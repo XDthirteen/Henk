@@ -1,65 +1,45 @@
-#####################################
-*/
-*/      #  LoginVue.vue
-*/      #  ==================
-*/      #  Beschrijving:
-*/      #  ------------
-*/      #  Dit zorgt ervoor dat je kan aanmelden.
-*/ 
-*/      #  Auteur: Arno Defillet / Gert-Jan Germeys
-*/      #  Datum aangemaakt: 11/12/2024
-*/
-##################
-*/
-*/      Changelog:
-*/      ----------
-*/      11/12/2024 - Arno Defillet / Gert-Jan Germeys 
-*/          - Creatie van view + uitwerken van loginfunctionaliteit.
-*/      16/12/2024 - Arno Defillet 
-*/          - Toevoegen van comments
-*/          - Toevoegen van boodschap wanneer inloggegevens foutief zijn
-*/      
-*/      Opmerkingen:
-*/      ------------
-*/      ...
-*/      
-#####################################
+/*#####################################
+/
+/      #  LoginVue.vue
+/      #  ==================
+/      #  Beschrijving:
+/      #  ------------
+/      #  Dit zorgt ervoor dat je kan aanmelden.
+/ 
+/      #  Auteur: Arno Defillet / Gert-Jan Germeys
+/      #  Datum aangemaakt: 11/12/2024
+/
+#################
+/
+/      Changelog:
+/      ----------
+/      11/12/2024 - Arno Defillet / Gert-Jan Germeys 
+/          - Creatie van view + uitwerken van loginfunctionaliteit.
+/      16/12/2024 - Arno Defillet 
+/          - Toevoegen van comments
+/          - Toevoegen van boodschap wanneer inloggegevens foutief zijn
+/          - Alle service code verplaatst naar services -> auth.service.ts
+/      Opmerkingen:
+/      ------------
+/      ...
+/      
+#####################################*/
 
 <script lang="ts" setup>
-import axios from 'axios';
+import { useAuth } from '@/services/auth.service';
 import { ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
+const { login } = useAuth();
+
 // Declareer een referentie voor de ingevoerde gebruikersnaam & wachtwoord
 const inputUsername: Ref<string> = ref("");
 const inputPassword: Ref<string> = ref("");
 
-// Controleer of er al een authenticatietoken in de lokale opslag staat
-// Hiermee wordt bepaald of de gebruiker al ingelogd is
-const isAuthenticated = ref(localStorage.getItem("token") !== null);
-
 // Initialiseren van referentie voor verkeerde inloggegevens en default op False zetten
 let wrongCredentials :Ref<boolean | undefined> = ref();
-
-// Functie om de gebruiker in te loggen
-const login = async (email: string, password: string) => {
-    try {
-        // Verstuur een POST-verzoek naar de API met de ingevoerde email en wachtwoord
-        const response = await axios.post<{token: string}>("/api/auth/login", {
-            email: email,
-            password: password
-        });
-
-        const token = response.data.token;
-        localStorage.setItem("token", token);
-        isAuthenticated.value = true;
-
-    } catch (error) {
-        throw new Error(`Login wrong. Error: ${error}`);
-    }
-}
 
 // Functie om de huidige gebruiker te authenticeren
 const authenticate = async() => {
@@ -85,7 +65,7 @@ const authenticate = async() => {
             <input id="login-password" class="login" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
             <div class="button-container">
                 <button id="login-btn" @click="authenticate()">Login</button>
-                <button id="signin-btn" @click="">Sign in</button>
+                <button id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
             </div>
             <div v-if="wrongCredentials">Incorrect username - password combination</div>
         </form>

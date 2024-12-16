@@ -1,22 +1,23 @@
-#####################################
-*/      
-*/      #  Component.vue
-*/      #  ==================
-*/      #  Beschrijving:
-*/      #  ------------
-*/      #  Korte beschrijving van code.
-*/ 
-*/      #  Auteur: [Auteur]
-*/      #  Datum aangemaakt: [Datum]
-*/
-##################
-*/
-*/      Changelog:
-*/      ----------
-*/      [DD/MM/JJ] - [User]- Omschrijving van actie.
-*/      
-*/      Opmerkingen:
-*/      ------------
-*/      Enige opmerkingen?
-*/      
-#####################################
+/*#####################################
+/      
+/      #  Component.vue
+/      #  ==================
+/      #  Beschrijving:
+/      #  ------------
+/      #  Korte beschrijving van code.
+/ 
+/      #  Auteur: [Auteur]
+/      #  Datum aangemaakt: [Datum]
+/
+#################
+/
+/      Changelog:
+/      ----------
+/      [DD/MM/JJ] - [User] 
+/           - Omschrijving van actie.
+/      
+/      Opmerkingen:
+/      ------------
+/      Enige opmerkingen?
+/      
+#####################################*/
