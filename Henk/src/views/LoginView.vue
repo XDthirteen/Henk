@@ -6,15 +6,18 @@
 */      #  ------------
 */      #  Dit zorgt ervoor dat je kan aanmelden.
 */ 
-*/      #  Auteur: Arno Defillet
+*/      #  Auteur: Arno Defillet / Gert-Jan Germeys
 */      #  Datum aangemaakt: 11/12/2024
 */
 ##################
 */
 */      Changelog:
 */      ----------
-*/      11/12/2024 - Creatie van view + uitwerken van loginfunctionaliteit.
-*/      16/12/2024 - Toevoegen van comments
+*/      11/12/2024 - Arno Defillet / Gert-Jan Germeys 
+*/          - Creatie van view + uitwerken van loginfunctionaliteit.
+*/      16/12/2024 - Arno Defillet 
+*/          - Toevoegen van comments
+*/          - Toevoegen van boodschap wanneer inloggegevens foutief zijn
 */      
 */      Opmerkingen:
 */      ------------
@@ -33,6 +36,9 @@ const inputPassword: Ref<string> = ref("");
 // Controleer of er al een authenticatietoken in de lokale opslag staat
 // Hiermee wordt bepaald of de gebruiker al ingelogd is
 const isAuthenticated = ref(localStorage.getItem("token") !== null);
+
+// Initialiseren van referentie voor verkeerde inloggegevens en default op False zetten
+let wrongCredentials :Ref<boolean> = ref(false);
 
 // Functie om de gebruiker in te loggen
 const login = async (email: string, password: string) => {
@@ -56,8 +62,10 @@ const login = async (email: string, password: string) => {
 const authenticate = async() => {
     try {
         await login(inputUsername.value, inputPassword.value)
+        wrongCredentials.value = false;
         console.log('Succesfull authenticated')
     } catch (error) {
+        wrongCredentials.value = true;
         console.error(error)
     }
 }
@@ -66,9 +74,15 @@ const authenticate = async() => {
 <template>
     <div>This is the Login view</div>
     <div class="login-container">
-        <input id = "login-username" class="login" type="email" placeholder="example@example.com" v-model="inputUsername">
-        <input id = "login-password" class="login" type="password" placeholder="Your password" v-model="inputPassword">
-        <button id="login-btn" @click="authenticate()">Login</button>
+        <form>
+            <input id="login-username" class="login" type="email" placeholder="example@example.com" v-model="inputUsername" autocomplete="email">
+            <input id="login-password" class="login" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
+            <div class="button-container">
+                <button id="login-btn" @click="authenticate()">Login</button>
+                <button id="signin-btn" @click="">Sign in</button>
+            </div>
+            <div v-if="wrongCredentials">Incorrect username - password combination</div>
+        </form>
     </div>
 </template>
 
@@ -77,5 +91,9 @@ const authenticate = async() => {
     display: flex;
     flex-direction: column;
     max-width: 12rem;
+}
+
+.button-container{
+    display: flex;
 }
 </style>
