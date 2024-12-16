@@ -28,6 +28,9 @@
 <script lang="ts" setup>
 import axios from 'axios';
 import { ref, type Ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // Declareer een referentie voor de ingevoerde gebruikersnaam & wachtwoord
 const inputUsername: Ref<string> = ref("");
@@ -38,7 +41,7 @@ const inputPassword: Ref<string> = ref("");
 const isAuthenticated = ref(localStorage.getItem("token") !== null);
 
 // Initialiseren van referentie voor verkeerde inloggegevens en default op False zetten
-let wrongCredentials :Ref<boolean> = ref(false);
+let wrongCredentials :Ref<boolean | undefined> = ref();
 
 // Functie om de gebruiker in te loggen
 const login = async (email: string, password: string) => {
@@ -64,6 +67,9 @@ const authenticate = async() => {
         await login(inputUsername.value, inputPassword.value)
         wrongCredentials.value = false;
         console.log('Succesfull authenticated')
+
+        // Doorsturen naar een andere pagina
+        router.push({ name: 'home' })
     } catch (error) {
         wrongCredentials.value = true;
         console.error(error)
