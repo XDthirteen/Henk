@@ -61,14 +61,14 @@ const authenticate = async() => {
     <div>This is the Login view</div>
     <div class="login-container">
         <form>
-            <input id="login-username" class="login" type="email" placeholder="example@example.com" v-model="inputUsername" autocomplete="email">
-            <input id="login-password" class="login" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
-            <div class="button-container">
-                <button id="login-btn" @click="authenticate()">Login</button>
-                <button id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
-            </div>
-            <div v-if="wrongCredentials">Incorrect username - password combination</div>
+            <input id="login-username" type="email" placeholder="example@example.com" v-model="inputUsername" autocomplete="email">
+            <input id="login-password" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
         </form>
+        <div class="button-container">
+            <button id="login-btn" @click="authenticate()">Login</button>
+            <button id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
+        </div>
+        <div v-if="wrongCredentials">Incorrect username - password combination</div>
     </div>
 </template>
 
