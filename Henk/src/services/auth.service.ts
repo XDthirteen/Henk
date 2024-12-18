@@ -13,7 +13,10 @@
 /
 /      Changelog:
 /      ----------
-/      [DD/MM/JJ] - [User]- Omschrijving van actie.
+/       16/12/2024 - Arno Defillet 
+/           - Opmaken van service voor "login"
+/       16/12/2024 - Arno Defillet
+/           - Opmaken van service voor "logout"
 /      
 /      Opmerkingen:
 /      ------------
@@ -45,9 +48,16 @@ const useAuth = () => {
             throw new Error(`Login wrong. Error: ${error}`);
         }
     }
+
+    // Code om later te gebruiken op een 'logout' button. Deze button staat momenteel op de HomeView.
+    const logout = () => {
+        localStorage.removeItem("token");
+        isAuthenticated.value = false;
+    }
     
     return {
         login,
+        logout,
         isAuthenticated
     }
 }

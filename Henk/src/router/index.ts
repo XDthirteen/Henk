@@ -21,7 +21,7 @@ const router = createRouter({
           path: "/signin",
           name: "signin",
           component: () => import('@/views/RegisterView.vue')
-        },
+        }
       ]
     },
   ],
