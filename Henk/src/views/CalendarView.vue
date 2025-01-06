@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { CalendarDay } from "@/components/models";
 import { ref, computed, onMounted } from "vue";
 
 // Test data for events
@@ -35,15 +36,6 @@ const months = [
   "November", 
   "December"
 ];
-
-interface CalendarDay {
-  day: number;
-  month: number;
-  year: number;
-  faded: boolean;
-  isToday?: boolean;
-  dayOfWeek: string;
-}
 
 const calendarDays = computed(() => {
   const year = currentYear.value;

@@ -6,3 +6,12 @@ export interface User {
     lastName: string, 
     chosenLanguage: number
 }
+
+export interface CalendarDay {
+  day: number
+  month: number
+  year: number
+  faded: boolean
+  isToday?: boolean
+  dayOfWeek: string
+}
