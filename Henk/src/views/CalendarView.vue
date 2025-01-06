@@ -238,9 +238,9 @@ onMounted(() => console.log("Loaded"));
 .date.planned::after {
   content: "";
   position: absolute;
-  bottom: 5px; /* Line position */
-  left: 10%; /* Line width adjustment */
-  right: 10%; /* Line width adjustment */
+  bottom: 5px;
+  left: 10%;
+  right: 10%;
   height: 3px; 
   border-radius: 2px;
 }
