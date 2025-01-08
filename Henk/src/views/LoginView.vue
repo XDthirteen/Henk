@@ -5,7 +5,7 @@
 /      #  Beschrijving:
 /      #  ------------
 /      #  Dit zorgt ervoor dat je kan aanmelden.
-/ 
+/
 /      #  Auteur: Arno Defillet / Gert-Jan Germeys
 /      #  Datum aangemaakt: 11/12/2024
 /
@@ -13,16 +13,16 @@
 /
 /      Changelog:
 /      ----------
-/      11/12/2024 - Arno Defillet / Gert-Jan Germeys 
+/      11/12/2024 - Arno Defillet / Gert-Jan Germeys
 /          - Creatie van view + uitwerken van loginfunctionaliteit.
-/      16/12/2024 - Arno Defillet 
+/      16/12/2024 - Arno Defillet
 /          - Toevoegen van comments
 /          - Toevoegen van boodschap wanneer inloggegevens foutief zijn
 /          - Alle service code verplaatst naar services -> auth.service.ts
 /      Opmerkingen:
 /      ------------
 /      ...
-/      
+/
 #####################################*/
 
 <script lang="ts" setup>
@@ -39,7 +39,7 @@ const inputUsername: Ref<string> = ref("");
 const inputPassword: Ref<string> = ref("");
 
 // Initialiseren van referentie voor verkeerde inloggegevens en default op False zetten
-let wrongCredentials :Ref<boolean | undefined> = ref();
+const wrongCredentials :Ref<boolean | undefined> = ref();
 
 // Functie om de huidige gebruiker te authenticeren
 const authenticate = async() => {
@@ -59,14 +59,14 @@ const authenticate = async() => {
 
 <template>
     <div>This is the Login view</div>
-    <div class="login-container">
+    <div class="login-container" >
         <form>
             <input id="login-username" type="email" placeholder="example@example.com" v-model="inputUsername" autocomplete="email">
             <input id="login-password" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
         </form>
         <div class="button-container">
-            <button id="login-btn" @click="authenticate()">Login</button>
-            <button id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
+            <button class="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded " id="login-btn" @click="authenticate()">Login</button>
+            <button class="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded" id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
         </div>
         <div v-if="wrongCredentials">Incorrect username - password combination</div>
     </div>
