@@ -4,9 +4,9 @@ import { ref, computed, onMounted } from "vue";
 
 // Test data for events
 const eventDates = {
-  personal: ["7-1-2025", "9-1-2025"],
-  group: ["10-1-2025", "9-1-2025"],
-  planned: ["17-1-2025", "29-1-2025"],
+  personal: ["2-1-2025","29-1-2025", "18-1-2025"],
+  group: ["7-1-2025","10-1-2025", "29-1-2025","8-1-2025"],
+  planned: ["7-1-2025","17-1-2025", "29-1-2025", "8-1-2025"],
 };
 
 const currentYear = ref(new Date().getFullYear());
@@ -42,9 +42,12 @@ const calendarDays = computed(() => {
   const month = currentMonth.value;
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+
   const firstDayOfWeek = new Date(year, month, 1).getDay();
-  const lastDayOfWeek = new Date(year, month + 1, 0).getDay();
   const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+  const lastDayOfWeek = new Date(year, month + 1, 0).getDay();
+  const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
 
   const days: CalendarDay[] = [];
 
@@ -59,11 +62,13 @@ const calendarDays = computed(() => {
       const targetDate = new Date(year, month + offsetMonth, day);
       const targetMonth = targetDate.getMonth();
       const targetYear = targetDate.getFullYear();
+      const fullDate = `${targetDate.getDate()}-${targetMonth + 1}-${targetYear}`;
 
       days.push({
         day: targetDate.getDate(),
         month: targetMonth,
         year: targetYear,
+        date: fullDate,
         faded,
         isToday:
           !faded &&
@@ -79,8 +84,6 @@ const calendarDays = computed(() => {
   const daysInPrevMonth = new Date(year, month, 0).getDate();
   addDays(startOffset, daysInPrevMonth - startOffset + 1, true, -1);
   addDays(daysInMonth, 1, false, 0);
-
-  const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
   addDays(endOffset, 1, true, 1);
 
   return days;
@@ -94,23 +97,6 @@ const goToPrevMonth = () => {
 const goToNextMonth = () => {
   currentMonth.value = (currentMonth.value + 1) % 12;
   if (currentMonth.value === 0) currentYear.value++;
-};
-
-const getDayEvent = (date: CalendarDay): string[] => {
-  const dateStr = `${date.day}-${date.month + 1}-${date.year}`;
-  const classes: string[] = [];
-
-  if (eventDates.personal.includes(dateStr)) {
-    classes.push("personal");
-  }
-  if (eventDates.group.includes(dateStr)) {
-    classes.push("group");
-  }
-  if (eventDates.planned.includes(dateStr)) {
-    classes.push("planned");
-  }
-
-  return classes;
 };
 
 onMounted(() => console.log("Loaded"));
@@ -136,12 +122,26 @@ onMounted(() => console.log("Loaded"));
       <!-- Calendar Days -->
       <div
         v-for="date in calendarDays"
-        :key="`${date.day}-${date.month}-${date.year}`"
-        :id="`${date.day}-${date.month + 1}-${date.year}`"
-        :class="['date', { faded: date.faded, today: date.isToday }, ...getDayEvent(date)]"
-        @click="console.log(`Clicked on: ${date.day}-${date.month + 1}-${date.year} (${date.dayOfWeek})`)"
+        :key="date.date"
+        :id="date.date"
+        :class="['date', {faded: date.faded, today: date.isToday}]"
+        @click="console.log(`Clicked on: ${date.date} (${date.dayOfWeek})`)"
       >
-        {{ date.day }}
+        <span>{{ date.day }}</span>
+        <div class="event-lines">
+          <div
+            class="event-line personal"
+            v-if="eventDates.personal.includes(`${date.date}`)"
+          ></div>
+          <div
+            class="event-line group"
+            v-if="eventDates.group.includes(`${date.date}`)"
+          ></div>
+          <div
+            class="event-line planned"
+            v-if="eventDates.planned.includes(`${date.date}`)"
+          ></div>
+        </div>
       </div>
     </div>
   </div>
@@ -211,6 +211,7 @@ onMounted(() => console.log("Loaded"));
 
     .day,
     .date {
+        position: relative;
         padding: 20%;
         text-align: center;
         font-size: 14px;
@@ -219,8 +220,10 @@ onMounted(() => console.log("Loaded"));
         border: 2px solid transparent;
     }
 
-    .date {
-        cursor: pointer; 
+    .date span{
+        position: relative;
+        z-index: 2;
+        top: -8px;
     }
 
     .date:hover {
@@ -233,32 +236,40 @@ onMounted(() => console.log("Loaded"));
         font-weight: bold;
     }
 
-    .date.personal::after,
-.date.group::after,
-.date.planned::after {
-  content: "";
-  position: absolute;
-  bottom: 5px; /* Line position */
-  left: 10%; /* Line width adjustment */
-  right: 10%; /* Line width adjustment */
-  height: 3px; 
-  border-radius: 2px;
-}
-
-
-.date.personal::after {
-  background-color: #ff6b6b; 
-}
-
-.date.group::after {
-  background-color: #4ecdc4;
-}
-
-.date.planned::after {
-  background-color: #1a73e8; 
-}
-
     .faded {
         color: #aaa;
     }
+
+.event-lines {
+  position: absolute;
+  bottom: 5px;
+  left: 10%;
+  right: 10%;
+  height: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.event-line {
+  position: absolute;
+  width: 100%;
+  height: 3px;
+}
+
+.event-line.personal {
+  bottom: 9px;
+  background-color: red;
+}
+
+.event-line.group {
+  bottom: 5px;
+  background-color: green;
+}
+
+.event-line.planned {
+  bottom: 1px;
+  background-color: blue;
+}
+
 </style>
