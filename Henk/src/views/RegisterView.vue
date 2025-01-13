@@ -1,12 +1,12 @@
 /*#####################################
-/      
+/
 /      #  RegisterView.vue
 /      #  ==================
 /      #  Beschrijving:
 /      #  ------------
 /      #  Het kunnen aanmaken van een gebruiker.
-/ 
-/      #  Auteur: Arno Defillet 
+/
+/      #  Auteur: Arno Defillet
 /      #  Datum aangemaakt: 16/11/2024
 /
 #################
@@ -15,11 +15,11 @@
 /      ----------
 /      18/11/2024 - Arno Defillet
 /          - Opzetten van de Axios Post -> Deze retourneert in een 400 error. Nog uit te zoeken.
-/      
+/
 /      Opmerkingen:
 /      ------------
 /      Enige opmerkingen?
-/      
+/
 #####################################*/
 
 <script lang="ts" setup>
@@ -30,7 +30,7 @@ import axios from 'axios';
 const router = useRouter();
 
 const languages: string[] = [
-    'Nederlands', 
+    'Nederlands',
     'English'
 ]
 
@@ -72,13 +72,13 @@ const createUser = async() => {
               console.error(error)
           }
       }
-      
+
 }
 
 </script>
 
 <template>
-    <h2>Create account</h2>
+    <div class="signup-header">Create account</div>
     <form>
         <label for="username">Username: </label><br>
         <input type="text" v-model="username" name="username" placeholder="Choose an username"><br>
@@ -88,19 +88,57 @@ const createUser = async() => {
 
         <label for="pwd">Password: </label><br>
         <input type="password" v-model="userPassword" name="pwd" autocomplete="off" placeholder="***"><br>
-        
+
         <label for="confirm_pwd">Confirm password: </label><br>
         <input type="password" v-model="confirmPassword"name="confirm_pwd" autocomplete="off" placeholder="***"><br>
-        
+
         <label for="fname">First name: </label><br>
         <input type="text" v-model="userFirstName" name="fname"><br>
-        
+
         <label for="lname">Last name: </label><br>
         <input type="text" v-model="userLastName" name="lname"><br>
-        
+
         <label v-for="(language, index) in languages" :key="index">
             <input type="radio" :value="index + 1" v-model="selectedLanguage"/> {{ language }}
         </label>
     </form>
     <button @click="createUser()">Create account</button>
 </template>
+
+<style scoped>
+
+.signup-header{
+    color: blue;
+    font-weight: bold;
+    font-size: 23px;
+}
+
+label{
+  color: blue;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+input{
+  border: 2px solid grey;
+}
+
+button{
+    color: white;
+    background-color: blue;
+    border-radius: 5%;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    margin: 5px;
+    border: 2px solid blue;
+}
+button:hover{
+    color: blue;
+    background-color: white;
+    border: 2px solid blue
+}
+
+</style>

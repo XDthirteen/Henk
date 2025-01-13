@@ -58,28 +58,84 @@ const authenticate = async() => {
 </script>
 
 <template>
-    <div>This is the Login view</div>
+    <div class="login-header">HENK</div>
     <div class="login-container" >
         <form>
             <input id="login-username" type="email" placeholder="example@example.com" v-model="inputUsername" autocomplete="email">
             <input id="login-password" type="password" placeholder="Your password" v-model="inputPassword" autocomplete="current-password">
         </form>
         <div class="button-container">
-            <button class="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded " id="login-btn" @click="authenticate()">Login</button>
-            <button class="bg-blue-700 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded" id="signin-btn" @click="router.push({name: 'signin'})">Sign in</button>
+            <button id="login-btn" @click="authenticate()">Login</button>
+            <button id="signin-btn" @click="router.push({name: 'signin'})">Sign up</button>
         </div>
         <div v-if="wrongCredentials">Incorrect username - password combination</div>
     </div>
 </template>
 
 <style scoped>
+
+
+
+.login-header{
+    color: blue;
+    font-weight: bold;
+    font-size: 50px;
+}
+
 .login-container{
     display: flex;
     flex-direction: column;
     max-width: 12rem;
+    align-items: center;
 }
 
 .button-container{
     display: flex;
+}
+
+#login-btn{
+    color: white;
+    background-color: blue;
+    border-radius: 5%;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    margin: 5px;
+    border: 2px solid blue;
+}
+#login-btn:hover{
+    color: blue;
+    background-color: white;
+    border: 2px solid blue
+}
+
+#signin-btn{
+    color: white;
+    background-color: blue;
+    border-radius: 5%;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    margin: 5px;
+    border: 2px solid blue
+}
+#signin-btn:hover{
+    color: blue;
+    background-color: white;
+    border: 2px solid blue;
+}
+
+#login-username{
+    border: 2px solid gray;
+    margin: 1px;
+}
+
+#login-password{
+    border: 2px solid gray;
+    margin: 1px;
 }
 </style>
