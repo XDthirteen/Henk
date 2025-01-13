@@ -1,8 +1,8 @@
-export interface User {
-    username: string, 
-    email: string, 
-    password: string, 
-    firstName: string, 
-    lastName: string, 
-    chosenLanguage: number
+export interface UserData {
+    username: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    defaultLanguage: string;
 }
