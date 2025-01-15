@@ -7,7 +7,7 @@ const router = useRouter();
 
 <template>
   <div class="wrapper">
-    <div>This is the main layout</div>
+    <div><img src="/images/logohenkFinal.png" alt="Henk" width="200"></div>
     <button class="main-login" @click="router.push({ name: 'login' })">Go to login</button>
     <RouterView/>
   </div>
