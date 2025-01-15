@@ -8,5 +8,6 @@ const router = useRouter();
 <template>
     <div>This is the main layout</div>
     <button @click="router.push({ name: 'login' })">Go to login</button>
-    <RouterView/>
+    <button @click="router.push({ name: 'myAccount' })">Go to My account</button>
+    <RouterView />
 </template>
