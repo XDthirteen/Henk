@@ -1,3 +1,4 @@
+import { authenticationGuard } from '@/guards/authenticationGuard'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -15,15 +16,34 @@ const router = createRouter({
         {
           path: "/home",
           name: "home",
+          beforeEnter: [authenticationGuard],
           component: () => import('@/views/HomeView.vue')
         },
         {
           path: "/signin",
           name: "signin",
           component: () => import('@/views/RegisterView.vue')
+        },
+        {
+          path: "/myAccount",
+          name: "myAccount",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/layouts/MyAccount.vue'),
+          children: [
+            {
+              path: "/myAccount/settings",
+              name: "settings",
+              component: () => import('@/views/AccountUserSettings.vue')
+            },
+            {
+              path: "/myAccount/parameters",
+              name: "parameters",
+              component: () => import('@/views/AccountParameters.vue')
+            }
+          ]
         }
       ]
-    },
+    }
   ],
 })
 
