@@ -31,20 +31,20 @@ const router = useRouter();
 
 .btn {
     color: white;
-    background-color: deeppink;
-    border-radius: 5%;
+    background-color: #453d83;
+    border-radius: 10px;
     padding: 0.2rem 1rem 0.2rem 1rem;
     text-align: center;
     display: inline-block;
     font-size: 16px;
     transition-duration: 0.4s;
     margin: 5px;
-    border: 2px solid deeppink;
+    border: 2px solid #453d83;
 }
 
 .btn:hover {
-    color: deeppink;
+    color: #453d83;
     background-color: white;
-    border: 2px solid deeppink
+    border: 2px solid #453d83
 }
 </style>

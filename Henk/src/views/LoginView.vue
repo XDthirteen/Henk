@@ -57,13 +57,13 @@ const authenticate = async () => {
 }
 </script>
 
-<template>
+<template> <!--Aanpassen van inputs en buttons > in Components steken en ophalen in deze code -->
     <div class="login-container">
         <form>
-            <input id="login-username" type="email" placeholder="example@example.com" v-model="inputUsername"
-                autocomplete="email">
-            <input id="login-password" type="password" placeholder="Your password" v-model="inputPassword"
-                autocomplete="current-password">
+            <input class="login-input" id="login-username" type="email" placeholder="example@example.com"
+                v-model="inputUsername" autocomplete="email">
+            <input class="login-input" id="login-password" type="password" placeholder="Your password"
+                v-model="inputPassword" autocomplete="current-password">
         </form>
         <div class="button-container">
             <button id="login-btn" @click="authenticate()">Login</button>
@@ -73,17 +73,17 @@ const authenticate = async () => {
 </template>
 
 <style scoped>
-.login-header {
-    color: blue;
-    font-weight: bold;
-    font-size: 50px;
-}
-
 .login-container {
     display: flex;
     flex-direction: column;
     max-width: 12rem;
     align-items: center;
+}
+
+.login-input {
+    border: 2px solid gray;
+    margin: 1px;
+    padding: 5px 10px;
 }
 
 .button-container {
@@ -126,15 +126,5 @@ const authenticate = async () => {
     color: blue;
     background-color: white;
     border: 2px solid blue;
-}
-
-#login-username {
-    border: 2px solid gray;
-    margin: 1px;
-}
-
-#login-password {
-    border: 2px solid gray;
-    margin: 1px;
 }
 </style>
