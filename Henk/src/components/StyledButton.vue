@@ -18,30 +18,30 @@ button {
   font-size: 16px;
   transition-duration: 0.4s;
   margin: 5px;
-  background-color: #eeeeee;
+  background-color: var(--secundary-white);
   border-radius: 0.25rem;
   font-weight: 500;
   border: none;
-  color: #567868;
+  color: var(--primary-purple);
 }
 
 button:hover {
-  background-color: #e6e6e6;
-  color: #0096e8;
+  background-color: var(--secundary-orange);
+  color: var(--primary-purple);
   cursor: pointer;
 }
 
 
 .primary {
-  color: white;
-  background-color: #453d83;
-  border: 2px solid #453d83;
+  background-color: var(--primary-purple);
+  color: var(--primary-white);
+  border: 2px solid var(--primary-purple);
 }
 
 .primary:hover {
-  color: #453d83;
-  background-color: white;
-  border: 2px solid #453d83
+  background-color: var(--primary-white);
+  color: var(--primary-purple);
+  border: 2px solid var(--primary-purple)
 }
 
 .negative {

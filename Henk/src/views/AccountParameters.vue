@@ -1,5 +1,5 @@
 <template>
-    <div>
-        <h1>AccountParameters view</h1>
-    </div>
+  <div class="user-overview">
+    test
+  </div>
 </template>

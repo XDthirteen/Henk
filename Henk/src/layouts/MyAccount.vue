@@ -1,23 +1,42 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import StyledButton from '@/components/StyledButton.vue';
 
 const router = useRouter();
+
+const buttonType = "primary";
+
 
 </script>
 
 <template>
-    <h1 class="title">My account</h1>
-    <div class="user-options">
-        <button @click="router.push({ name: 'settings' })">User Settings</button>
-        <button @click="router.push({ name: 'parameters' })">Parameters</button>
-    </div>
+  <div class="view-title">My account</div>
+  <div class="button-container">
+    <StyledButton :type="buttonType" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
+    <StyledButton :type="buttonType" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
+  </div>
 
-    <RouterView />
+
+  <RouterView />
 </template>
 
 <style scoped>
-.user-options {
-    display: flex;
-    gap: 0.5rem;
+.view-title {
+  border: 2px solid var(--primary-purple);
+  border-radius: 10px;
+  background-color: var(--secundary-purple);
+  margin: 1rem 2rem 1rem 2rem;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: x-large;
+  font-weight: 500;
+}
+
+.button-container {
+  margin: 0 2rem 0 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 </style>
