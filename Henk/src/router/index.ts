@@ -25,6 +25,11 @@ const router = createRouter({
           component: () => import('@/views/RegisterView.vue')
         },
         {
+          path: "/weather",
+          name: "weather",
+          component: () => import('@/views/WeatherView.vue')
+        },
+        {
           path: "/myAccount",
           name: "myAccount",
           beforeEnter: [authenticationGuard],
