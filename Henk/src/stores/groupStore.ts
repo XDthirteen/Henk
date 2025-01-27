@@ -2,14 +2,14 @@ import { defineStore } from 'pinia'
 
 export const useGroupStore = defineStore('groupStore', {
   state: () => ({
-    meGroup: { id: 0, name: 'Me', icon: './src/assets/me.png' },
+    meGroup: { id: 0, name: 'Me',   icon: './src/assets/sunglasses.png' },
     invites: [
-      { id: 1, name: 'School', icon: './src/assets/school.png' },
-      { id: 2, name: 'Work', icon: './src/assets/work.png' },
+      { id: 1, name: 'School', icon: './src/assets/sleepy.png' },
+      { id: 2, name: 'Work', icon: './src/assets/rage.png' },
     ],
     groups: [
-      { id: 101, name: 'Family', icon: './src/assets/family.png' },
-      { id: 102, name: 'Friends', icon: './src/assets/friends.png' },
+      { id: 101, name: 'Family', icon: './src/assets/man-woman-boy.png' },
+      { id: 102, name: 'Friends', icon: './src/assets/joy.png' },
     ],
     acceptedGroups: [] as Array<{ id: number; name: string; icon: string }>,
   }),
