@@ -47,7 +47,7 @@ export default defineComponent({
     const isSidebarOpen = ref(false);
 
     const navigateToInvites = () => {
-      router.push('/invites');
+      router.push({ name: 'invites' });
     };
 
     const toggleSidebar = () => {

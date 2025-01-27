@@ -33,42 +33,36 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useGroupStore } from '@/stores/groupStore';
 import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  setup() {
-    const groupStore = useGroupStore();
-    const router = useRouter();
-    const selectedGroup = ref(null);
+const groupStore = useGroupStore();
+const router = useRouter();
+const selectedGroup = ref(null);
 
-    const navigateBack = () => {
-      router.push('/');
-    };
+const navigateBack = () => {
+  router.go(-1);
+};
 
-    const openPopup = (group) => {
-      selectedGroup.value = group;
-    };
+const openPopup = (group) => {
+  selectedGroup.value = group;
+};
 
-    const acceptInvite = () => {
-      if (selectedGroup.value) {
-        groupStore.acceptGroup(selectedGroup.value);
-        selectedGroup.value = null;
-      }
-    };
+const acceptInvite = () => {
+  if (selectedGroup.value) {
+    groupStore.acceptGroup(selectedGroup.value);
+    selectedGroup.value = null;
+  }
+};
 
-    const declineInvite = () => {
-      if (selectedGroup.value) {
-        groupStore.declineGroup(selectedGroup.value);
-        selectedGroup.value = null;
-      }
-    };
-
-    return { groupStore, navigateBack, selectedGroup, openPopup, acceptInvite, declineInvite };
-  },
-});
+const declineInvite = () => {
+  if (selectedGroup.value) {
+    groupStore.declineGroup(selectedGroup.value);
+    selectedGroup.value = null;
+  }
+};
 </script>
 
 <style scoped>

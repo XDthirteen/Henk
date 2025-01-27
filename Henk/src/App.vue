@@ -5,13 +5,10 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import TabBar from './components/TabBar.vue';
 
-export default defineComponent({
-  components: { TabBar },
-});
+
 </script>
 
 
