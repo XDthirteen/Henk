@@ -1,10 +1,12 @@
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({});
+<script setup lang="ts">
 </script>
 
+<template>
+  <div>
+  </div>
+</template>
 <style>
+
 .tab-bar {
   display: flex;
   justify-content: space-around;

@@ -22,7 +22,7 @@
     <div v-if="selectedGroup" class="popup-overlay">
       <div class="popup">
         <h2>Group Invitation</h2>
-        <img :src="selectedGroup.icon" :alt="selectedGroup.name" class="popup-icon" />
+        <img :src="selectedGroup!.icon" :alt="selectedGroup!.name" class="popup-icon" />
         <p>{{ selectedGroup.name }}</p>
         <div class="popup-buttons">
           <button class="accept-btn" @click="acceptInvite">Accept</button>
@@ -40,13 +40,15 @@ import { useRouter } from 'vue-router';
 
 const groupStore = useGroupStore();
 const router = useRouter();
-const selectedGroup = ref(null);
+import type { Group } from '@/types/Group';
+
+const selectedGroup = ref<Group | null>(null);
 
 const navigateBack = () => {
   router.go(-1);
 };
 
-const openPopup = (group) => {
+const openPopup = (group: Group) => {
   selectedGroup.value = group;
 };
 

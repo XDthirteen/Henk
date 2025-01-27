@@ -35,33 +35,27 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 import { useGroupStore } from '@/stores/groupStore';
 import { useRouter } from 'vue-router';
 
-export default defineComponent({
-  setup() {
-    const groupStore = useGroupStore();
-    const router = useRouter();
-    const isSidebarOpen = ref(false);
+const groupStore = useGroupStore();
+const router = useRouter();
+const isSidebarOpen = ref(false);
 
-    const navigateToInvites = () => {
-      router.push({ name: 'invites' });
-    };
+const navigateToInvites = () => {
+  router.push({ name: 'invites' });
+};
 
-    const toggleSidebar = () => {
-      isSidebarOpen.value = !isSidebarOpen.value;
-    };
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
 
-    const navigateTo = (path: string) => {
-      router.push(path);
-      isSidebarOpen.value = false;
-    };
-
-    return { groupStore, isSidebarOpen, toggleSidebar, navigateToInvites, navigateTo };
-  },
-});
+const navigateTo = (path: string) => {
+  router.push(path);
+  isSidebarOpen.value = false;
+};
 </script>
 
 <style scoped>
