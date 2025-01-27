@@ -20,29 +20,52 @@ interface WeatherData {
   };
 }
 
+interface ForecastData{
+  dt_txt: string;
+  main:{
+    temp: number;
+    humidity: number;
+  };
+  weather:{
+    description: string;
+  }[];
+  wind:{
+    speed: number;
+  };
+}
+
 export default defineComponent({
   name: 'WeatherApp',
   setup() {
     const city = ref<string>('');
     const weather = ref<WeatherData | null>(null);
+    const forecast = ref<ForecastData[]>([]);
     const error = ref<string | null>(null);
 
     const getWeather = async () => {
       if (!city.value) {
         error.value = "Please enter a city name.";
         weather.value = null;
+        forecast.value = [];
         return;
       }
 
       const apiKey = "59f5d73944c323b9071de991b104300b"; // OpenWeatherMap API key
-      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}`;
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}`;
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city.value}&units=metric&appid=${apiKey}`;
 
       try {
-        const response = await axios.get<WeatherData>(url);
-        weather.value = response.data;
+        const weatherResponse = await axios.get<WeatherData>(weatherUrl);
+        weather.value = weatherResponse.data;
+        const forecastResponse = await axios.get<{list:ForecastData[]}>(forecastUrl);
+        forecast.value = forecastResponse.data.list.filter((item)=>
+      item.dt_txt.includes("12:00:00")
+    ).slice(0, 4);
+
         error.value = null;
       } catch  {
         weather.value = null;
+        forecast.value = [];
         error.value = "City not found. Please try again.";
       }
     };
@@ -50,6 +73,7 @@ export default defineComponent({
     return {
       city,
       weather,
+      forecast,
       error,
       getWeather,
     };
@@ -69,13 +93,26 @@ export default defineComponent({
       />
       <button @click="getWeather">Search</button>
     </div>
+
     <div v-if="weather" class="weather">
       <h2>{{ weather.name }}, {{ weather.sys.country }}</h2>
-      <p>{{ weather.weather[0].description }}</p>
-      <p>Temperature: {{ weather.main.temp }}°C</p>
+      <p class="description">{{ weather.weather[0].description }}</p>
+      <p class="temperature">Temperature: <strong>{{ weather.main.temp }}°C</strong></p>
       <p>Humidity: {{ weather.main.humidity }}%</p>
       <p>Wind Speed: {{ weather.wind.speed }} m/s</p>
     </div>
+
+    <div v-if="forecast.length > 0" class="forecast">
+      <h3>Future 4 days</h3>
+      <div class="forecast-item" v-for="(item, index) in forecast" :key="index">
+        <p><strong>{{ item.dt_txt }}</strong></p>
+        <p class="description">{{ item.weather[0].description }}</p>
+        <p class="temperature">Temperature: <strong>{{ item.main.temp }}°C</strong></p>
+        <p>Humidity: {{ item.main.humidity }}%</p>
+        <p>Wind Speed: {{ item.wind.speed }} m/s</p>
+      </div>
+    </div>
+
     <div v-if="error" class="error">
       <p>{{ error }}</p>
     </div>
@@ -86,7 +123,8 @@ export default defineComponent({
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
-  margin-top: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .search {
@@ -97,21 +135,84 @@ export default defineComponent({
   padding: 10px;
   font-size: 16px;
   width: 200px;
+  border: 2px solid #453d83;
+  border-radius: 2%;
 }
 
 .search button {
   padding: 10px 15px;
   font-size: 16px;
   cursor: pointer;
+  background-color: #453d83;
+  border-radius: 2%;
+  margin-left: 5px;
+  border: 2px solid #453d83;
+  color: white;
+  transition-duration: 0.4s;
+}
+
+.search button:hover {
+  background-color: white;
+  border: 2px solid #453d83;
+  color: #453d83;
 }
 
 .weather {
+  display: flex;
+  flex-direction: column;
   margin-top: 20px;
+  padding: 5%;
   font-size: 18px;
+  background-color: #e9f3fe;
+  border-radius: 2%;
 }
 
 .error {
   margin-top: 20px;
   color: red;
+  font-weight: bolder;
+  font-size: x-large;
 }
+
+.description{
+  font-style: italic;
+}
+
+h1{
+  font-weight: bolder;
+  font-size: xx-large;
+  margin-bottom: 10px;
+  color: #453d83;
+}
+h2{
+  font-weight: bold;
+  color: #453d83;
+}
+
+h3{
+  font-weight: bold;
+  color: #453d83;
+}
+
+.forecast{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e9f3fe;
+  border-radius: 2%;
+}
+
+.forecast-item{
+  flex: 1 1 calc(25% - 20px);
+  max-width: 200px;
+  text-align: center;
+  margin: 10px;
+  background-color: white;
+  border-radius: 2%;
+  padding: 10px;
+}
+
 </style>

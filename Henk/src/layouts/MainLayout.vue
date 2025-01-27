@@ -26,7 +26,7 @@ const router = useRouter();
 
 .main-login{
     color: white;
-    background-color: deeppink;
+    background-color: #453d83;
     border-radius: 5%;
     padding: 0.2rem 1rem 0.2rem 1rem;
     text-align: center;
@@ -34,12 +34,12 @@ const router = useRouter();
     font-size: 16px;
     transition-duration: 0.4s;
     margin: 5px;
-    border: 2px solid deeppink;
+    border: 2px solid #453d83;
 }
 .main-login:hover{
-    color: deeppink;
+    color: #453d83;
     background-color: white;
-    border: 2px solid deeppink
+    border: 2px solid #453d83
 }
 
 </style>
