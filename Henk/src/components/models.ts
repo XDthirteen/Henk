@@ -15,4 +15,5 @@ export interface CalendarDay {
   faded: boolean
   isToday?: boolean
   dayOfWeek: string
+  eventLines: string[]
 }
