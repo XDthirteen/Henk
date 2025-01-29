@@ -5,13 +5,13 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "",
+      path: '',
       component: () => import('@/layouts/MainLayout.vue'),
       children: [
         {
-          path: "/login",
-          name: "login",
-          component: () => import('@/views/LoginView.vue')
+          path: '/login',
+          name: 'login',
+          component: () => import('@/views/LoginView.vue'),
         },
         {
           path: "/home",
@@ -41,7 +41,12 @@ const router = createRouter({
               component: () => import('@/views/AccountParameters.vue')
             }
           ]
-        }
+        },
+        {
+          path: '/calendar',
+          name: 'calendar',
+          component: () => import('@/views/CalendarView.vue'),
+        },
       ]
     }
   ],
