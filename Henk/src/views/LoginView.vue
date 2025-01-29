@@ -37,6 +37,7 @@ const authenticate = async () => {
 <template>
   <div class="login-container">
     <form class="form-wrapper">
+      <div class="error-message" v-if="wrongCredentials">Incorrect username - password combination</div>
       <StyledInputByType input-type="email" placeholder="example@example.com" v-model="inputUsername"
         autocomplete="email"></StyledInputByType>
 
@@ -47,7 +48,6 @@ const authenticate = async () => {
     <div class="button-container">
       <StyledButton :type="buttonType" @click="authenticate()">Login</StyledButton>
     </div>
-    <div v-if="wrongCredentials">Incorrect username - password combination</div>
   </div>
 </template>
 
@@ -65,5 +65,12 @@ const authenticate = async () => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.error-message {
+  border: 3px solid black;
+  padding: 0.5rem;
+  background-color: var(--primary-red);
+  border-radius: 10px;
 }
 </style>
