@@ -1,38 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
-
-
-interface WeatherData {
-  name: string;
-  sys: {
-    country: string;
-  };
-  weather: {
-    description: string;
-  }[];
-  main: {
-    temp: number;
-    humidity: number;
-  };
-  wind: {
-    speed: number;
-  };
-}
-
-interface ForecastData{
-  dt_txt: string;
-  main:{
-    temp: number;
-    humidity: number;
-  };
-  weather:{
-    description: string;
-  }[];
-  wind:{
-    speed: number;
-  };
-}
+import type { WeatherData, ForecastData } from '@/components/models';
 
 export default defineComponent({
   name: 'WeatherApp',
@@ -99,7 +68,7 @@ export default defineComponent({
       <p class="description">{{ weather.weather[0].description }}</p>
       <p class="temperature">Temperature: <strong>{{ weather.main.temp }}°C</strong></p>
       <p>Humidity: {{ weather.main.humidity }}%</p>
-      <p>Wind Speed: {{ weather.wind.speed }} m/s</p>
+      <p>Wind Speed: {{ weather.wind.speed }}m/s</p>
     </div>
 
     <div v-if="forecast.length > 0" class="forecast">
@@ -109,7 +78,7 @@ export default defineComponent({
         <p class="description">{{ item.weather[0].description }}</p>
         <p class="temperature">Temperature: <strong>{{ item.main.temp }}°C</strong></p>
         <p>Humidity: {{ item.main.humidity }}%</p>
-        <p>Wind Speed: {{ item.wind.speed }} m/s</p>
+        <p>Wind Speed: {{ item.wind.speed }}m/s</p>
       </div>
     </div>
 
@@ -125,6 +94,9 @@ export default defineComponent({
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .search {
@@ -162,6 +134,7 @@ export default defineComponent({
   flex-direction: column;
   margin-top: 20px;
   padding: 5%;
+  width: 300px;
   font-size: 18px;
   background-color: #e9f3fe;
   border-radius: 2%;
@@ -191,7 +164,11 @@ h2{
 
 h3{
   font-weight: bold;
+  font-size: large;
   color: #453d83;
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
 
 .forecast{
