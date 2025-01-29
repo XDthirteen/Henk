@@ -4,16 +4,13 @@ import StyledButton from '@/components/StyledButton.vue';
 
 const router = useRouter();
 
-const buttonType = "primary";
-
-
 </script>
 
 <template>
   <div class="view-title">My account</div>
   <div class="button-container">
-    <StyledButton :type="buttonType" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
-    <StyledButton :type="buttonType" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
+    <StyledButton type="primary" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
+    <StyledButton type="primary" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
   </div>
 
 

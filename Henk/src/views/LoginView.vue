@@ -16,7 +16,7 @@ const inputUsername: Ref<string> = ref("");
 const inputPassword: Ref<string> = ref("");
 
 // Initialiseren van referentie voor verkeerde inloggegevens en default op False zetten
-const wrongCredentials: Ref<boolean | undefined> = ref();
+const wrongCredentials: Ref<boolean> = ref(false);
 
 // Functie om de huidige gebruiker te authenticeren
 const authenticate = async () => {

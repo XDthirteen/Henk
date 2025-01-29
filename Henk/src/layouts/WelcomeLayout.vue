@@ -3,18 +3,16 @@ import StyledButton from '@/components/StyledButton.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
-const buttonType = 'primary';
 </script>
 
 <template>
   <div class="wrapper">
     <div><img src="/images/logohenkFinal.png" alt="Henk" width="200"></div>
     <div>
-      <StyledButton :type="buttonType" @click="router.push({ name: 'login' })">
+      <StyledButton type="primary" @click="router.push({ name: 'login' })">
         Login
       </StyledButton>
-      <StyledButton :type="buttonType" @click="router.push({ name: 'signup' })">
+      <StyledButton type="primary" @click="router.push({ name: 'signup' })">
         Sign up
       </StyledButton>
     </div>
