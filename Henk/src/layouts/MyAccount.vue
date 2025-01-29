@@ -1,3 +1,39 @@
+/*#####################################
+/
+/ # MyAccount.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # Pagina die 2 buttons voorziet (userSettings & Parameters)
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 15/01/2025
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 15/01/2025 - Arno Defillet
+/ - Start van de layout
+/ - Toevoeging : Volledige pagina uitwerken
+/ - Toevoeging : CSS toevoegen
+/
+/ 22/01/2025 - Arno Defillet
+/ - Aanpassing : HTML buttons aanpassen naar StyledButtons
+/
+/ 29/01/2025 - Arno Defillet
+/ - Aanpassing : onnodige types in StyledButton aanpassen :type="buttonType" => type="primary"
+/
+/ To do:
+/ -
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
+
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import StyledButton from '@/components/StyledButton.vue';

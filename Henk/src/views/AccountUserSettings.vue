@@ -1,6 +1,56 @@
-<script setup lang="ts">
-import EditIcon from '@/components/EditIcon.vue';
+/*#####################################
+/
+/ # AccountUserSettings.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # De view om uw usersettings te zien en aan te passen
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 15/01/2025
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 15/01/2025 - Arno Defillet
+/ - Start van de view met 1 div ter testing
+/
+/ 22/01/2025 - Arno Defillet
+/ - Toegevoegd: Uitbouw van de structuur van deze view.
+/
+/ 29/01/2025 - Arno Defillet
+/ - Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
+/
+/ To do:
+/ -
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
 
+<script setup lang="ts">
+import { ref } from 'vue';
+import EditIcon from '@/components/EditIcon.vue'; // Pas de path aan indien nodig
+
+const isEditing = ref({
+  firstname: false,
+  lastname: false,
+  city: false,
+  language: false
+});
+
+const lastname = ref("lastname");
+const firstname = ref("firstname");
+const city = ref("city");
+const language = ref("language");
+
+function toggleEdit(field: keyof typeof isEditing.value) {
+  isEditing.value[field] = !isEditing.value[field];
+}
 </script>
 
 <template>
@@ -15,30 +65,35 @@ import EditIcon from '@/components/EditIcon.vue';
         <div>*optional info*</div>
       </div>
     </div>
-    <div class="input-title">Last name: </div>
     <div class="field-container-wrapper">
+      <div class="input-title">First name: </div>
       <div class="field-container">
-        <div class="text-field">lastname</div>
-        <EditIcon></EditIcon> <!--Voorlopig zit hier een @click die HelloWorld zal printen in console-->
+        <div v-if="!isEditing.firstname" class="text-field">{{ firstname }}</div>
+        <input v-else v-model="firstname" class="edit-input" type="text" />
+        <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
       </div>
+
+      <div class="input-title">Last name: </div>
       <div class="field-container">
-        <div class="text-field">lastname</div>
-        <EditIcon></EditIcon> <!--Voorlopig zit hier een @click die HelloWorld zal printen in console-->
+        <div v-if="!isEditing.lastname" class="text-field">{{ lastname }}</div>
+        <input v-else v-model="lastname" class="edit-input" type="text" />
+        <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
       </div>
+
+      <div class="input-title">City: </div>
       <div class="field-container">
-        <div class="text-field">lastname</div>
-        <EditIcon></EditIcon> <!--Voorlopig zit hier een @click die HelloWorld zal printen in console-->
+        <div v-if="!isEditing.city" class="text-field">{{ city }}</div>
+        <input v-else v-model="city" class="edit-input" type="text" />
+        <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
       </div>
+
+      <div class="input-title">Language: </div>
       <div class="field-container">
-        <div class="text-field">lastname</div>
-        <EditIcon></EditIcon> <!--Voorlopig zit hier een @click die HelloWorld zal printen in console-->
-      </div>
-      <div class="field-container">
-        <div class="text-field">lastname</div>
-        <EditIcon></EditIcon> <!--Voorlopig zit hier een @click die HelloWorld zal printen in console-->
+        <div v-if="!isEditing.language" class="text-field">{{ language }}</div>
+        <input v-else v-model="language" class="edit-input" type="text" />
+        <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
       </div>
     </div>
-
   </body>
 </template>
 
@@ -76,13 +131,13 @@ body {
 }
 
 .input-title {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0rem;
 }
 
 .field-container-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .field-container {

@@ -1,3 +1,36 @@
+/*#####################################
+/
+/ # StyledInputByType.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # Een input component die op de hele app ingeladen kan worden
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 20/01/2025
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 20/01/2025 - Arno Defillet
+/ - Start van de layout
+/ - Toevoeging : Volledige pagina uitwerken
+/ - Toevoeging : CSS toevoegen
+/
+/ 22/01/2025 - Arno Defillet
+/ - Aanpassing : Huisstijl toevoegen aan de input
+/
+/ To do:
+/ -
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
+
 <script setup lang="ts">
 const { label, inputType = "text", placeholder, autocomplete } = defineProps<{
   label?: string,

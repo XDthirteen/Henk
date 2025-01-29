@@ -1,3 +1,31 @@
+/*#####################################
+/
+/ # LoginView.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # De login pagina zodat een gebruiker kan aanmelden
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 11/12/2024
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 11/12/2024 - Arno Defillet
+/ - Start van de view
+/ - Toegevoegd: Uitwerken van de structuur + javascript (API)
+/
+/ To do:
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
+
 <script lang="ts" setup>
 import { useAuth } from '@/services/auth.service';
 import { ref, type Ref } from 'vue';

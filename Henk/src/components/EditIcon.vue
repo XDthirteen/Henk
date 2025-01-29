@@ -1,29 +1,51 @@
-<script lang="ts" setup>
+/*#####################################
+/
+/ # EditIcon.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # Bewerkicoon dat verander naar save icoon
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 22/01/2025
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 22/01/2025 - Arno Defillet
+/ - Start van de layout
+/
+/ 29/01/2025 - Arno Defillet
+/ - Aanpassing : icoon laten veranderen on click
+/ - Toevoeging : Props voorzien op de image
+/
+/ To do:
+/ -
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
 
-function myFunction() {
-  console.log('HelloWorld')
-}
+<script lang="ts" setup>
+import { defineProps } from 'vue';
+
+defineProps({
+  isEditing: Boolean
+});
 
 </script>
 
 <template>
-  <img class="edit-image" src="/images/Edit_icon.png" @click="myFunction">
+  <img class="edit-image" :src="isEditing ? '/images/save-icon.png' : '/images/edit-icon.png'"
+    :alt="isEditing ? 'save-icon' : 'edit-icon'" @click="$emit('toggle-edit')">
 </template>
 
 <style scoped>
 .edit-image {
-  background-color: var(--secundary-purple);
-  border-radius: 100%;
   width: 10%;
-}
-
-button {
-  background: none;
-  color: inherit;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
-  outline: inherit;
 }
 </style>
