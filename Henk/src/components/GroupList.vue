@@ -71,10 +71,6 @@ header {
   position: relative;
 }
 
-h1 {
-  font-size: 24px;
-}
-
 .header-buttons {
   position: absolute;
   right: 10px;
