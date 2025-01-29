@@ -21,9 +21,11 @@
 /
 / 29/01/2025 - Arno Defillet
 / - Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
+/ - Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt, veranderd div element naar input element.
+/ Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
 /
 / To do:
-/ -
+/ - API integratie
 / -
 /
 / Opmerkingen:
@@ -34,7 +36,16 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EditIcon from '@/components/EditIcon.vue'; // Pas de path aan indien nodig
+import EditIcon from '@/components/EditIcon.vue';
+
+const savedValues = ref({
+  firstname: "Arno",
+  lastname: "Defillet",
+  city: "Tienen",
+  language: "Dutch"
+});
+
+const tempValues = ref({ ...savedValues.value });
 
 const isEditing = ref({
   firstname: false,
@@ -43,58 +54,59 @@ const isEditing = ref({
   language: false
 });
 
-const lastname = ref("lastname");
-const firstname = ref("firstname");
-const city = ref("city");
-const language = ref("language");
-
 function toggleEdit(field: keyof typeof isEditing.value) {
+  if (isEditing.value[field]) {
+    savedValues.value[field] = tempValues.value[field];
+  } else {
+    tempValues.value[field] = savedValues.value[field];
+  }
+
   isEditing.value[field] = !isEditing.value[field];
 }
 </script>
 
 <template>
-
-  <body>
-    <div class="user-overview">
-      <img class="user-image" src="../assets/images/cool_duck.png" alt="">
-      <div class="user-info">
-        <div class="user-fullname">First name + Last name</div>
-        <div>My userID: ...</div>
-        <div>*optional info*</div>
-        <div>*optional info*</div>
-      </div>
+  <div class="user-overview">
+    <img class="user-image" src="../assets/images/cool_duck.png" alt="">
+    <div class="user-info">
+      <div class="user-fullname">{{ savedValues.firstname }} {{ savedValues.lastname }}</div>
+      <div id="userId">My userID: ...</div>
+      <div id="firstname">Firstname: {{ savedValues.firstname }}</div>
+      <div id="lastname">Lastname: {{ savedValues.lastname }}</div>
+      <div id="city">City: {{ savedValues.city }}</div>
+      <div id="language">Language: {{ savedValues.language }}</div>
     </div>
-    <div class="field-container-wrapper">
-      <div class="input-title">First name: </div>
-      <div class="field-container">
-        <div v-if="!isEditing.firstname" class="text-field">{{ firstname }}</div>
-        <input v-else v-model="firstname" class="edit-input" type="text" />
-        <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
-      </div>
+  </div>
 
-      <div class="input-title">Last name: </div>
-      <div class="field-container">
-        <div v-if="!isEditing.lastname" class="text-field">{{ lastname }}</div>
-        <input v-else v-model="lastname" class="edit-input" type="text" />
-        <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
-      </div>
-
-      <div class="input-title">City: </div>
-      <div class="field-container">
-        <div v-if="!isEditing.city" class="text-field">{{ city }}</div>
-        <input v-else v-model="city" class="edit-input" type="text" />
-        <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
-      </div>
-
-      <div class="input-title">Language: </div>
-      <div class="field-container">
-        <div v-if="!isEditing.language" class="text-field">{{ language }}</div>
-        <input v-else v-model="language" class="edit-input" type="text" />
-        <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
-      </div>
+  <div class="field-container-wrapper">
+    <div class="input-title">First name: </div>
+    <div class="field-container">
+      <div v-if="!isEditing.firstname" class="text-field">{{ savedValues.firstname }}</div>
+      <input v-else v-model="tempValues.firstname" class="edit-input" type="text" />
+      <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
     </div>
-  </body>
+
+    <div class="input-title">Last name: </div>
+    <div class="field-container">
+      <div v-if="!isEditing.lastname" class="text-field">{{ savedValues.lastname }}</div>
+      <input v-else v-model="tempValues.lastname" class="edit-input" type="text" />
+      <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
+    </div>
+
+    <div class="input-title">City: </div>
+    <div class="field-container">
+      <div v-if="!isEditing.city" class="text-field">{{ savedValues.city }}</div>
+      <input v-else v-model="tempValues.city" class="edit-input" type="text" />
+      <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
+    </div>
+
+    <div class="input-title">Language: </div>
+    <div class="field-container">
+      <div v-if="!isEditing.language" class="text-field">{{ savedValues.language }}</div>
+      <input v-else v-model="tempValues.language" class="edit-input" type="text" />
+      <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+    </div>
+  </div>
 </template>
 
 <style scoped>
