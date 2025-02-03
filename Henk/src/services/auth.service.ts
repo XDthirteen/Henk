@@ -1,11 +1,11 @@
 /*#####################################
-/      
+/
 /      #  auth.service.ts
 /      #  ==================
 /      #  Beschrijving:
 /      #  ------------
 /      #  Alle typescript code dat te maken heeft met het authenticeren van de gebruiker
-/ 
+/
 /      #  Auteur: Arno Defillet
 /      #  Datum aangemaakt: 16/12/2024
 /
@@ -13,15 +13,16 @@
 /
 /      Changelog:
 /      ----------
-/       16/12/2024 - Arno Defillet 
-/           - Opmaken van service voor "login"
 /       16/12/2024 - Arno Defillet
+/           - Opmaken van service voor "login"
+/
+/       18/12/2024 - Arno Defillet
 /           - Opmaken van service voor "logout"
-/      
+/
 /      Opmerkingen:
 /      ------------
 /      ...
-/      
+/
 #####################################*/
 
 import axios from "axios";
@@ -39,11 +40,11 @@ const useAuth = () => {
                 email: email,
                 password: password
             });
-    
+
             const token = response.data.token;
             localStorage.setItem("token", token);
             isAuthenticated.value = true;
-    
+
         } catch (error) {
             throw new Error(`Login wrong. Error: ${error}`);
         }
@@ -54,7 +55,7 @@ const useAuth = () => {
         localStorage.removeItem("token");
         isAuthenticated.value = false;
     }
-    
+
     return {
         login,
         logout,

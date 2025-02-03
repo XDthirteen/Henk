@@ -1,0 +1,27 @@
+:root {
+  --primary-purple: #453d83;
+  --primary-blue: #76b6fa;
+  --primary-white: #e9f3fe;
+  --primary-orange: #ffcdbe;
+  --primary-red: #f7997c;
+
+  --secundary-purple: #897fdb;
+  --secundary-blue: #a7d0fc;
+  --secundary-white: #ffeee5;
+  --secundary-orange: #ffbeaa;
+  
+  --tertiary-orange: #faa68e;
+  --tertiary-purple: #afa8df;
+
+  --test-color: deeppink;
+}
+
+#app{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    
+  }
+  } */
+  

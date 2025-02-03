@@ -19,11 +19,21 @@ const router = createRouter({
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/HomeView.vue')
         },
+
         {
-          path: "/signin",
-          name: "signin",
-          component: () => import('@/views/RegisterView.vue')
+          path: "/groups",
+          name: "groups",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupList.vue')
         },
+
+        {
+          path: "/invites",
+          name: "invites",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupInvites.vue')
+        },
+
         {
           path: "/myAccount",
           name: "myAccount",
@@ -42,13 +52,13 @@ const router = createRouter({
             }
           ]
         },
-        {
-          path: '/calendar',
-          name: 'calendar',
-          component: () => import('@/views/CalendarView.vue'),
-        },
       ]
-    }
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarView.vue'),
+    },
   ],
 })
 
