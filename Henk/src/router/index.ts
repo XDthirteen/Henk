@@ -6,23 +6,31 @@ const router = createRouter({
   routes: [
     {
       path: "",
+        name: "welcome",
+        component: () => import('@/layouts/WelcomeLayout.vue'),
+        children: [
+          {
+            path: "/login",
+            name: "login",
+            component: () => import('@/views/LoginView.vue')
+          },
+          {
+            path: "/signup",
+            name: "signup",
+            component: () => import('@/views/RegisterView.vue')
+          }
+        ]
+    },
+    {
+      path: "/main",
+      beforeEnter: [authenticationGuard],
       component: () => import('@/layouts/MainLayout.vue'),
       children: [
-        {
-          path: "/login",
-          name: "login",
-          component: () => import('@/views/LoginView.vue')
-        },
         {
           path: "/home",
           name: "home",
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/HomeView.vue')
-        },
-        {
-          path: "/signin",
-          name: "signin",
-          component: () => import('@/views/RegisterView.vue')
         },
         {
           path: "/myAccount",

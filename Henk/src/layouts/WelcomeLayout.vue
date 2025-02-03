@@ -1,10 +1,10 @@
 /*#####################################
 /
-/ # MyAccount.vue
+/ # WelcomeLayout.vue
 / # ==================
 / # Beschrijving:
 / # ------------
-/ # Pagina die 2 buttons voorziet (userSettings & Parameters)
+/ # De pagina waar je login of signup knop ziet, samen met het logo. De basis pagina als je naar de website surft.
 /
 / # Auteur: Arno Defillet
 / # Datum aangemaakt: 15/01/2025
@@ -20,6 +20,7 @@
 /
 / 22/01/2025 - Arno Defillet
 / - Aanpassing : HTML buttons aanpassen naar StyledButtons
+/ - Verwijdering : CSS van de buttons verwijderd
 /
 / 29/01/2025 - Arno Defillet
 / - Aanpassing : onnodige types in StyledButton aanpassen :type="buttonType" => type="primary"
@@ -35,41 +36,33 @@
 #####################################*/
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
 import StyledButton from '@/components/StyledButton.vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
 </script>
 
 <template>
-  <div class="view-title">My account</div>
-  <div class="button-container">
-    <StyledButton type="primary" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
-    <StyledButton type="primary" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
+  <div class="wrapper">
+    <div><img src="/images/logohenkFinal.png" alt="Henk" width="200"></div>
+    <div>
+      <StyledButton type="primary" @click="router.push({ name: 'login' })">
+        Login
+      </StyledButton>
+      <StyledButton type="primary" @click="router.push({ name: 'signup' })">
+        Sign up
+      </StyledButton>
+    </div>
+    <RouterView />
   </div>
-
-
-  <RouterView />
 </template>
 
-<style scoped>
-.view-title {
-  border: 2px solid var(--primary-purple);
-  border-radius: 10px;
-  background-color: var(--secundary-purple);
-  margin: 1rem 2rem 1rem 2rem;
-  padding: 0.5rem;
-  text-align: center;
-  font-size: x-large;
-  font-weight: 500;
-}
 
-.button-container {
-  margin: 0 2rem 0 2rem;
+<style scoped>
+.wrapper {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>
