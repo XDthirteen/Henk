@@ -15,4 +15,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://syntra-20242025-henk-api.onrender.com/',
+        changeOrigin: true,
+      },
+    }
+  }
 })

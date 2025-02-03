@@ -1,16 +1,10 @@
-<template>
-  <div id="app">
-    <TabBar />
-    <router-view />
-  </div>
-</template>
-
 <script setup lang="ts">
-import TabBar from './components/TabBar.vue';
-
-
+import { RouterView } from 'vue-router';
 </script>
 
+<template>
+  <RouterView />
+</template>
 
 <style scoped>
 header {
