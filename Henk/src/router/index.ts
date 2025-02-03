@@ -1,27 +1,73 @@
 import { authenticationGuard } from '@/guards/authenticationGuard'
 import { createRouter, createWebHistory } from 'vue-router'
 
-import GroupList from '../components/GroupList.vue'
-import GroupInvites from '../components/GroupInvites.vue'
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: HomeView,
+      path: "",
+        name: "welcome",
+        component: () => import('@/layouts/WelcomeLayout.vue'),
+        children: [
+          {
+            path: "/login",
+            name: "login",
+            component: () => import('@/views/LoginView.vue')
+          },
+          {
+            path: "/signup",
+            name: "signup",
+            component: () => import('@/views/RegisterView.vue')
+          }
+        ]
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
+      path: "/main",
+      beforeEnter: [authenticationGuard],
+      component: () => import('@/layouts/MainLayout.vue'),
+      children: [
+        {
+          path: "/home",
+          name: "home",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/views/HomeView.vue')
+        },
+
+        {
+          path: "/groups",
+          name: "groups",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupList.vue')
+        },
+
+        {
+          path: "/invites",
+          name: "invites",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupInvites.vue')
+        },
+
+        {
+          path: "/myAccount",
+          name: "myAccount",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/layouts/MyAccount.vue'),
+          children: [
+            {
+              path: "/myAccount/settings",
+              name: "settings",
+              component: () => import('@/views/AccountUserSettings.vue')
+            },
+            {
+              path: "/myAccount/parameters",
+              name: "parameters",
+              component: () => import('@/views/AccountParameters.vue')
+            }
+          ]
+        }
+      ]
+    }
   ],
 })
 
 export default router
-
