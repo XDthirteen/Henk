@@ -1,27 +1,39 @@
-List of functions that Henk must be able to do.
+# Henk
 
-- Agenda is the big selling point.
+This template should help get you started developing with Vue 3 in Vite.
 
-- A group of users can share an agenda of events.
+## Recommended IDE Setup
 
-- Per event / repitition of events, this can be shared with a group
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
 
-- Dashboard met group overview + personal overview
+## Type Support for `.vue` Imports in TS
 
-- Calendar where I can select / deselect all my groups
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
 
-- Add people / groups to events
+## Customize configuration
 
-- Calendar will have tags / colors based on
+See [Vite Configuration Reference](https://vite.dev/config/).
 
-- Month / day overview of events
+## Project Setup
 
-- Weather forecast based on location
+```sh
+npm install
+```
 
-- Order food based on personal preferences
+### Compile and Hot-Reload for Development
 
-- Jokes generator based on sense of humor
+```sh
+npm run dev
+```
 
-- Task list - autoscheduler
+### Type-Check, Compile and Minify for Production
 
-- Translations when going travelling
+```sh
+npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
