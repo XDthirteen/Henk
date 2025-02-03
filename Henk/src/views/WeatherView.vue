@@ -20,8 +20,10 @@ export default defineComponent({
       }
 
       const apiKey = "59f5d73944c323b9071de991b104300b"; // OpenWeatherMap API key
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&appid=${apiKey}`;
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city.value}&units=metric&appid=${apiKey}`;
+      const weatherBaseUrl = `https://api.openweathermap.org/data/2.5/` // BaseUrl API
+      const weatherUrl = `${weatherBaseUrl}weather?q=${city.value}&units=metric&appid=${apiKey}`;
+      const forecastUrl = `${weatherBaseUrl}forecast?q=${city.value}&units=metric&appid=${apiKey}`;
+
 
       try {
         const weatherResponse = await axios.get<WeatherData>(weatherUrl);
@@ -88,7 +90,7 @@ export default defineComponent({
   </div>
 </template>
 
-<style>
+<style scoped>
 #app {
   font-family: Arial, sans-serif;
   text-align: center;
@@ -129,6 +131,26 @@ export default defineComponent({
   color: #453d83;
 }
 
+h1{
+    font-weight: bolder;
+    font-size: xx-large;
+    margin-bottom: 10px;
+    color: #453d83;
+  }
+  h2{
+    font-weight: bold;
+    color: #453d83;
+  }
+
+  h3{
+    font-weight: bold;
+    font-size: large;
+    color: #453d83;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+  
 .weather {
   display: flex;
   flex-direction: column;
@@ -149,26 +171,6 @@ export default defineComponent({
 
 .description{
   font-style: italic;
-}
-
-h1{
-  font-weight: bolder;
-  font-size: xx-large;
-  margin-bottom: 10px;
-  color: #453d83;
-}
-h2{
-  font-weight: bold;
-  color: #453d83;
-}
-
-h3{
-  font-weight: bold;
-  font-size: large;
-  color: #453d83;
-  display: flex;
-  width: 100%;
-  justify-content: center;
 }
 
 .forecast{
