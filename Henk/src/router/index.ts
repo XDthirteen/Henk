@@ -32,6 +32,21 @@ const router = createRouter({
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/HomeView.vue')
         },
+
+        {
+          path: "/groups",
+          name: "groups",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupList.vue')
+        },
+
+        {
+          path: "/invites",
+          name: "invites",
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/components/GroupInvites.vue')
+        },
+
         {
           path: "/myAccount",
           name: "myAccount",
