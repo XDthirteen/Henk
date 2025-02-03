@@ -41,4 +41,31 @@ const router = useRouter();
 </template>
 
 
-<style scoped></style>
+<style scoped>
+
+.wrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-login{
+    color: white;
+    background-color: #453d83;
+    border-radius: 5%;
+    padding: 0.2rem 1rem 0.2rem 1rem;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    margin: 5px;
+    border: 2px solid #453d83;
+}
+.main-login:hover{
+    color: #453d83;
+    background-color: white;
+    border: 2px solid #453d83
+}
+
+</style>
