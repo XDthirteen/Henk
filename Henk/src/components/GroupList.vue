@@ -4,7 +4,11 @@
       <h1>Groups</h1>
 
       <div class="header-buttons">
-        <button class="invite-button" @click="navigateToInvites" v-if="groupStore.invites.length > 0">
+        <button
+          class="invite-button"
+          @click="navigateToInvites"
+          v-if="groupStore.invites.length > 0"
+        >
           <span class="invite-badge">{{ groupStore.invites.length }}</span>
         </button>
         <button class="menu-button" @click="toggleSidebar">☰</button>
@@ -27,7 +31,7 @@
       <button class="close-button" @click="toggleSidebar">✖</button>
       <h2>Menu</h2>
       <ul>
-        <li @click="navigateTo('')">Settings</li>
+        <li @click="navigateTo('')">Home</li>
         <li @click="navigateTo('')">Profile</li>
         <li @click="navigateTo('')">Logout</li>
       </ul>
@@ -36,26 +40,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useGroupStore } from '@/stores/groupStore';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue'
+import { useGroupStore } from '@/stores/groupStore'
+import { useRouter } from 'vue-router'
 
-const groupStore = useGroupStore();
-const router = useRouter();
-const isSidebarOpen = ref(false);
+const groupStore = useGroupStore()
+const router = useRouter()
+const isSidebarOpen = ref(false)
 
 const navigateToInvites = () => {
-  router.push({ name: 'invites' });
-};
+  router.push({ name: 'invites' })
+}
 
 const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
+  isSidebarOpen.value = !isSidebarOpen.value
+}
 
 const navigateTo = (path: string) => {
-  router.push(path);
-  isSidebarOpen.value = false;
-};
+  router.push(path)
+  isSidebarOpen.value = false
+}
 </script>
 
 <style scoped>
