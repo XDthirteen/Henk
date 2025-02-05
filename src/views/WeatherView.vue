@@ -99,6 +99,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .search {
@@ -150,16 +151,19 @@ h1{
     width: 100%;
     justify-content: center;
   }
-  
+
 .weather {
-  display: flex;
-  flex-direction: column;
   margin-top: 20px;
-  padding: 5%;
-  width: 300px;
+  padding: 25px;
+  width: 30%;
+  max-width: 300px;
+  min-width: 250px;
+  height: auto;
+  max-height: 250px;
   font-size: 18px;
   background-color: #e9f3fe;
   border-radius: 2%;
+  text-align: center;
 }
 
 .error {
@@ -192,6 +196,10 @@ h1{
   background-color: white;
   border-radius: 2%;
   padding: 10px;
+}
+
+strong{
+  font-weight: bold;
 }
 
 </style>
