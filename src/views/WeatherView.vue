@@ -2,6 +2,7 @@
 import { defineComponent, ref } from 'vue';
 import axios from 'axios';
 import type { WeatherData, ForecastData } from '@/components/models';
+import { getWeather } from '@/services/weather.service';
 
 export default defineComponent({
   name: 'WeatherApp',
@@ -30,7 +31,7 @@ export default defineComponent({
         weather.value = weatherResponse.data;
         const forecastResponse = await axios.get<{list:ForecastData[]}>(forecastUrl);
         forecast.value = forecastResponse.data.list.filter((item)=>
-      item.dt_txt.includes("12:00:00")
+        item.dt_txt.includes("12:00:00")
     ).slice(0, 4);
 
         error.value = null;
