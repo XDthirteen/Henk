@@ -66,42 +66,44 @@ const logoutAndRedirect = () => {
     <!-- Hamburger menu -->
     <div :class="{ 'hamburger-menu': true, 'active': isMenuOpen }">
       <!-- Bovenste balk met Home & Profile -->
-      <div class="menu-header">
-        <div class="small-icon " @click="navigate('home')">
-          <img class="icon-image" src="/images/edit-icon.png" alt="Home">
-          <div>Home</div> <!--Te verwijderen wanneer icoon in orde is-->
+      <div class="menu-layout">
+        <div class="menu-header">
+          <div class="small-icon " @click="navigate('home')">
+            <img class="icon-image" src="/images/edit-icon.png" alt="Home">
+            <div>Home</div> <!--Te verwijderen wanneer icoon in orde is-->
+          </div>
+          <div class="small-icon " @click="navigate('myAccount')">
+            <img class="icon-image" src="/images/edit-icon.png" alt="Profile">
+            <div>Profile</div> <!--Te verwijderen wanneer icoon in orde is-->
+          </div>
         </div>
-        <div class="small-icon " @click="navigate('myAccount')">
-          <img class="icon-image" src="/images/edit-icon.png" alt="Profile">
-          <div>Profile</div> <!--Te verwijderen wanneer icoon in orde is-->
-        </div>
-      </div>
 
-      <!-- Menu items -->
-      <div class="menu-organizer">
-        <div class="menu-item" @click="navigate('calendar')">
-          <img src="/images/edit-icon.png" alt="Calendar">
-          <div class="item-text">Calendar</div>
+        <!-- Menu items -->
+        <div class="menu-organizer">
+          <div class="menu-item" @click="navigate('calendar')">
+            <img src="/images/edit-icon.png" alt="Calendar">
+            <div class="item-text">Calendar</div>
+          </div>
+          <div class="menu-item" @click="navigate('weather')">
+            <img src="/images/edit-icon.png" alt="Weather">
+            <div class="item-text">Weather</div>
+          </div>
+          <div class="menu-item" @click="navigate('tasks')">
+            <img src="/images/edit-icon.png" alt="Tasks">
+            <div class="item-text">My Tasks</div>
+          </div>
+          <div class="menu-item" @click="navigate('translator')">
+            <img src="/images/edit-icon.png" alt="Translator">
+            <div class="item-text">Translator</div>
+          </div>
         </div>
-        <div class="menu-item" @click="navigate('weather')">
-          <img src="/images/edit-icon.png" alt="Weather">
-          <div class="item-text">Weather</div>
-        </div>
-        <div class="menu-item" @click="navigate('tasks')">
-          <img src="/images/edit-icon.png" alt="Tasks">
-          <div class="item-text">My Tasks</div>
-        </div>
-        <div class="menu-item" @click="navigate('translator')">
-          <img src="/images/edit-icon.png" alt="Translator">
-          <div class="item-text">Translator</div>
-        </div>
-      </div>
 
-      <!-- Logout-knop onderaan -->
-      <div class="logout-container">
-        <div class="menu-item logout-button" @click="logoutAndRedirect()">
-          <img src="/images/edit-icon.png" alt="Logout">
-          <div class="item-text">Logout</div>
+        <!-- Logout-knop onderaan -->
+        <div class="logout-container">
+          <div class="menu-item logout-button" @click="logoutAndRedirect()">
+            <img src="/images/edit-icon.png" alt="Logout">
+            <div class="item-text">Logout</div>
+          </div>
         </div>
       </div>
     </div>
@@ -172,6 +174,7 @@ const logoutAndRedirect = () => {
   align-items: center;
   justify-content: space-around;
   padding-top: 0;
+  padding-bottom: 0;
   border-radius: 24px;
   transform: translate(-50%, -50%) scale(0.8);
   opacity: 0;
@@ -189,21 +192,27 @@ const logoutAndRedirect = () => {
   /* Als de menu actief is, wordt klikken toegestaan */
 }
 
+.menu-layout {
+  width: 100%;
+  height: 90%;
+}
 
 .menu-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  gap: 3rem;
   width: 100%;
+  height: 15%;
   border-bottom: 4px solid rgb(138, 134, 134);
   margin-bottom: 1rem;
-  padding-bottom: 1rem;
 }
 
 .menu-header .small-icon {
-  width: auto;
+  height: 4rem;
+  width: 4rem;
   padding: 8px;
-  border-radius: 8px;
-  background: #f8f8f8;
+  border-radius: 12px;
+  background: var(--primary-white);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   display: flex;
@@ -219,22 +228,27 @@ const logoutAndRedirect = () => {
 
 .menu-organizer {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-content: flex-start;
   gap: 12px;
   width: 100%;
+  height: 55%;
 }
 
 .menu-item {
   display: flex;
+  flex-direction: column;
+  height: 6rem;
+  width: 6rem;
   align-items: center;
-  gap: 10px;
+  gap: 1rem;
   padding: 10px;
-  border-radius: 8px;
-  background: #f8f8f8;
+  border-radius: 12px;
+  background: var(--primary-white);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
-  width: 100%;
-  justify-content: flex-start;
 }
 
 .menu-item:hover {
@@ -248,21 +262,20 @@ const logoutAndRedirect = () => {
 .item-text {
   font-size: large;
   font-weight: 500;
-  padding-left: 10%;
 }
 
 .logout-container {
   border-top: 4px solid rgb(138, 134, 134);
   padding-top: 1rem;
   margin-top: 1rem;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .logout-button {
-  background: #ffdddd;
+  background: var(--secundary-orange);
   padding: 10px;
+  height: 5rem;
+  gap: 0;
+  width: 100%;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
