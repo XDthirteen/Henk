@@ -19,6 +19,7 @@
 / 15/01/2025---Arno Defillet----Toevoeging : CSS toevoegen
 / 25/01/2025---Arno Defillet----Toevoeging : Verplaatsen van de hamburgermenu naar de hoofdlayout
 / 25/01/2025---Arno Defillet----Aanpassing : Styling aanpassen van de menu
+/ 10/02/2025---Arno Defillet----Aanpassing :
 /
 /
 / Opmerkingen:
@@ -69,31 +70,29 @@ const logoutAndRedirect = () => {
       <div class="menu-layout">
         <div class="menu-header">
           <div class="small-icon " @click="navigate('home')">
-            <img class="icon-image" src="/images/edit-icon.png" alt="Home">
-            <div>Home</div> <!--Te verwijderen wanneer icoon in orde is-->
+            <font-awesome-icon class="icon" :icon="['fas', 'house']" />
           </div>
-          <div class="small-icon " @click="navigate('myAccount')">
-            <img class="icon-image" src="/images/edit-icon.png" alt="Profile">
-            <div>Profile</div> <!--Te verwijderen wanneer icoon in orde is-->
+          <div class="small-icon" @click="navigate('myAccount')">
+            <font-awesome-icon class="icon" :icon="['fas', 'user']" />
           </div>
         </div>
 
         <!-- Menu items -->
         <div class="menu-organizer">
           <div class="menu-item" @click="navigate('calendar')">
-            <img src="/images/edit-icon.png" alt="Calendar">
+            <font-awesome-icon class="icon" :icon="['fas', 'calendar-days']" />
             <div class="item-text">Calendar</div>
           </div>
           <div class="menu-item" @click="navigate('weather')">
-            <img src="/images/edit-icon.png" alt="Weather">
+            <font-awesome-icon class="icon" :icon="['fas', 'poo-storm']" />
             <div class="item-text">Weather</div>
           </div>
           <div class="menu-item" @click="navigate('tasks')">
-            <img src="/images/edit-icon.png" alt="Tasks">
+            <font-awesome-icon class="icon" :icon="['fas', 'list-check']" />
             <div class="item-text">My Tasks</div>
           </div>
           <div class="menu-item" @click="navigate('translator')">
-            <img src="/images/edit-icon.png" alt="Translator">
+            <font-awesome-icon class="icon" :icon="['fas', 'language']" />
             <div class="item-text">Translator</div>
           </div>
         </div>
@@ -101,7 +100,7 @@ const logoutAndRedirect = () => {
         <!-- Logout-knop onderaan -->
         <div class="logout-container">
           <div class="menu-item logout-button" @click="logoutAndRedirect()">
-            <img src="/images/edit-icon.png" alt="Logout">
+            <font-awesome-icon class="icon" :icon="['fas', 'right-from-bracket']" />
             <div class="item-text">Logout</div>
           </div>
         </div>
@@ -218,11 +217,12 @@ const logoutAndRedirect = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
-.menu-header .small-icon img {
-  width: 24px;
-  height: 24px;
+.icon {
+  width: 40px;
+  height: 40px;
   margin-bottom: 3px;
 }
 
@@ -243,7 +243,6 @@ const logoutAndRedirect = () => {
   height: 6rem;
   width: 6rem;
   align-items: center;
-  gap: 1rem;
   padding: 10px;
   border-radius: 12px;
   background: var(--primary-white);
@@ -279,6 +278,11 @@ const logoutAndRedirect = () => {
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
+}
+
+.logout-button .icon {
+  width: 32px;
+  height: 32px;
 }
 
 .logout-button:hover {
