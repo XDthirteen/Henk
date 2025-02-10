@@ -23,6 +23,13 @@
 /          - Toegevoegd: Expandable/collapsable div met event data.
 /      27/01/2025 - Jorn Vierbergen
 /          - Toegevoegd: Events over meerdere dagen. Event lijn + datums in expandable div bij event time gezet.
+/      08/02/2025 - Jorn Vierbergen
+/          - Fixed: Merge deletion CalendarDay in /components/models.ts
+/          - Fixed: Merge deletion prettier config in .prettierrc.json
+/          - Fixed: Expandable div height
+/          - Fixed: No-scrolling on page
+/      10/02/2025 - Jorn Vierbergen
+/          - Toegevoegd: Event items klikbaar
 /
 /      To do:
 /      - Change month to specified month. Click on month, drop down menu
@@ -272,6 +279,9 @@ const selectDate = (date: CalendarDay) => {
   console.log(`Events for ${date.date}:`, eventsForDate);
 };
 
+const eventClick = (eventData) => {
+  console.log("Clicked event:", eventData);
+};
 
 onMounted(() => {
   calculateExpandableDiv();
@@ -280,7 +290,7 @@ onMounted(() => {
 </script>
 
 <template>
-<body>
+<div class="center">
   <div class="calendar-wrapper">
     <div class="calendar">
       <!-- Header -->
@@ -301,7 +311,7 @@ onMounted(() => {
           v-for="date in calendarDays"
           :key="date.date"
           :id="date.date"
-          :class="['date', {faded: date.faded, today: date.isToday}]"
+          :class="['date', {faded: date.faded, today: date.isToday}, {'selected-day': selectedDate?.date === date.date}]"
           @click="selectDate(date)"
         >
 
@@ -319,11 +329,13 @@ onMounted(() => {
     <div
       :class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']"
       @click="toggleExpand"
-      @touch="toggleExpand"
+      @touch="toggleExpand">
+      <!-- ?fix later touch does not work well together with
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
-      @touchend="onTouchEnd"
-    >
+      @touchend="onTouchEnd"> 
+      -->
+    
       <div class="line">
         <button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
       </div>
@@ -335,7 +347,7 @@ onMounted(() => {
       <h3>{{ selectedDate ? selectedDate.date : 'No date selected' }}</h3>
 
         <ul v-if="getEventsForSelectedDate().length">
-            <li v-for="(event, index) in getEventsForSelectedDate()" :key="index" class="event-item">
+            <li v-for="(event, index) in getEventsForSelectedDate()" :key="index" class="event-item" @click.stop="eventClick(event)">
                 <div v-if="event.startDate !== event.endDate">
                     <span class="event-date-range">
                         <span>{{ event.startDate }} - {{ event.endDate }}</span>
@@ -343,7 +355,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Event circle and time -->
-                <div class="event-details">
+                <div class="event-details" >
                     <div class="event-circle" :class="event.type"></div>
                     <span>{{ event.startTime }} - {{ event.endTime }} {{ event.title }}</span>
                 </div>
@@ -357,13 +369,16 @@ onMounted(() => {
       Event Button
     </button>
   </div>
-</body>
+</div>
 </template>
 
 <style scoped>
+ul {
+  padding-left: 0%;
+  padding-right: 0%;
+}
 
-/* temporary */
-body {
+.center {
     font-family: Arial;
     display: flex;
     justify-content: center;
@@ -453,12 +468,14 @@ button:hover {
     top: -8px;
 }
 
-.date:hover {
+.selected-day {
     border: 2px solid black;
+    border-radius: 4px;
 }
 
 .today {
     background: grey;
+    border-radius: 4px;
     color: white;
     font-weight: bold;
 }
@@ -502,7 +519,8 @@ button:hover {
     left: 0;
     right: 0;
     background-color: white;
-    padding: 20px;
+    padding: 10px;
+    padding-top: 20px;
     box-sizing: border-box;
     z-index: 3;
 }
@@ -547,8 +565,10 @@ button:hover {
 .event-item {
   display: flex;
   flex-direction: column;
-
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+  border: 1px solid black;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 .event-circle {
@@ -580,7 +600,8 @@ button:hover {
 
 .event-details {
   display: flex;
-  align-items: center; 
+  align-items: center;
+  padding: 3px 10px;
 }
 
 .event-time {
