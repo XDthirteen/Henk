@@ -19,7 +19,8 @@
 / 15/01/2025---Arno Defillet----Toevoeging : CSS toevoegen
 / 25/01/2025---Arno Defillet----Toevoeging : Verplaatsen van de hamburgermenu naar de hoofdlayout
 / 25/01/2025---Arno Defillet----Aanpassing : Styling aanpassen van de menu
-/ 10/02/2025---Arno Defillet----Aanpassing :
+/ 10/02/2025---Arno Defillet----Aanpassing : Toevoegen van FontAwesomeIcons
+/ 12/02/2025---Arno Defillet----Aanpassing : Verwijderen van redirect to 'login' uit logout en in de service gestoken
 /
 /
 / Opmerkingen:
@@ -46,9 +47,8 @@ const navigate = (routeName: string) => {
 };
 
 const { logout } = useAuth();
-const logoutAndRedirect = () => {
+const logoutAndCloseMenu = () => {
   logout();
-  router.push({ name: 'login' });
   isMenuOpen.value = false;
 };
 </script>
@@ -99,7 +99,7 @@ const logoutAndRedirect = () => {
 
         <!-- Logout-knop onderaan -->
         <div class="logout-container">
-          <div class="menu-item logout-button" @click="logoutAndRedirect()">
+          <div class="menu-item logout-button" @click="logoutAndCloseMenu()">
             <font-awesome-icon class="icon" :icon="['fas', 'right-from-bracket']" />
             <div class="item-text">Logout</div>
           </div>
@@ -165,7 +165,7 @@ const logoutAndRedirect = () => {
   width: 80%;
   min-width: 240px;
   max-width: 320px;
-  background: white;
+  background: var(--tertiary-purple);
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.4);
   padding: 30px;
   display: flex;
@@ -202,7 +202,7 @@ const logoutAndRedirect = () => {
   gap: 3rem;
   width: 100%;
   height: 15%;
-  border-bottom: 4px solid rgb(138, 134, 134);
+  border-bottom: 4px solid var(--secundary-purple);
   margin-bottom: 1rem;
 }
 
@@ -210,8 +210,9 @@ const logoutAndRedirect = () => {
   height: 4rem;
   width: 4rem;
   padding: 8px;
-  border-radius: 12px;
-  background: var(--primary-white);
+  border-radius: 100%;
+  background: var(--primary-purple);
+  color: var(--primary-white);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   display: flex;
@@ -234,7 +235,7 @@ const logoutAndRedirect = () => {
   align-content: flex-start;
   gap: 12px;
   width: 100%;
-  height: 55%;
+  height: 60%;
 }
 
 .menu-item {
@@ -245,7 +246,7 @@ const logoutAndRedirect = () => {
   align-items: center;
   padding: 10px;
   border-radius: 12px;
-  background: var(--primary-white);
+  background: var(--secundary-blue);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
@@ -264,7 +265,7 @@ const logoutAndRedirect = () => {
 }
 
 .logout-container {
-  border-top: 4px solid rgb(138, 134, 134);
+  border-top: 4px solid var(--secundary-purple);
   padding-top: 1rem;
   margin-top: 1rem;
 }

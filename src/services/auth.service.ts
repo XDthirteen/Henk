@@ -13,11 +13,11 @@
 /
 /      Changelog:
 /      ----------
-/       16/12/2024 - Arno Defillet
-/           - Opmaken van service voor "login"
-/
-/       18/12/2024 - Arno Defillet
-/           - Opmaken van service voor "logout"
+/ Date:--------User:------------Changes:
+/ -------------------------------------------------------------------
+/ 16/12/2024---Arno Defillet----Toevoegen : Opmaken van service voor "login"
+/ 18/12/2024---Arno Defillet----Toevoegen : Opmaken van service voor "logout"
+/ 12/02/2024---Arno Defillet----Aanpassing: Redirect to 'login' in functio logout steken
 /
 /      Opmerkingen:
 /      ------------
@@ -25,6 +25,7 @@
 /
 #####################################*/
 
+import router from "@/router";
 import axios from "axios";
 import { ref } from "vue";
 
@@ -54,6 +55,7 @@ const useAuth = () => {
     const logout = () => {
         localStorage.removeItem("token");
         isAuthenticated.value = false;
+        router.push({ name: 'login' });
     }
 
     return {
