@@ -33,7 +33,6 @@
 /
 /      To do:
 /      - Change month to specified month. Click on month, drop down menu
-/      - Selected day should have a visible border around, now set on :hover
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Add API
