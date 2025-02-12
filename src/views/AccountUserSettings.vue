@@ -13,20 +13,20 @@
 /
 / Changelog:
 / ----------
-/ 15/01/2025 - Arno Defillet
-/ - Start van de view met 1 div ter testing
-/
-/ 22/01/2025 - Arno Defillet
-/ - Toegevoegd: Uitbouw van de structuur van deze view.
-/
-/ 29/01/2025 - Arno Defillet
-/ - Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
-/ - Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt, veranderd div element naar input element.
-/ Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
+/ Date:--------User:------------Omschrijving:
+/ -------------------------------------------------------------------
+/ 15/01/2025---Arno Defillet----Start van de view met 1 div ter testing
+/ 22/01/2025---Arno Defillet----Toegevoegd: Uitbouw van de structuur van deze view.
+/ 29/01/2025---Arno Defillet----Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
+/ 29/01/2025---Arno Defillet----Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt,
+/veranderd div element naar input element.
+/Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
+/ 12/02/2025---Arno Defillet----Aanpassing: user-overview volledig veranderd + onderste velden lichtjes aangepast qua
+/styling
 /
 / To do:
 / - API integratie
-/ -
+/ - Bewerk en save icons nog aan te passen ipv images
 /
 / Opmerkingen:
 / ------------
@@ -37,6 +37,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import EditIcon from '@/components/EditIcon.vue';
+import StyledButton from '@/components/StyledButton.vue';
+import StyledInputByType from '@/components/StyledInputByType.vue';
 
 const savedValues = ref({
   firstname: "Arno",
@@ -55,62 +57,99 @@ const isEditing = ref({
 });
 
 function toggleEdit(field: keyof typeof isEditing.value) {
-  if (isEditing.value[field]) {
-    savedValues.value[field] = tempValues.value[field];
+  if (!isEditing.value[field]) {
   } else {
-    tempValues.value[field] = savedValues.value[field];
+    tempValues.value[field] = tempValues.value[field] || savedValues.value[field];
+  }
+  isEditing.value[field] = !isEditing.value[field];
+}
+
+function isSaveDisabled() {
+  // Controleer of er een verschil is tussen tempValues en savedValues
+  let hasChanges = false;
+  for (const key in savedValues.value) {
+    if (savedValues.value[key] !== tempValues.value[key]) {
+      hasChanges = true;
+      break;
+    }
   }
 
-  isEditing.value[field] = !isEditing.value[field];
+  // Controleer of er nog velden in bewerkmodus staan
+  const isEditingActive = Object.values(isEditing.value).includes(true);
+
+  return !hasChanges || isEditingActive;
+}
+
+function saveUserChanges() {
+  savedValues.value = { ...tempValues.value };
 }
 </script>
 
 <template>
-  <div class="user-overview">
-    <img class="user-image" src="../assets/images/cool_duck.png" alt="">
-    <div class="user-info">
-      <div class="user-fullname">{{ savedValues.firstname }} {{ savedValues.lastname }}</div>
-      <div id="userId">My userID: ...</div>
-      <div id="firstname">Firstname: {{ savedValues.firstname }}</div>
-      <div id="lastname">Lastname: {{ savedValues.lastname }}</div>
-      <div id="city">City: {{ savedValues.city }}</div>
-      <div id="language">Language: {{ savedValues.language }}</div>
-    </div>
-  </div>
-
-  <div class="field-container-wrapper">
-    <div class="input-title">First name: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.firstname" class="text-field">{{ savedValues.firstname }}</div>
-      <input v-else v-model="tempValues.firstname" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
-    </div>
-
-    <div class="input-title">Last name: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.lastname" class="text-field">{{ savedValues.lastname }}</div>
-      <input v-else v-model="tempValues.lastname" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
-    </div>
-
-    <div class="input-title">City: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.city" class="text-field">{{ savedValues.city }}</div>
-      <input v-else v-model="tempValues.city" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
+  <div class="body">
+    <div class="user-overview">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <img src="../assets/images/cool_duck.png" class="user-image" alt="User_image">
+          </div>
+          <div class="col">
+            <h2 class="user-fullname">{{ savedValues.firstname }} {{ savedValues.lastname }}</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p>UserID</p>
+            <p>Firstname</p>
+            <p>Lastname</p>
+            <p>City</p>
+            <p>Language</p>
+          </div>
+          <div class="col">
+            <p id="userId">12345</p>
+            <p id="firstname">{{ savedValues.firstname }}</p>
+            <p id="lastname">{{ savedValues.lastname }}</p>
+            <p id="city">{{ savedValues.city }}</p>
+            <p id="language">{{ savedValues.language }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="input-title">Language: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.language" class="text-field">{{ savedValues.language }}</div>
-      <input v-else v-model="tempValues.language" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+    <div class="button-wrapper">
+      <StyledButton v-if="!isSaveDisabled()" type="save" @click="saveUserChanges">Save</StyledButton>
+    </div>
+    <div class="field-container-wrapper">
+      <h2 class="input-title">First name: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.firstname" class="text-field">{{ tempValues.firstname }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.firstname"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
+      </div>
+      <h2 class="input-title">Last name: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.lastname" class="text-field">{{ tempValues.lastname }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.lastname"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
+      </div>
+      <h2 class="input-title">City: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.city" class="text-field">{{ tempValues.city }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.city"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
+      </div>
+      <h2 class="input-title">Language: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.language" class="text-field">{{ tempValues.language }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.language"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-body {
+.body {
   margin: 1rem 2rem 1rem 2rem;
 }
 
@@ -120,36 +159,55 @@ body {
   border-radius: 10px;
   background-color: var(--tertiary-purple);
   padding: 0.5rem;
-  text-align: center;
   margin-bottom: 1rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+}
+
+.row:last-child {
+  border-top: 1px solid black;
+}
+
+.col {
+  flex: 1;
+  padding: 10px;
+}
+
+.col:first-child {
+  width: 10rem;
+  border-right: 1px solid black;
 }
 
 .user-image {
   border-radius: 100%;
-  width: 20%;
-  margin: 2rem 2rem 2rem 1rem;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
+  width: 50%;
 }
 
 .user-fullname {
   text-decoration: underline;
-  padding-bottom: 1rem;
+  font-weight: 700;
 }
 
 .input-title {
   margin-bottom: 0rem;
+  font-weight: bolder;
+  text-decoration: underline;
+  margin-left: 0.5rem;
 }
 
 .field-container-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 3rem;
 }
 
 .field-container {
@@ -157,15 +215,19 @@ body {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--primary-purple);
 }
 
 .text-field {
   display: flex;
-  border: 1px solid var(--secundary-purple);
-  border-radius: 5px;
   width: 80%;
   align-items: center;
   padding-left: 1rem;
+}
 
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

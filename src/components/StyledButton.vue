@@ -32,12 +32,12 @@
 #####################################*/
 
 <script lang="ts" setup>
-type ButtonType = "default" | "primary" | "negative";
+type ButtonType = "default" | "primary" | "negative" | "save";
 defineProps<{ type?: ButtonType }>()
 </script>
 
 <template>
-  <button :class="{ 'primary': type === 'primary', 'negative': type === 'negative' }">
+  <button :class="{ 'primary': type === 'primary', 'negative': type === 'negative', 'save': type === 'save' }">
     <slot />
   </button>
 </template>
@@ -85,5 +85,15 @@ button:hover {
 .negative:hover {
   background-color: #9b0012;
   color: #fff;
+}
+
+.save {
+  background-color: var(--primary-green);
+  color: #000000;
+}
+
+.save:hover {
+  background-color: var(--secundary-green);
+  color: #000000;
 }
 </style>

@@ -13,19 +13,16 @@
 /
 / Changelog:
 / ----------
-/ 15/01/2025 - Arno Defillet
-/ - Start van de layout
-/ - Toevoeging : Volledige pagina uitwerken
-/ - Toevoeging : CSS toevoegen
-/
-/ 22/01/2025 - Arno Defillet
-/ - Aanpassing : HTML buttons aanpassen naar StyledButtons
-/
-/ 29/01/2025 - Arno Defillet
-/ - Aanpassing : onnodige types in StyledButton aanpassen :type="buttonType" => type="primary"
+/ Date:--------User:------------Omschrijving:
+/ -------------------------------------------------------------------
+/ 15/01/2025---Arno Defillet----Start van de layout
+/ Toevoeging : Volledige pagina uitwerken
+/ Toevoeging : CSS toevoegen
+/ 22/01/2025---Arno Defillet----Aanpassing : HTML buttons aanpassen naar StyledButtons
+/ 29/01/2025---Arno Defillet----Aanpassing : onnodige types in StyledButton aanpassen :type="buttonType" =>
+type="primary"
 /
 / To do:
-/ -
 / -
 /
 / Opmerkingen:
@@ -55,21 +52,24 @@ const router = useRouter();
 
 <style scoped>
 .view-title {
+  display: flex;
   border: 2px solid var(--primary-purple);
   border-radius: 10px;
   background-color: var(--secundary-purple);
   margin: 1rem 2rem 1rem 2rem;
   padding: 0.5rem;
-  text-align: center;
+  justify-content: center;
+  align-items: center;
   font-size: x-large;
   font-weight: 500;
+  height: 5rem;
 }
 
 .button-container {
   margin: 0 2rem 0 2rem;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 0.5rem;
 }
 </style>
