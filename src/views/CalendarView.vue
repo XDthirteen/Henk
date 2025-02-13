@@ -34,6 +34,7 @@
 /          - Toegevoegd: scrollable event items in case of unable to display all.
 /
 /      To do:
+/      - Make group calendars
 /      - Change month to specified month. Click on month, drop down menu
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
@@ -49,6 +50,7 @@
 
 <script setup lang="ts">
 import type { CalendarDay } from "@/components/models";
+import expandableDiv from "@/components/ExpandableDiv.vue";
 import { ref, computed, onMounted, nextTick } from "vue";
 
 // TEST DATA
@@ -216,67 +218,11 @@ const todayClick = () => {
   	}
 };
 
-// Expandable div toggle
-const isExpanded = ref(false);
-const toggleExpand = () => {
-  	isExpanded.value = !isExpanded.value;
-};
-
-// Swipe detection
-let touchStartY = 0;
-let touchEndY = 0;
-const onTouchStart = (event: TouchEvent) => {
-  	touchStartY = event.touches[0].clientY;
-};
-
-const onTouchMove = (event: TouchEvent) => {
-  	touchEndY = event.touches[0].clientY;
-};
-
-const onTouchEnd = () => {
-  	// Swipe up
-  	if (touchStartY - touchEndY > 50) {
-    	isExpanded.value = true;
-  	} 
-	// Swipe down
-	else if (touchEndY - touchStartY > 50) {
-    	isExpanded.value = false;
-  	}
-};
-
 // Event button
 const addEvent = () => {
   	console.log("Event button clicked!");
 };
 
-// ? merge set event data and set event lines ?
-// Set event data
-const getEventsForSelectedDate = () => {
-  	if (!selectedDate.value) return [];
-
-  	let allEvents: any[] = [];
-  	const selectedDateFormatted = selectedDate.value.date; // DD/MM/YYYY format -OLD REMOVE LATER
-
-  	// Find every date per event type
-  	Object.entries(events).forEach(([type, eventList]) => {
-    	eventList.forEach(event => {
-     	 	const { startDate, endDate } = event;
-
-			// Convert startDate, endDate back to date objects to compare
-			const start = new Date(startDate.split("/").reverse().join("-"));
-			const end = new Date(endDate.split("/").reverse().join("-"));
-			const selected = new Date(selectedDateFormatted.split("/").reverse().join("-"));
-
-			// Check if selected date is within event range
-			if (selected >= start && selected <= end) {
-				allEvents.push({ ...event, type });
-			}
-    	});
-  	});
-
-  	// Sort events by startTime (sorded by backend?)
-  	return allEvents.sort((a, b) => a.startTime.localeCompare(b.startTime));
-};
 
 // Set event-lines on calendar
 const getEventLinesForDay = (date: string) => {
@@ -302,20 +248,12 @@ const getEventLinesForDay = (date: string) => {
 };
 
 // Selected date
-const selectedDate = ref<CalendarDay>();
+const selectedDate = ref<CalendarDay | null>(null);
 
 // Select date
 const selectDate = (date: CalendarDay) => {
   	selectedDate.value = date;
   	console.log(`Clicked on: ${date.date} ${date.dayOfWeek}`);
-
-  	// Get events for selected date
-  	const eventsForDate = getEventsForSelectedDate();
-  	console.log(`Events for ${date.date}:`, eventsForDate);
-};
-
-const eventClick = (eventData) => {
-  	console.log("Clicked event:", eventData);
 };
 
 onMounted(() => {
@@ -358,42 +296,7 @@ onMounted(() => {
     	</div>
 
     	<!-- Expandable Div -->
-		<div
-		:class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']"
-		@click="toggleExpand"
-		@touch="toggleExpand">
-		<!-- ?fix later touch does not work well together with
-		@touchstart="onTouchStart"
-		@touchmove="onTouchMove"
-		@touchend="onTouchEnd"> 
-		-->
-		
-			<div class="line">
-				<button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
-			</div>
-			<div class="event-selected-date">
-				{{ selectedDate?.date }}
-			</div>
-			<div class="event-container">
-				<ul v-if="getEventsForSelectedDate().length">
-					<li v-for="(event, index) in getEventsForSelectedDate()" :key="index" class="event-item" @click.stop="eventClick(event)">
-						<div v-if="event.startDate !== event.endDate">
-							<div class="event-date-range">
-								{{ event.startDate }} - {{ event.endDate }}
-							</div>
-						</div>
-
-						<!-- Event circle and time -->
-						<div class="event-details" >
-							<div class="event-circle" :class="event.type"></div>
-							<span>{{ event.startTime }} - {{ event.endTime }} {{ event.title }}</span>
-						</div>
-					</li>
-				</ul>
-			
-				<p v-else>No events for this date... yet :P</p>
-			</div>
-		</div>
+		<expandableDiv :selectedDate="selectedDate" />
 
 		<button class="add-event-button" @click="addEvent">
 			Event Button
@@ -403,11 +306,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-ul {
-  	padding-left: 0%;
-  	padding-right: 0%;
-}
-
 .center {
     font-family: Arial;
     display: flex;
@@ -443,6 +341,7 @@ ul {
     align-items: center;
 }
 
+/* change button, also duplicate in ExpandableDiv.vue component */
 button{
     background: #007BFF;
     color: white;
@@ -472,7 +371,6 @@ button:hover {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    
     background: white;
     overflow-y: auto;
     max-height: 350px;
@@ -490,6 +388,10 @@ button:hover {
     color: black;
     /* Transparent border, accounts for the border so no elements are pushed around on hover */
     border: 2px solid transparent;
+}
+
+.date{
+	cursor: pointer;
 }
 
 .date span{
@@ -544,77 +446,6 @@ button:hover {
     bottom: 1px;
 }
 
-.expand-wrapper {
-    position: fixed;
-    left: 0;
-    right: 0;
-    background-color: white;
-    padding: 10px;
-    padding-top: 20px;
-    box-sizing: border-box;
-    z-index: 3;
-}
-
-.expand-wrapper.minimized {
-    top: auto;
-    bottom: 0;
-    height: calc(100vh - var(--calendar-bottom)); /* Calculate height */
-}
-
-.expand-wrapper.expanded {
-    top: var(--calendar-top); /* Start at top calendar-wrapper */
-    bottom: 0;
-    height: auto;
-    z-index: 3;
-}
-
-.line {
-    position: relative;
-    width: 105%;
-    left: -2.5%;
-    height: 4px;
-	margin-bottom: 20px;
-    background-color: lightgrey;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.expand-button {
-    position: absolute;
-    top: -10px;
-    padding: 5px 10px;
-    z-index: 4;
-}
-
-.event-selected-date {
-    position: absolute;
-    top: 20px;
-	left: 20px;
-    font-size: 18px;
-}
-.event-container {
-  	padding-bottom: 50px;
-  	max-height: 90%;
-  	overflow-y: auto;
-}
-
-.event-item {
-  	display: flex;
-  	flex-direction: column;
-  	margin-bottom: 2px;
-  	border: 1px solid black;
-  	border-radius: 10px;
-  	cursor: pointer;
-}
-
-.event-circle {
-  	width: 12px;
-  	height: 12px;
-  	border-radius: 50%;
-  	margin-right: 10px;
-}
-
 /* Colors based on event type */
 .personal {
   	background-color: red;
@@ -626,25 +457,6 @@ button:hover {
 
 .planned {
   	background-color: blue;
-}
-
-
-.event-date-range {
-  	font-size: 12px;
-  	margin-bottom: 5px;
-  	text-align: left;
-	padding-left: 11px;
-}
-
-.event-details {
-  	display: flex;
-  	align-items: center;
-  	padding: 3px 10px;
-}
-
-.event-time {
-  	display: flex;
-  	flex-direction: column;
 }
 
 </style>
