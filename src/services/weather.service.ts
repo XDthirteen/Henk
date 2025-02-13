@@ -41,3 +41,5 @@ export const getForecast = async (city:string): Promise<ForecastData[]> => {
     return [];
   }
 };
+
+

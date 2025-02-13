@@ -40,6 +40,12 @@ export default {
       fetchWeatherData,
     };
   },
+  methods: {
+    getDayFromDate(aDateString) {
+      const aDate = new Date(aDateString)
+      return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
+    }
+  },
 };
 </script>
 
@@ -67,7 +73,7 @@ export default {
     <div v-if="forecast.length > 0" class="forecast">
       <h3>Future 4 days</h3>
       <div class="forecast-item" v-for="(item, index) in forecast" :key="index">
-        <p><strong>{{ item.dt_txt }}</strong></p>
+        <p><strong>{{ getDayFromDate(item.dt_txt) }}</strong></p>
         <p class="description">{{ item.weather[0].description }}</p>
         <p class="temperature">Temperature: <strong>{{ item.main.temp }}°C</strong></p>
         <p>Humidity: {{ item.main.humidity }}%</p>
