@@ -1,44 +1,34 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import axios from 'axios';
+import { ref } from 'vue';
+import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
-import { getWeather } from '@/services/weather.service';
 
-export default defineComponent({
-  name: 'WeatherApp',
+export default {
+  name: 'WeathermanHenk',
   setup() {
     const city = ref<string>('');
     const weather = ref<WeatherData | null>(null);
     const forecast = ref<ForecastData[]>([]);
     const error = ref<string | null>(null);
 
-    const getWeather = async () => {
+    const fetchWeatherData = async () => {
       if (!city.value) {
-        error.value = "Please enter a city name.";
+        error.value = 'Please enter a city name.';
         weather.value = null;
         forecast.value = [];
         return;
       }
 
-      const apiKey = "59f5d73944c323b9071de991b104300b"; // OpenWeatherMap API key
-      const weatherBaseUrl = `https://api.openweathermap.org/data/2.5/` // BaseUrl API
-      const weatherUrl = `${weatherBaseUrl}weather?q=${city.value}&units=metric&appid=${apiKey}`;
-      const forecastUrl = `${weatherBaseUrl}forecast?q=${city.value}&units=metric&appid=${apiKey}`;
+      error.value = null;
+      try{
+      weather.value = await getWeather(city.value);
 
-
-      try {
-        const weatherResponse = await axios.get<WeatherData>(weatherUrl);
-        weather.value = weatherResponse.data;
-        const forecastResponse = await axios.get<{list:ForecastData[]}>(forecastUrl);
-        forecast.value = forecastResponse.data.list.filter((item)=>
-        item.dt_txt.includes("12:00:00")
-    ).slice(0, 4);
-
-        error.value = null;
-      } catch  {
+      const forecastData = await getForecast(city.value);
+      forecast.value = Array.isArray(forecastData) ? forecastData : [];
+      } catch (error) {
+        error.value = 'Fail';
         weather.value = null;
         forecast.value = [];
-        error.value = "City not found. Please try again.";
       }
     };
 
@@ -47,10 +37,10 @@ export default defineComponent({
       weather,
       forecast,
       error,
-      getWeather,
+      fetchWeatherData,
     };
   },
-});
+};
 </script>
 
 <template>
@@ -61,9 +51,9 @@ export default defineComponent({
         v-model="city"
         type="text"
         placeholder="Enter city name"
-        @keyup.enter="getWeather"
+        @keyup.enter="fetchWeatherData"
       />
-      <button @click="getWeather">Search</button>
+      <button @click="fetchWeatherData">Search</button>
     </div>
 
     <div v-if="weather" class="weather">
