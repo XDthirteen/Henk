@@ -189,18 +189,17 @@ function saveUserChanges() {
   display: flex;
 }
 
-.row:last-child {
+/* .row:last-child {
   border-top: 1px solid black;
-}
+} */
 
 .col {
-  flex: 1;
   padding: 10px;
 }
 
 .col:first-child {
-  width: 10rem;
-  border-right: 1px solid black;
+  width: 7rem;
+  /* border-right: 1px solid black; */
 }
 
 .user-image {
