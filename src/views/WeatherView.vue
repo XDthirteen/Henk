@@ -1,11 +1,8 @@
-<script lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue';
 import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
 
-export default {
-  name: 'WeathermanHenk',
-  setup() {
     const city = ref<string>('');
     const weather = ref<WeatherData | null>(null);
     const forecast = ref<ForecastData[]>([]);
@@ -32,21 +29,10 @@ export default {
       }
     };
 
-    return {
-      city,
-      weather,
-      forecast,
-      error,
-      fetchWeatherData,
-    };
-  },
-  methods: {
-    getDayFromDate(aDateString) {
+    function getDayFromDate(aDateString) {
       const aDate = new Date(aDateString)
       return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
     }
-  },
-};
 </script>
 
 <template>
