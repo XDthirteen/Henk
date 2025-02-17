@@ -19,10 +19,13 @@
 / 22/01/2025---Arno Defillet----Toegevoegd: Uitbouw van de structuur van deze view.
 / 29/01/2025---Arno Defillet----Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
 / 29/01/2025---Arno Defillet----Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt,
-/veranderd div element naar input element.
-/Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
+veranderd div element naar input element.
+Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
 / 12/02/2025---Arno Defillet----Aanpassing: user-overview volledig veranderd + onderste velden lichtjes aangepast qua
-/styling
+styling
+/ 12/02/2025---Arno Defillet----Aanpassing: Saved velden aangepast naar TempSaved, indien iets aangepast, komt er een
+save knop.
+/ 17/02/2025---Arno Defillet----Aanpassing: Language inputveld aanpassen naar knoppen.
 /
 / To do:
 / - API integratie
@@ -39,6 +42,11 @@ import { ref } from 'vue';
 import EditIcon from '@/components/EditIcon.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
+
+
+const setLanguage = (lang: string) => {
+  tempValues.value.language = lang;
+};
 
 const savedValues = ref({
   firstname: "Arno",
@@ -141,7 +149,14 @@ function saveUserChanges() {
       <h2 class="input-title">Language: </h2>
       <div class="field-container">
         <div v-if="!isEditing.language" class="text-field">{{ tempValues.language }}</div>
-        <StyledInputByType input-type="text" v-else v-model="tempValues.language"></StyledInputByType>
+        <div v-else class="language-selector">
+          <button :class="{ active: tempValues.language === 'Nederlands' }" @click="setLanguage('Nederlands')">
+            Nederlands
+          </button>
+          <button :class="{ active: tempValues.language === 'Engels' }" @click="setLanguage('Engels')">
+            English
+          </button>
+        </div>
         <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
       </div>
     </div>
@@ -155,7 +170,9 @@ function saveUserChanges() {
 
 .user-overview {
   display: flex;
-  border: 2px solid var(--primary-purple);
+  border: none;
+  box-shadow: 5px 5px 30px var(--primary-purple);
+  ;
   border-radius: 10px;
   background-color: var(--tertiary-purple);
   padding: 0.5rem;
@@ -229,5 +246,30 @@ function saveUserChanges() {
 .button-wrapper {
   display: flex;
   justify-content: flex-end;
+}
+
+.language-selector {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.language-selector button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: var(--primary-white);
+  transition: background 0.3s;
+}
+
+.language-selector button.active {
+  background: var(--secundary-purple);
+  color: white;
+  font-weight: bold;
+}
+
+.language-selector button:not(.active):hover {
+  background: var(--primary-white);
 }
 </style>
