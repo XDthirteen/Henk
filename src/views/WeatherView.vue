@@ -1,55 +1,38 @@
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import axios from 'axios';
+<script setup lang="ts">
+import { ref } from 'vue';
+import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
 
-export default defineComponent({
-  name: 'WeatherApp',
-  setup() {
     const city = ref<string>('');
     const weather = ref<WeatherData | null>(null);
     const forecast = ref<ForecastData[]>([]);
     const error = ref<string | null>(null);
 
-    const getWeather = async () => {
+    const fetchWeatherData = async () => {
       if (!city.value) {
-        error.value = "Please enter a city name.";
+        error.value = 'Please enter a city name.';
         weather.value = null;
         forecast.value = [];
         return;
       }
 
-      const apiKey = "59f5d73944c323b9071de991b104300b"; // OpenWeatherMap API key
-      const weatherBaseUrl = `https://api.openweathermap.org/data/2.5/` // BaseUrl API
-      const weatherUrl = `${weatherBaseUrl}weather?q=${city.value}&units=metric&appid=${apiKey}`;
-      const forecastUrl = `${weatherBaseUrl}forecast?q=${city.value}&units=metric&appid=${apiKey}`;
+      error.value = null;
+      try{
+      weather.value = await getWeather(city.value);
 
-
-      try {
-        const weatherResponse = await axios.get<WeatherData>(weatherUrl);
-        weather.value = weatherResponse.data;
-        const forecastResponse = await axios.get<{list:ForecastData[]}>(forecastUrl);
-        forecast.value = forecastResponse.data.list.filter((item)=>
-      item.dt_txt.includes("12:00:00")
-    ).slice(0, 4);
-
-        error.value = null;
-      } catch  {
+      const forecastData = await getForecast(city.value);
+      forecast.value = Array.isArray(forecastData) ? forecastData : [];
+      } catch (error) {
+        error.value = 'Fail';
         weather.value = null;
         forecast.value = [];
-        error.value = "City not found. Please try again.";
       }
     };
 
-    return {
-      city,
-      weather,
-      forecast,
-      error,
-      getWeather,
-    };
-  },
-});
+    function getDayFromDate(aDateString) {
+      const aDate = new Date(aDateString)
+      return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
+    }
 </script>
 
 <template>
@@ -60,9 +43,9 @@ export default defineComponent({
         v-model="city"
         type="text"
         placeholder="Enter city name"
-        @keyup.enter="getWeather"
+        @keyup.enter="fetchWeatherData"
       />
-      <button @click="getWeather">Search</button>
+      <button @click="fetchWeatherData">Search</button>
     </div>
 
     <div v-if="weather" class="weather">
@@ -76,7 +59,7 @@ export default defineComponent({
     <div v-if="forecast.length > 0" class="forecast">
       <h3>Future 4 days</h3>
       <div class="forecast-item" v-for="(item, index) in forecast" :key="index">
-        <p><strong>{{ item.dt_txt }}</strong></p>
+        <p><strong>{{ getDayFromDate(item.dt_txt) }}</strong></p>
         <p class="description">{{ item.weather[0].description }}</p>
         <p class="temperature">Temperature: <strong>{{ item.main.temp }}°C</strong></p>
         <p>Humidity: {{ item.main.humidity }}%</p>
@@ -99,6 +82,7 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .search {
@@ -150,16 +134,19 @@ h1{
     width: 100%;
     justify-content: center;
   }
-  
+
 .weather {
-  display: flex;
-  flex-direction: column;
   margin-top: 20px;
-  padding: 5%;
-  width: 300px;
+  padding: 25px;
+  width: 30%;
+  max-width: 300px;
+  min-width: 250px;
+  height: auto;
+  max-height: 250px;
   font-size: 18px;
   background-color: #e9f3fe;
   border-radius: 2%;
+  text-align: center;
 }
 
 .error {
@@ -192,6 +179,10 @@ h1{
   background-color: white;
   border-radius: 2%;
   padding: 10px;
+}
+
+strong{
+  font-weight: bold;
 }
 
 </style>
