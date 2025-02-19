@@ -26,7 +26,8 @@ styling
 / 12/02/2025---Arno Defillet----Aanpassing: Saved velden aangepast naar TempSaved, indien iets aangepast, komt er een
 save knop.
 / 17/02/2025---Arno Defillet----Aanpassing: Language inputveld aanpassen naar knoppen.
-/
+/ 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het ophalen van de user informatie
+/ 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het updaten van de user informatie
 / To do:
 / - API integratie
 / - Bewerk en save icons nog aan te passen ipv images
@@ -38,36 +39,60 @@ save knop.
 #####################################*/
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import EditIcon from '@/components/EditIcon.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
+import { userSettings } from '@/services/userSettings.service';
 
+const { userInfo, updateUserInfo, getUserInfo } = userSettings();
+
+const isEditing = ref({
+  firstname: false,
+  lastname: false,
+  email: false,
+  language: false
+});
+
+const savedValues = ref({
+  username: 'Loading...',
+  firstname: "Loading...",
+  lastname: "Loading...",
+  email: "Loading...",
+  language: "Loading..."
+});
+
+const tempValues = ref({ ...savedValues.value });
+
+onMounted(async () => {
+  await getUserInfo();
+
+  if (userInfo.value) {
+    savedValues.value = {
+      username: userInfo.value.username,
+      firstname: userInfo.value.firstName,
+      lastname: userInfo.value.lastName,
+      email: userInfo.value.email,
+      language: userInfo.value.defaultLanguage,
+    };
+    tempValues.value = { ...savedValues.value }; // Pas hier initialiseren
+  }
+})
+
+const saveChangesToBackend = async () => {
+  const updatedData = await updateUserInfo(tempValues.value);
+  if (updatedData) {
+    console.log("Update succesvol!", updatedData);
+  }
+};
 
 const setLanguage = (lang: string) => {
   tempValues.value.language = lang;
 };
 
-const savedValues = ref({
-  firstname: "Arno",
-  lastname: "Defillet",
-  city: "Tienen",
-  language: "Dutch"
-});
-
-const tempValues = ref({ ...savedValues.value });
-
-const isEditing = ref({
-  firstname: false,
-  lastname: false,
-  city: false,
-  language: false
-});
-
 function toggleEdit(field: keyof typeof isEditing.value) {
   if (!isEditing.value[field]) {
-  } else {
-    tempValues.value[field] = tempValues.value[field] || savedValues.value[field];
+    tempValues.value[field] = savedValues.value[field];
   }
   isEditing.value[field] = !isEditing.value[field];
 }
@@ -90,6 +115,7 @@ function isSaveDisabled() {
 
 function saveUserChanges() {
   savedValues.value = { ...tempValues.value };
+  saveChangesToBackend();
 }
 </script>
 
@@ -102,22 +128,22 @@ function saveUserChanges() {
             <img src="../assets/images/cool_duck.png" class="user-image" alt="User_image">
           </div>
           <div class="col">
-            <h2 class="user-fullname">{{ savedValues.firstname }} {{ savedValues.lastname }}</h2>
+            <h2 class="user-fullname">{{ savedValues.username }}</h2>
           </div>
         </div>
         <div class="row">
           <div class="col">
-            <p>UserID</p>
+            <!-- <p>UserID</p> -->
             <p>Firstname</p>
             <p>Lastname</p>
-            <p>City</p>
+            <p>Email</p>
             <p>Language</p>
           </div>
           <div class="col">
-            <p id="userId">12345</p>
+            <!-- <p id="userId">12345</p> -->
             <p id="firstname">{{ savedValues.firstname }}</p>
             <p id="lastname">{{ savedValues.lastname }}</p>
-            <p id="city">{{ savedValues.city }}</p>
+            <p id="email">{{ savedValues.email }}</p>
             <p id="language">{{ savedValues.language }}</p>
           </div>
         </div>
@@ -140,11 +166,11 @@ function saveUserChanges() {
         <StyledInputByType input-type="text" v-else v-model="tempValues.lastname"></StyledInputByType>
         <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
       </div>
-      <h2 class="input-title">City: </h2>
+      <h2 class="input-title">Email: </h2>
       <div class="field-container">
-        <div v-if="!isEditing.city" class="text-field">{{ tempValues.city }}</div>
-        <StyledInputByType input-type="text" v-else v-model="tempValues.city"></StyledInputByType>
-        <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
+        <div v-if="!isEditing.email" class="text-field">{{ tempValues.email }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.email"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.email" @toggle-edit="toggleEdit('email')" />
       </div>
       <h2 class="input-title">Language: </h2>
       <div class="field-container">
