@@ -48,7 +48,13 @@
           <p>Select a group icon</p>
           <div v-if="showIconPicker" class="icon-picker">
             <img
-              v-for="icon in ['./assets/airplane.png', './assets/anchor.png', './assets/bear.png', '/assets/love.png', '/assets/man-golfing.png']"
+              v-for="icon in [
+                '../src/assets/airplane.png',
+                '../src/assets/grinning.png',
+                '../src/assets/bear.png',
+                '../src/assets/love.png',
+                '../src/assets/man-golfing.png',
+              ]"
               :key="icon"
               :src="icon"
               class="icon"
@@ -77,6 +83,19 @@ const isSidebarOpen = ref(false)
 const isAddGroupModalOpen = ref(false)
 const showIconPicker = ref(false)
 const selectedIcon = ref<string | null>(null)
+const availableIcons = [
+  '../src/assets/airplane.png',
+  '../src/assets/videogame.png',
+  '../src/assets/dog.png',
+  '../src/assets/couplekiss.png',
+  '../src/assets/joy.png',
+  '../src/assets/man-woman-boy.png',
+  '../src/assets/sleepy.png',
+  '../src/assets/soccer.png',
+  '../src/assets/grinning.png',
+  '../src/assets/smile-cat.png',
+]
+const randomIcons = ref<string[]>([])
 
 const navigateToInvites = () => {
   router.push({ name: 'invites' })
@@ -94,11 +113,17 @@ const navigateTo = (path: string) => {
 const showAddGroupModal = () => {
   isAddGroupModalOpen.value = true
   isSidebarOpen.value = false
+  randomIcons.value = getRandomIcons(availableIcons, 4)
 }
 
 const selectIcon = (icon: string) => {
   selectedIcon.value = icon
   showIconPicker.value = false
+}
+
+const getRandomIcons = (icons: string[], count: number) => {
+  const shuffled = icons.sort(() => 0.5 - Math.random())
+  return shuffled.slice(0, count)
 }
 </script>
 
@@ -258,6 +283,13 @@ header {
   font-size: 24px;
   color: #9e9e9e;
   margin-bottom: 10px;
+}
+
+.logo-placeholder img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .input-field {
