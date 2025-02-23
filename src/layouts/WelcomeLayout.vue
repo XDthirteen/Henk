@@ -37,9 +37,17 @@
 
 <script setup lang="ts">
 import StyledButton from '@/components/StyledButton.vue';
+import CalenderEventView from '@/views/CalenderEventView.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+let isVisible = true
+
+const toggleModal = () => {
+  isVisible = !isVisible
+}
+
 </script>
 
 <template>
@@ -52,8 +60,12 @@ const router = useRouter();
       <StyledButton type="primary" @click="router.push({ name: 'signup' })">
         Sign up
       </StyledButton>
+      <StyledButton type="primary" @click="alert('hello')">
+        just testing shit
+      </StyledButton>
     </div>
     <RouterView />
+    <CalenderEventView :is-visible=isVisible default-location="genk"></CalenderEventView>
   </div>
 </template>
 

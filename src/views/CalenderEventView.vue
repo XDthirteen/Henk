@@ -42,7 +42,7 @@ const submitEvent = () => {
 
   <form @submit.prevent="submitEvent">
     <div>
-      <label for="eventTitle">titel event</label>
+      <label for="eventTitle">title event</label>
       <input v-model="event.title" id="eventTitle" type="text" required>
     </div>
 
