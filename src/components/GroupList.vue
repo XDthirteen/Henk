@@ -4,14 +4,9 @@
       <h1>Groups</h1>
 
       <div class="header-buttons">
-        <button
-          class="invite-button"
-          @click="navigateToInvites"
-          v-if="groupStore.invites.length > 0"
-        >
+        <button class="invite-button" @click="navigateToInvites" v-if="groupStore.invites.length > 0">
           <span class="invite-badge">{{ groupStore.invites.length }}</span>
         </button>
-        <button class="menu-button" @click="toggleSidebar">☰</button>
       </div>
     </header>
 
@@ -90,14 +85,7 @@ const navigateToInvites = () => {
   router.push({ name: 'invites' })
 }
 
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value
-}
 
-const navigateTo = (path: string) => {
-  router.push(path)
-  isSidebarOpen.value = false
-}
 </script>
 
 <style scoped>
@@ -118,14 +106,6 @@ header {
   right: 10px;
   display: flex;
   align-items: center;
-}
-
-.menu-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  margin-left: 10px;
 }
 
 .invite-button {
