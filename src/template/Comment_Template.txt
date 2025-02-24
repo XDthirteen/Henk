@@ -13,9 +13,10 @@
 /
 /      Changelog:
 /      ----------
-/      [DD/MM/JJ] - [User] 
-/           - Omschrijving van actie.
-/      
+/ Date:--------User:------------Omschrijving:
+/ -------------------------------------------------------------------
+/ [date]-------[Gebruiker]------[Omschrijving]
+/
 /      Opmerkingen:
 /      ------------
 /      Enige opmerkingen?
