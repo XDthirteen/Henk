@@ -41,10 +41,10 @@ const router = createRouter({
         },
 
         {
-        path: '/createGroup',
-        name: 'createGroup',
-        beforeEnter: [authenticationGuard],
-        component: () => import('@/views/CreateGroup.vue'),
+          path: '/createGroup',
+          name: 'createGroup',
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/views/CreateGroup.vue'),
         },
 
         {
@@ -54,14 +54,14 @@ const router = createRouter({
           component: () => import('@/components/GroupInvites.vue'),
         },
         {
-          path: "/signin",
-          name: "signin",
-          component: () => import('@/views/RegisterView.vue')
+          path: '/signin',
+          name: 'signin',
+          component: () => import('@/views/RegisterView.vue'),
         },
         {
-          path: "/weather",
-          name: "weather",
-          component: () => import('@/views/WeatherView.vue')
+          path: '/weather',
+          name: 'weather',
+          component: () => import('@/views/WeatherView.vue'),
         },
         {
           path: '/myAccount',

@@ -2,13 +2,8 @@
   <div class="container">
     <header>
       <h1>Groups</h1>
-
       <div class="header-buttons">
-        <button
-          class="invite-button"
-          @click="navigateToInvites"
-          v-if="groupStore.invites.length > 0"
-        >
+        <button class="invite-button" @click="navigateToInvites" v-if="groupStore.invites.length > 0">
           <span class="invite-badge">{{ groupStore.invites.length }}</span>
         </button>
         <button class="menu-button" @click="toggleSidebar">☰</button>
@@ -20,54 +15,49 @@
         <img :src="groupStore.meGroup.icon" alt="Me" />
         <span>{{ groupStore.meGroup.name }}</span>
       </div>
-
       <div v-for="group in groupStore.groups" :key="group.id" class="group-item">
         <img :src="group.icon" :alt="group.name" />
         <span>{{ group.name }}</span>
       </div>
     </div>
 
+    <!-- Zijmenu -->
     <div v-if="isSidebarOpen" class="sidebar">
       <button class="close-button" @click="toggleSidebar">✖</button>
       <h2>Menu</h2>
       <ul>
-        <li @click="showAddGroupModal">Add new group</li>
+        <li @click="showAddGroupForm">Add new group</li>
         <li @click="navigateTo('')">Invite members</li>
         <li @click="navigateTo('')">Leave group</li>
       </ul>
     </div>
 
-    <div v-if="isAddGroupModalOpen" class="modal-overlay">
-      <div class="modal">
-        <h2>Add New Group</h2>
-        <div class="logo-upload">
-          <div class="logo-placeholder" @click="showIconPicker = true">
-            <img v-if="selectedIcon" :src="`/assets/${selectedIcon}`" />
-            <template v-else>+</template>
-          </div>
-          <p>Select a group icon</p>
-          <div v-if="showIconPicker" class="icon-picker">
-            <img
-              v-for="icon in [
-                '../src/assets/airplane.png',
-                '../src/assets/grinning.png',
-                '../src/assets/bear.png',
-                '../src/assets/love.png',
-                '../src/assets/man-golfing.png',
-              ]"
-              :key="icon"
-              :src="icon"
-              class="icon"
-              @click="selectIcon(icon)"
-            />
-          </div>
+    <!-- Formulier voor groep toevoegen -->
+    <div v-if="isAddGroupFormOpen" class="add-group-form">
+      <h2>Add New Group</h2>
+      <div class="logo-upload">
+        <div class="logo-placeholder" @click="showIconPicker = true">
+          <img v-if="selectedIcon" :src="selectedIcon" />
+          <template v-else>+</template>
         </div>
-        <input type="text" placeholder="Enter ID or email" class="input-field" />
-        <div class="modal-buttons">
-          <button class="send-btn">Send Invite</button>
-          <button class="cancel-btn" @click="isAddGroupModalOpen = false">Cancel</button>
+        <p>Select a group icon</p>
+        <div v-if="showIconPicker" class="icon-picker">
+          <img
+            v-for="icon in availableIcons"
+            :key="icon"
+            :src="icon"
+            class="icon"
+            @click="selectIcon(icon)"
+          />
         </div>
       </div>
+      <input type="text" v-model="groupName" placeholder="Enter group name" class="input-field" />
+      <input type="text" v-model="inviteInput" placeholder="Enter ID or email" class="input-field" />
+      <div class="form-buttons">
+        <button class="send-btn" @click="sendInvite">Send Invite</button>
+        <button class="cancel-btn" @click="resetForm">Cancel</button>
+      </div>
+      <p v-if="inviteSent" class="invite-sent-message">Invite Sent</p>
     </div>
   </div>
 </template>
@@ -76,13 +66,25 @@
 import { ref } from 'vue'
 import { useGroupStore } from '@/stores/groupStore'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { useAuth } from '@/services/auth.service' // ✅ Auth service importeren
 
 const groupStore = useGroupStore()
 const router = useRouter()
+const { getAuthToken, isAuthenticated } = useAuth() // ✅ Token ophalen via auth service
+
+// UI states
 const isSidebarOpen = ref(false)
-const isAddGroupModalOpen = ref(false)
+const isAddGroupFormOpen = ref(false)
 const showIconPicker = ref(false)
+
+// Form data
 const selectedIcon = ref<string | null>(null)
+const inviteInput = ref('')
+const groupName = ref('')
+const inviteSent = ref(false)
+
+// Beschikbare icons
 const availableIcons = [
   '../src/assets/airplane.png',
   '../src/assets/videogame.png',
@@ -95,8 +97,13 @@ const availableIcons = [
   '../src/assets/grinning.png',
   '../src/assets/smile-cat.png',
 ]
+
 const randomIcons = ref<string[]>([])
 
+// API gegevens
+const API_URL = '/api/groups'
+
+// Navigatie functies
 const navigateToInvites = () => {
   router.push({ name: 'invites' })
 }
@@ -110,8 +117,9 @@ const navigateTo = (path: string) => {
   isSidebarOpen.value = false
 }
 
-const showAddGroupModal = () => {
-  isAddGroupModalOpen.value = true
+// Groep aanmaken
+const showAddGroupForm = () => {
+  isAddGroupFormOpen.value = true
   isSidebarOpen.value = false
   randomIcons.value = getRandomIcons(availableIcons, 4)
 }
@@ -122,10 +130,73 @@ const selectIcon = (icon: string) => {
 }
 
 const getRandomIcons = (icons: string[], count: number) => {
-  const shuffled = icons.sort(() => 0.5 - Math.random())
+  const shuffled = [...icons].sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
 }
+
+// Verzenden van de uitnodiging
+const sendInvite = async () => {
+  if (!inviteInput.value.trim() || !groupName.value.trim()) {
+    alert('Please fill in all fields.')
+    return
+  }
+
+  // ✅ Controleer of de gebruiker is ingelogd
+  if (!isAuthenticated.value) {
+    alert('You are not authenticated. Please log in again.')
+    return
+  }
+
+  const token = getAuthToken()
+  console.log('Gebruikt token:', token) // ✅ Debugging
+
+  try {
+    const response = await axios.post(
+      API_URL,
+      {
+        name: groupName.value,
+        icon: selectedIcon.value || '',
+        invite: inviteInput.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    if (response.status === 201) {
+      inviteSent.value = true
+      setTimeout(() => {
+        inviteSent.value = false
+        resetForm()
+      }, 2000)
+    } else {
+      alert('Something went wrong, please try again.')
+    }
+  } catch (error: unknown) {
+    console.error('Error creating group:', error)
+
+    let errorMsg = 'Failed to create the group.'
+
+    if (axios.isAxiosError(error) && error.response) {
+      errorMsg = error.response.data?.message || errorMsg
+    }
+
+    alert(errorMsg)
+  }
+}
+
+// Formulier resetten
+const resetForm = () => {
+  inviteInput.value = ''
+  groupName.value = ''
+  selectedIcon.value = null
+  isAddGroupFormOpen.value = false
+}
 </script>
+
 
 <style scoped>
 .container {
@@ -243,26 +314,14 @@ header {
   background: #f0f0f0;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
+.add-group-form {
   background: white;
   padding: 20px;
   border-radius: 8px;
   width: 300px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
+  margin: 20px auto;
 }
 
 .logo-upload {
@@ -301,7 +360,7 @@ header {
   text-align: center;
 }
 
-.modal-buttons {
+.form-buttons {
   display: flex;
   justify-content: space-between;
 }
@@ -358,5 +417,11 @@ header {
 
 .icon:hover {
   transform: scale(1.1);
+}
+
+.invite-sent-message {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
 }
 </style>
