@@ -1,4 +1,4 @@
-import { UserData } from "@/components/models";
+import type { UserData } from "@/components/models";
 import axios from "axios";
 import { ref } from "vue";
 
