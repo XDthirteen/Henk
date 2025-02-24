@@ -1,3 +1,18 @@
+export interface EditingState {
+  firstname: boolean;
+  lastname: boolean;
+  email: boolean;
+  language: boolean;
+}
+
+export interface SavedValues {
+  username: string,
+  firstname: string,
+  lastname: string,
+  email: string,
+  language: string
+}
+
 export interface UserData {
   username: string;
   email: string;

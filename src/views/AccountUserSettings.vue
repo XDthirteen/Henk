@@ -30,10 +30,10 @@ save knop.
 / 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het updaten van de user informatie
 / 24/02/2025---Arno Defillet----Aanpassing: Eigenschappen in Savedvalues aanpassen naar blanco strings, en strings met
 'Loading...' naar onMounted verplaatst
+/ 24/02/2025---Arno Defillet----Toevoegen: Overal Typescript toepassen
 /
 /
 / To do:
-/ - API integratie
 / - Bewerk en save icons nog aan te passen ipv images
 /
 / Opmerkingen:
@@ -48,17 +48,18 @@ import EditIcon from '@/components/EditIcon.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import { userSettings } from '@/services/userSettings.service';
+import { EditingState, SavedValues } from '@/components/models';
 
 const { userInfo, updateUserInfo, getUserInfo } = userSettings();
 
-const isEditing = ref({
+const isEditing = ref<EditingState>({
   firstname: false,
   lastname: false,
   email: false,
   language: false
 });
 
-const savedValues = ref({
+const savedValues = ref<SavedValues>({
   username: '',
   firstname: '',
   lastname: '',
@@ -66,7 +67,7 @@ const savedValues = ref({
   language: ''
 });
 
-const tempValues = ref({ ...savedValues.value });
+const tempValues = ref<SavedValues>({ ...savedValues.value });
 
 onMounted(async () => {
   savedValues.value.username = 'Loading...';
@@ -89,7 +90,7 @@ onMounted(async () => {
   }
 })
 
-const saveChangesToBackend = async () => {
+const saveChangesToBackend = async (): Promise<void> => {
   const updatedData = await updateUserInfo(tempValues.value);
   if (updatedData) {
     console.log("Update succesvol!", updatedData);
@@ -107,23 +108,23 @@ function toggleEdit(field: keyof typeof isEditing.value) {
   isEditing.value[field] = !isEditing.value[field];
 }
 
-function isSaveDisabled() {
+function isSaveDisabled(): boolean {
   // Controleer of er een verschil is tussen tempValues en savedValues
   let hasChanges = false;
   for (const key in savedValues.value) {
-    if (savedValues.value[key] !== tempValues.value[key]) {
+    if (savedValues.value[key as keyof SavedValues] !== tempValues.value[key as keyof SavedValues]) {
       hasChanges = true;
       break;
     }
   }
 
   // Controleer of er nog velden in bewerkmodus staan
-  const isEditingActive = Object.values(isEditing.value).includes(true);
+  const isEditingActive: boolean = Object.values(isEditing.value).includes(true);
 
   return !hasChanges || isEditingActive;
 }
 
-function saveUserChanges() {
+function saveUserChanges(): void {
   savedValues.value = { ...tempValues.value };
   saveChangesToBackend();
 }
