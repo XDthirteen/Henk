@@ -42,22 +42,22 @@ const submitEvent = () => {
 
   <form @submit.prevent="submitEvent">
     <div>
-      <label for="eventTitle">title event</label>
+      <label for="eventTitle">Title event</label>
       <input v-model="event.title" id="eventTitle" type="text" required>
     </div>
 
   <div>
-    <label for="eventTime">time event</label>
+    <label for="eventTime">Time event</label>
     <input v-model="event.time" id="eventTime" type="time" required>
   </div>
 
   <div>
-    <label for="eventLocation">location event</label>
+    <label for="eventLocation">Location event</label>
     <input v-model="event.location" id="eventLocation" type="text" disabled>
   </div>
 
   <div>
-    <label for="eventNotes">note event</label>
+    <label for="eventNotes">Note event</label>
     <textarea v-model="event.notes" id="eventNotes" placeholder="Add notes..."></textarea>
   </div>
 
@@ -88,7 +88,7 @@ const submitEvent = () => {
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  width: 300px;
+  width: 350px;
 }
 
 .event-buttons {
@@ -111,5 +111,8 @@ button[type='submit'] {
 button[type='button'] {
   background-color: #f44336;
   color: white;
+}
+label {
+  padding-right: 5px;
 }
 </style>
