@@ -49,7 +49,6 @@ import { useGroupStore } from '@/stores/groupStore'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
-// State
 const groupStore = useGroupStore()
 const router = useRouter()
 const isSidebarOpen = ref(false)
@@ -63,12 +62,10 @@ interface Group {
 
 const groups = ref<Group[]>([])
 
-// API Config
 const API_URL = 'https://syntra-20242025-henk-api.onrender.com/api/groups'
 const AUTH_TOKEN =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTczOTk5NzI1MCwiZXhwIjoxNzQwMDAwODUwfQ.JUNZFBKE6MKYwfUcQojVjFHNbUEfKq_p85wRNZUD-u4'
 
-// Functie om groepen op te halen
 const fetchGroups = async () => {
   loading.value = true
   error.value = null
@@ -87,10 +84,8 @@ const fetchGroups = async () => {
   }
 }
 
-// API-oproep uitvoeren zodra de component geladen is
 onMounted(fetchGroups)
 
-// Navigatie functies
 const navigateToInvites = () => {
   router.push({ name: 'invites' })
 }
@@ -231,7 +226,6 @@ header {
   background: #f0f0f0;
 }
 
-/* Error message styling */
 .error {
   color: red;
   font-weight: bold;
