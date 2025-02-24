@@ -28,6 +28,10 @@ save knop.
 / 17/02/2025---Arno Defillet----Aanpassing: Language inputveld aanpassen naar knoppen.
 / 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het ophalen van de user informatie
 / 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het updaten van de user informatie
+/ 24/02/2025---Arno Defillet----Aanpassing: Eigenschappen in Savedvalues aanpassen naar blanco strings, en strings met
+'Loading...' naar onMounted verplaatst
+/
+/
 / To do:
 / - API integratie
 / - Bewerk en save icons nog aan te passen ipv images
@@ -55,16 +59,22 @@ const isEditing = ref({
 });
 
 const savedValues = ref({
-  username: 'Loading...',
-  firstname: "Loading...",
-  lastname: "Loading...",
-  email: "Loading...",
-  language: "Loading..."
+  username: '',
+  firstname: '',
+  lastname: '',
+  email: '',
+  language: ''
 });
 
 const tempValues = ref({ ...savedValues.value });
 
 onMounted(async () => {
+  savedValues.value.username = 'Loading...';
+  savedValues.value.firstname = 'Loading...';
+  savedValues.value.lastname = 'Loading...';
+  savedValues.value.email = 'Loading...';
+  savedValues.value.language = 'Loading...';
+
   await getUserInfo();
 
   if (userInfo.value) {
@@ -75,7 +85,7 @@ onMounted(async () => {
       email: userInfo.value.email,
       language: userInfo.value.defaultLanguage,
     };
-    tempValues.value = { ...savedValues.value }; // Pas hier initialiseren
+    tempValues.value = { ...savedValues.value };
   }
 })
 
