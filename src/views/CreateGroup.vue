@@ -21,7 +21,6 @@
       </div>
     </div>
 
-    <!-- Zijmenu -->
     <div v-if="isSidebarOpen" class="sidebar">
       <button class="close-button" @click="toggleSidebar">✖</button>
       <h2>Menu</h2>
@@ -32,7 +31,6 @@
       </ul>
     </div>
 
-    <!-- Formulier voor groep toevoegen -->
     <div v-if="isAddGroupFormOpen" class="add-group-form">
       <h2>Add New Group</h2>
       <div class="logo-upload">
@@ -67,24 +65,21 @@ import { ref } from 'vue'
 import { useGroupStore } from '@/stores/groupStore'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { useAuth } from '@/services/auth.service' // ✅ Auth service importeren
+import { useAuth } from '@/services/auth.service'
 
 const groupStore = useGroupStore()
 const router = useRouter()
-const { getAuthToken, isAuthenticated } = useAuth() // ✅ Token ophalen via auth service
+const { getAuthToken, isAuthenticated } = useAuth()
 
-// UI states
 const isSidebarOpen = ref(false)
 const isAddGroupFormOpen = ref(false)
 const showIconPicker = ref(false)
 
-// Form data
 const selectedIcon = ref<string | null>(null)
 const inviteInput = ref('')
 const groupName = ref('')
 const inviteSent = ref(false)
 
-// Beschikbare icons
 const availableIcons = [
   '../src/assets/airplane.png',
   '../src/assets/videogame.png',
@@ -100,10 +95,8 @@ const availableIcons = [
 
 const randomIcons = ref<string[]>([])
 
-// API gegevens
 const API_URL = '/api/groups'
 
-// Navigatie functies
 const navigateToInvites = () => {
   router.push({ name: 'invites' })
 }
@@ -117,7 +110,6 @@ const navigateTo = (path: string) => {
   isSidebarOpen.value = false
 }
 
-// Groep aanmaken
 const showAddGroupForm = () => {
   isAddGroupFormOpen.value = true
   isSidebarOpen.value = false
@@ -134,21 +126,19 @@ const getRandomIcons = (icons: string[], count: number) => {
   return shuffled.slice(0, count)
 }
 
-// Verzenden van de uitnodiging
 const sendInvite = async () => {
   if (!inviteInput.value.trim() || !groupName.value.trim()) {
     alert('Please fill in all fields.')
     return
   }
 
-  // ✅ Controleer of de gebruiker is ingelogd
   if (!isAuthenticated.value) {
     alert('You are not authenticated. Please log in again.')
     return
   }
 
   const token = getAuthToken()
-  console.log('Gebruikt token:', token) // ✅ Debugging
+  console.log('Gebruikt token:', token)
 
   try {
     const response = await axios.post(
@@ -188,7 +178,6 @@ const sendInvite = async () => {
   }
 }
 
-// Formulier resetten
 const resetForm = () => {
   inviteInput.value = ''
   groupName.value = ''
