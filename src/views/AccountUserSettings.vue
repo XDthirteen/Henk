@@ -285,6 +285,7 @@ function saveUserChanges(): void {
 }
 
 .language-selector {
+  width: 13rem;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;

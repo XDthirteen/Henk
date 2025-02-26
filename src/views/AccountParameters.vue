@@ -19,7 +19,7 @@
 / 26/02/2025---Arno Defillet----Volledige uitwerking van pagina (gebaseerd op AccountUserSettings)
 /
 / To do:
-/ -
+/ - Edit icon wordt niet veranderd naar save icon on click
 / -
 /
 / Opmerkingen:
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
+import StyledDropdown from '@/components/StyledDropdown.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import { ParamSavedValues } from '@/components/models';
 import EditIcon from '@/components/EditIcon.vue';
@@ -120,8 +121,13 @@ function saveParamChanges(): void {
       <h2 class="input-title">Default app on Home:</h2>
       <div class="field-container">
         <div v-if="!isEditingParam.app" class="text-field">{{ paramTempValues.app }}</div>
-        <StyledInputByType input-type="text" v-else v-model="paramTempValues.app"></StyledInputByType>
-        <EditIcon :isEditingParam="isEditingParam.app" @toggle-edit="toggleEdit('defaultApp')" />
+        <StyledDropdown v-else v-model="paramTempValues.app" :options="[
+          { value: 'weather', text: 'Weather' },
+          { value: 'myTasks', text: 'My Tasks' },
+          { value: 'translator', text: 'Translator' },
+          { value: 'calendar', text: 'Calendar' }
+        ]" />
+        <EditIcon :isEditingParam="isEditingParam.app" @toggle-edit="toggleEdit('app')" />
       </div>
       <h2 class="input-title">Default theme:</h2>
       <div class="field-container">
@@ -136,6 +142,8 @@ function saveParamChanges(): void {
         </div>
         <EditIcon :isEditingParam="isEditingParam.language" @toggle-edit="toggleEdit('theme')" />
       </div>
+
+
     </div>
   </div>
 </template>
@@ -181,6 +189,7 @@ function saveParamChanges(): void {
 }
 
 .theme-selector {
+  width: 13rem;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;
