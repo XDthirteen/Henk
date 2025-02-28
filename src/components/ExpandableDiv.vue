@@ -1,50 +1,45 @@
+/*#####################################
+/      
+/      #  CalendarView.vue
+/      #  ==================
+/      #  Beschrijving:
+/      #  ------------
+/      #  Overzichtelijkere code. Component voor div's groter en kleiner te maken in calendar. 
+/ 
+/      #  Auteur: Jorn Vierbergen
+/      #  Datum aangemaakt: 13/02/2025
+/
+#################
+/
+/      Changelog:
+/      ----------
+/      13/02/2025 - Jorn Vierbergen
+/          - Aangepast: expandable div verplaatst naar component ExpandableDiv.vue
+/      28/02/2025 - Jorn Vierbergen
+/          - Aangepast: selected date met props doorgeven
+/
+/      To do:
+/      - See CalendarView.vue
+/
+/      Opmerkingen:
+/      ------------
+/      Enige opmerkingen?
+/      
+#####################################*/
+
 <script setup lang="ts">
+import { ref, computed, defineProps } from "vue";
 
-import type { CalendarDay } from "@/components/models";
-import { ref, computed, onMounted, nextTick, defineProps } from "vue";
-
-// TEST DATA
-const events = {
-	personal: [
-		{ startDate: "01/02/2025", startTime: "08:00", endDate: "02/02/2025", endTime: "08:00" , title: "test title", description: "desceription < Spelling :/"},
-		{ startDate: "04/02/2025", startTime: "09:00", endDate: "14/03/2025", endTime: "09:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-	],
-	group: [
-    	{ startDate: "02/02/2025", startTime: "08:02", endDate: "02/02/2025", endTime: "08:02" },
-    	{ startDate: "05/02/2025", startTime: "09:02", endDate: "05/02/2025", endTime: "09:05" },
-  	],
-	planned: [
-    	{ startDate: "10/02/2025", startTime: "08:00", endDate: "10/02/2025", endTime: "08:00" },
-    	{ startDate: "11/02/2025", startTime: "09:00", endDate: "11/02/2025", endTime: "09:00" },
-  	],
-};
+const props = defineProps({
+	events: {
+		type: Array,
+		default: () => [],
+	},
+	selectedDate: {
+		type: Object,
+		default: () => null,
+	},
+});
 
 // Expandable div toggle
 const isExpanded = ref(false);
@@ -74,46 +69,18 @@ const onTouchEnd = () => {
   	}
 };
 
-// ? merge set event data and set event lines ?
-// Set event data
-const getEventsForSelectedDate = () => {
-  	if (!props.selectedDate) return [];
-
-  	let allEvents: any[] = [];
-
-  	// Find every date per event type
-  	Object.entries(events).forEach(([type, eventList]) => {
-    	eventList.forEach(event => {
-     	 	const { startDate, endDate } = event;
-
-			// Convert startDate, endDate back to date objects to compare
-			const start = new Date(startDate.split("/").reverse().join("-"));
-			const end = new Date(endDate.split("/").reverse().join("-"));
-			const selected = new Date(props.selectedDate.date.split("/").reverse().join("-"));
-
-			// Check if selected date is within event range
-			if (selected >= start && selected <= end) {
-				allEvents.push({ ...event, type });
-			}
-    	});
-  	});
-
-  	// Sort events by startTime (sorded by backend?)
-  	return allEvents.sort((a, b) => a.startTime.localeCompare(b.startTime));
-};
-
-// Selected date
-const selectedDate = ref<CalendarDay>();
+// Selected date event data
+const getEventsForSelectedDate = computed(() => {
+	if (props.selectedDate?.events) {
+		console.log('here', props.selectedDate)
+		return props.selectedDate.events
+  	}
+  	return [];
+});
 
 const eventClick = (eventData) => {
   	console.log("Clicked event:", eventData);
 };
-
-const props = defineProps({
-  selectedDate: {
-    type: Object,
-  }
-});
 
 </script>
 <template>
@@ -132,11 +99,11 @@ const props = defineProps({
             <button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
         </div>
         <div class="event-selected-date">
-            {{ props.selectedDate?.date }}
+            {{ props.selectedDate?.convertedDate }}
         </div>
         <div class="event-container">
-            <ul v-if="getEventsForSelectedDate().length">
-                <li v-for="(event, index) in getEventsForSelectedDate()" :key="index" class="event-item" @click.stop="eventClick(event)">
+            <ul v-if="getEventsForSelectedDate.length">
+                <li v-for="(event, index) in getEventsForSelectedDate" :key="index" class="event-item" @click.stop="eventClick(event)">
                     <div v-if="event.startDate !== event.endDate">
                         <div class="event-date-range">
                             {{ event.startDate }} - {{ event.endDate }}
@@ -145,7 +112,7 @@ const props = defineProps({
 
                     <!-- Event circle and time -->
                     <div class="event-details" >
-                        <div class="event-circle" :class="event.type"></div>
+                        <div class="event-circle" :class="event.eventType"></div>
                         <span>{{ event.startTime }} - {{ event.endTime }} {{ event.title }}</span>
                     </div>
                 </li>
