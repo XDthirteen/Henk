@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import type { CalendarDay } from "@/components/models";
 import { ref, computed, onMounted, nextTick } from "vue";
-import CalenderEventView from '@/views/CalenderEventView.vue';
+import CalenderEventView from '@/views/CalendarEventView.vue';
 
 // MODAL POP-UP
 const isVisible = ref(false);
@@ -250,14 +250,10 @@ const onTouchEnd = () => {
 };
 
 // Event button
-const addEvent = () => {
+const openEventDialogue = () => {
     isVisible.value=true
   	console.log("Event button clicked!");
 };
-
-const createEvent=() => {
-  
-}
 
 // ? merge set event data and set event lines ?
 // Set event data
@@ -405,7 +401,7 @@ onMounted(() => {
 			</div>
 		</div>
 
-		<button class="add-event-button" @click="addEvent">
+		<button class="add-event-button" @click="openEventDialogue">
 			Event Button
 		</button>
   </div>

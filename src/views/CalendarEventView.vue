@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import{ ref, watch } from 'vue';
+import{ ref } from 'vue';
 
 const props = defineProps<{
   isVisible: boolean;
@@ -12,15 +12,32 @@ const emit = defineEmits<{
 
 const event = ref({
   title: '',
-  time: '',
-  location: props.defaultLocation,
-  notes: '',
-  date: new Date().toISOString().split('T')[0],
+  groupId: '',
+  start: new Date().toISOString().split('T')[0],
+  end: new Date().toISOString().split('T')[0],
+  // location: props.defaultLocation,
+  description: '',
 });
 
-watch(() => props.defaultLocation, (newLocation) => {
-  event.value.location = newLocation;
-});
+// TODO: get the groups from the group service
+const groups = ref([
+  {
+    id: "alaa",
+    name: "alaa",
+    createdAt: "2025-01-01",
+    updatedAt: "2025-01-02"
+  },
+  {
+    id: "gert-jan",
+    name: "gert-jan",
+    createdAt: "2025-01-01",
+    updatedAt: "2025-01-02"
+  },
+])
+
+// watch(() => props.defaultLocation, (newLocation) => {
+//   event.value.location = newLocation;
+// });
 
 const closeModal = () => {
   emit('close');
@@ -28,6 +45,7 @@ const closeModal = () => {
 
 const submitEvent = () => {
   console.log('Event Created:', event.value);
+  // TODO: call create event from the service as well
   closeModal();
 };
 
@@ -47,20 +65,29 @@ const submitEvent = () => {
     </div>
 
   <div>
-    <label for="eventTime">Time event</label>
-    <input v-model="event.time" id="eventTime" type="time" required>
+    <label for="eventGroupId">Time event</label>
+    <select v-model="event.groupId" id="eventGroupId" type="" required>
+      <option disabled value="">Please select one</option>
+      <option v-for="group in groups" :value="group.id" :key="group.id">
+        {{ group.name }}
+      </option>
+    </select>
   </div>
 
   <div>
-    <label for="eventLocation">Location event</label>
-    <input v-model="event.location" id="eventLocation" type="text" disabled>
+    <label for="eventStart">Time event</label>
+    <input v-model="event.start" id="eventStart" type="date" required>
   </div>
 
   <div>
-    <label for="eventNotes">Note event</label>
-    <textarea v-model="event.notes" id="eventNotes" placeholder="Add notes..."></textarea>
+    <label for="eventEnd">Time event</label>
+    <input v-model="event.end" id="eventEnd" type="date" required>
   </div>
 
+  <div>
+    <label for="eventDescription">Note event</label>
+    <textarea v-model="event.description" id="eventDescription" placeholder="Add notes..."></textarea>
+  </div>
 
   <div class="event-buttons">
     <button type="button" @click="closeModal">Cancel</button>

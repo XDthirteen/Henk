@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import StyledButton from '@/components/StyledButton.vue';
-import CalenderEventView from '@/views/CalenderEventView.vue';
+import CalenderEventView from '@/views/CalendarEventView.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -55,13 +55,8 @@ const router = useRouter();
       <StyledButton type="primary" @click="router.push({ name: 'signup' })">
         Sign up
       </StyledButton>
-      <StyledButton type="primary" @click="isVisible=true">
-        just testing shit
-      </StyledButton>
     </div>
     <RouterView />
-    <CalenderEventView class="blep" :is-visible=true default-location="genk"></CalenderEventView>
-
   </div>
 </template>
 
