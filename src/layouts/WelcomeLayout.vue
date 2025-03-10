@@ -37,9 +37,12 @@
 
 <script setup lang="ts">
 import StyledButton from '@/components/StyledButton.vue';
+import CalenderEventView from '@/views/CalendarEventView.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+
+
 </script>
 
 <template>

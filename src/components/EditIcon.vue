@@ -47,5 +47,6 @@ defineProps({
 <style scoped>
 .edit-image {
   width: 10%;
+  max-width: 4em;
 }
 </style>

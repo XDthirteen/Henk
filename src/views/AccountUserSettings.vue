@@ -13,20 +13,28 @@
 /
 / Changelog:
 / ----------
-/ 15/01/2025 - Arno Defillet
-/ - Start van de view met 1 div ter testing
+/ Date:--------User:------------Omschrijving:
+/ -------------------------------------------------------------------
+/ 15/01/2025---Arno Defillet----Start van de view met 1 div ter testing
+/ 22/01/2025---Arno Defillet----Toegevoegd: Uitbouw van de structuur van deze view.
+/ 29/01/2025---Arno Defillet----Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
+/ 29/01/2025---Arno Defillet----Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt,
+veranderd div element naar input element.
+Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
+/ 12/02/2025---Arno Defillet----Aanpassing: user-overview volledig veranderd + onderste velden lichtjes aangepast qua
+styling
+/ 12/02/2025---Arno Defillet----Aanpassing: Saved velden aangepast naar TempSaved, indien iets aangepast, komt er een
+save knop.
+/ 17/02/2025---Arno Defillet----Aanpassing: Language inputveld aanpassen naar knoppen.
+/ 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het ophalen van de user informatie
+/ 19/02/2025---Arno Defillet----Toevoeging: API integratie voor het updaten van de user informatie
+/ 24/02/2025---Arno Defillet----Aanpassing: Eigenschappen in Savedvalues aanpassen naar blanco strings, en strings met
+'Loading...' naar onMounted verplaatst
+/ 24/02/2025---Arno Defillet----Toevoegen: Overal Typescript toepassen
 /
-/ 22/01/2025 - Arno Defillet
-/ - Toegevoegd: Uitbouw van de structuur van deze view.
-/
-/ 29/01/2025 - Arno Defillet
-/ - Aanpassing: Aanpassen van de edit/save-icoon zodat een div in een input veranderd.
-/ - Aanpassing: Reactieve inputvelden: wanneer je op de edit icon klikt, veranderd div element naar input element.
-/ Na aanpassing in inputveld > klikken op bewaar icoon, zal dit getoond worden in de paarse kader erboven
 /
 / To do:
-/ - API integratie
-/ -
+/ - Bewerk en save icons nog aan te passen ipv images
 /
 / Opmerkingen:
 / ------------
@@ -35,121 +43,224 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import EditIcon from '@/components/EditIcon.vue';
+import StyledButton from '@/components/StyledButton.vue';
+import StyledInputByType from '@/components/StyledInputByType.vue';
+import { userSettings } from '@/services/userSettings.service';
+import { EditingState, SavedValues } from '@/components/models';
 
-const savedValues = ref({
-  firstname: "Arno",
-  lastname: "Defillet",
-  city: "Tienen",
-  language: "Dutch"
-});
+const { userInfo, updateUserInfo, getUserInfo } = userSettings();
 
-const tempValues = ref({ ...savedValues.value });
-
-const isEditing = ref({
+const isEditing = ref<EditingState>({
   firstname: false,
   lastname: false,
-  city: false,
+  email: false,
   language: false
 });
 
+const savedValues = ref<SavedValues>({
+  username: '',
+  firstname: '',
+  lastname: '',
+  email: '',
+  language: ''
+});
+
+const tempValues = ref<SavedValues>({ ...savedValues.value });
+
+onMounted(async () => {
+  savedValues.value.username = 'Loading...';
+  savedValues.value.firstname = 'Loading...';
+  savedValues.value.lastname = 'Loading...';
+  savedValues.value.email = 'Loading...';
+  savedValues.value.language = 'Loading...';
+
+  await getUserInfo();
+
+  if (userInfo.value) {
+    savedValues.value = {
+      username: userInfo.value.username,
+      firstname: userInfo.value.firstName,
+      lastname: userInfo.value.lastName,
+      email: userInfo.value.email,
+      language: userInfo.value.defaultLanguage,
+    };
+    tempValues.value = { ...savedValues.value };
+  }
+})
+
+const saveChangesToBackend = async (): Promise<void> => {
+  const updatedData = await updateUserInfo(tempValues.value);
+  if (updatedData) {
+    console.log("Update succesvol!", updatedData);
+  }
+};
+
+const setLanguage = (lang: string) => {
+  tempValues.value.language = lang;
+};
+
 function toggleEdit(field: keyof typeof isEditing.value) {
-  if (isEditing.value[field]) {
-    savedValues.value[field] = tempValues.value[field];
-  } else {
+  if (!isEditing.value[field]) {
     tempValues.value[field] = savedValues.value[field];
   }
-
   isEditing.value[field] = !isEditing.value[field];
+}
+
+function isSaveDisabled(): boolean {
+  // Controleer of er een verschil is tussen tempValues en savedValues
+  let hasChanges = false;
+  for (const key in savedValues.value) {
+    if (savedValues.value[key as keyof SavedValues] !== tempValues.value[key as keyof SavedValues]) {
+      hasChanges = true;
+      break;
+    }
+  }
+
+  // Controleer of er nog velden in bewerkmodus staan
+  const isEditingActive: boolean = Object.values(isEditing.value).includes(true);
+
+  return !hasChanges || isEditingActive;
+}
+
+function saveUserChanges(): void {
+  savedValues.value = { ...tempValues.value };
+  saveChangesToBackend();
 }
 </script>
 
 <template>
-  <div class="user-overview">
-    <img class="user-image" src="../assets/images/cool_duck.png" alt="">
-    <div class="user-info">
-      <div class="user-fullname">{{ savedValues.firstname }} {{ savedValues.lastname }}</div>
-      <div id="userId">My userID: ...</div>
-      <div id="firstname">Firstname: {{ savedValues.firstname }}</div>
-      <div id="lastname">Lastname: {{ savedValues.lastname }}</div>
-      <div id="city">City: {{ savedValues.city }}</div>
-      <div id="language">Language: {{ savedValues.language }}</div>
-    </div>
-  </div>
-
-  <div class="field-container-wrapper">
-    <div class="input-title">First name: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.firstname" class="text-field">{{ savedValues.firstname }}</div>
-      <input v-else v-model="tempValues.firstname" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
-    </div>
-
-    <div class="input-title">Last name: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.lastname" class="text-field">{{ savedValues.lastname }}</div>
-      <input v-else v-model="tempValues.lastname" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
-    </div>
-
-    <div class="input-title">City: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.city" class="text-field">{{ savedValues.city }}</div>
-      <input v-else v-model="tempValues.city" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.city" @toggle-edit="toggleEdit('city')" />
+  <div class="body">
+    <div class="user-overview">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <img src="../assets/images/cool_duck.png" class="user-image" alt="User_image">
+          </div>
+          <div class="col">
+            <h2 class="user-fullname">{{ savedValues.username }}</h2>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <!-- <p>UserID</p> -->
+            <p>Firstname</p>
+            <p>Lastname</p>
+            <p>Email</p>
+            <p>Language</p>
+          </div>
+          <div class="col">
+            <!-- <p id="userId">12345</p> -->
+            <p id="firstname">{{ savedValues.firstname }}</p>
+            <p id="lastname">{{ savedValues.lastname }}</p>
+            <p id="email">{{ savedValues.email }}</p>
+            <p id="language">{{ savedValues.language }}</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="input-title">Language: </div>
-    <div class="field-container">
-      <div v-if="!isEditing.language" class="text-field">{{ savedValues.language }}</div>
-      <input v-else v-model="tempValues.language" class="edit-input" type="text" />
-      <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+    <div class="button-wrapper">
+      <StyledButton v-if="!isSaveDisabled()" type="save" @click="saveUserChanges">Save</StyledButton>
+    </div>
+    <div class="field-container-wrapper">
+      <h2 class="input-title">First name: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.firstname" class="text-field">{{ tempValues.firstname }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.firstname"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
+      </div>
+      <h2 class="input-title">Last name: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.lastname" class="text-field">{{ tempValues.lastname }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.lastname"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
+      </div>
+      <h2 class="input-title">Email: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.email" class="text-field">{{ tempValues.email }}</div>
+        <StyledInputByType input-type="text" v-else v-model="tempValues.email"></StyledInputByType>
+        <EditIcon :isEditing="isEditing.email" @toggle-edit="toggleEdit('email')" />
+      </div>
+      <h2 class="input-title">Language: </h2>
+      <div class="field-container">
+        <div v-if="!isEditing.language" class="text-field">{{ tempValues.language }}</div>
+        <div v-else class="language-selector">
+          <button :class="{ active: tempValues.language === 'Nederlands' }" @click="setLanguage('Nederlands')">
+            Nederlands
+          </button>
+          <button :class="{ active: tempValues.language === 'Engels' }" @click="setLanguage('Engels')">
+            English
+          </button>
+        </div>
+        <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-body {
+.body {
   margin: 1rem 2rem 1rem 2rem;
 }
 
 .user-overview {
   display: flex;
-  border: 2px solid var(--primary-purple);
+  border: none;
+  box-shadow: 5px 5px 30px var(--primary-purple);
+  ;
   border-radius: 10px;
   background-color: var(--tertiary-purple);
   padding: 0.5rem;
-  text-align: center;
   margin-bottom: 1rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.row {
+  display: flex;
+}
+
+/* .row:last-child {
+  border-top: 1px solid black;
+} */
+
+.col {
+  padding: 10px;
+}
+
+.col:first-child {
+  width: 7rem;
+  /* border-right: 1px solid black; */
 }
 
 .user-image {
   border-radius: 100%;
-  width: 20%;
-  margin: 2rem 2rem 2rem 1rem;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
+  width: 50%;
 }
 
 .user-fullname {
   text-decoration: underline;
-  padding-bottom: 1rem;
+  font-weight: 700;
 }
 
 .input-title {
   margin-bottom: 0rem;
+  font-weight: bolder;
+  text-decoration: underline;
+  margin-left: 0.5rem;
 }
 
 .field-container-wrapper {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 3rem;
 }
 
 .field-container {
@@ -157,15 +268,44 @@ body {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--primary-purple);
 }
 
 .text-field {
   display: flex;
-  border: 1px solid var(--secundary-purple);
-  border-radius: 5px;
   width: 80%;
   align-items: center;
   padding-left: 1rem;
+}
 
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.language-selector {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.language-selector button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: var(--primary-white);
+  transition: background 0.3s;
+}
+
+.language-selector button.active {
+  background: var(--secundary-purple);
+  color: white;
+  font-weight: bold;
+}
+
+.language-selector button:not(.active):hover {
+  background: var(--primary-white);
 }
 </style>

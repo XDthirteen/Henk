@@ -41,20 +41,27 @@ const router = createRouter({
         },
 
         {
+          path: '/createGroup',
+          name: 'createGroup',
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/views/CreateGroup.vue'),
+        },
+
+        {
           path: '/invites',
           name: 'invites',
           beforeEnter: [authenticationGuard],
           component: () => import('@/components/GroupInvites.vue'),
         },
         {
-          path: "/signin",
-          name: "signin",
-          component: () => import('@/views/RegisterView.vue')
+          path: '/signin',
+          name: 'signin',
+          component: () => import('@/views/RegisterView.vue'),
         },
         {
-          path: "/weather",
-          name: "weather",
-          component: () => import('@/views/WeatherView.vue')
+          path: '/weather',
+          name: 'weather',
+          component: () => import('@/views/WeatherView.vue'),
         },
         {
           path: '/myAccount',
@@ -79,6 +86,13 @@ const router = createRouter({
           name: 'calendar',
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/CalendarView.vue'),
+          children: [
+            {
+              path: '/calendar/events',
+              name: 'calenderEvents',
+              component: () => import('@/views/CalendarEventView.vue'),
+            },
+          ],
         },
       ],
     },
