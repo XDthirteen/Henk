@@ -51,6 +51,7 @@ const submitEvent = () => {
 
 </script>
 
+//TODO: Time + button for whole day
 
 <template>
 <div v-if="isVisible" class="calendar-events" @click.self="closeModal">
@@ -65,7 +66,7 @@ const submitEvent = () => {
     </div>
 
   <div>
-    <label for="eventGroupId">Time event</label>
+    <label for="eventGroupId">Group</label>
     <select v-model="event.groupId" id="eventGroupId" type="" required>
       <option disabled value="">Please select one</option>
       <option v-for="group in groups" :value="group.id" :key="group.id">
@@ -74,7 +75,7 @@ const submitEvent = () => {
     </select>
   </div>
 
-  <div>
+ <div>
     <label for="eventStart">Time event</label>
     <input v-model="event.start" id="eventStart" type="date" required>
   </div>
@@ -82,6 +83,11 @@ const submitEvent = () => {
   <div>
     <label for="eventEnd">Time event</label>
     <input v-model="event.end" id="eventEnd" type="date" required>
+  </div>
+
+  <div>
+    <label for="eventTime">Time event</label>
+    <input v-model="event.time" id="eventTime" type="time" required>
   </div>
 
   <div>
