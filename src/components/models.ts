@@ -5,12 +5,24 @@ export interface EditingState {
   language: boolean;
 }
 
+export interface ParamEditingState {
+  city: boolean,
+  app: boolean,
+  theme: boolean
+}
+
 export interface SavedValues {
   username: string,
   firstname: string,
   lastname: string,
   email: string,
   language: string
+}
+
+export interface ParamSavedValues {
+  city: string,
+  app: string,
+  theme: string
 }
 
 export interface UserData {
@@ -20,6 +32,12 @@ export interface UserData {
   firstName: string;
   lastName: string;
   defaultLanguage: string;
+}
+
+export interface UserParamData {
+  city: string,
+  app: string,
+  theme: string
 }
 
 export interface CalendarDay {

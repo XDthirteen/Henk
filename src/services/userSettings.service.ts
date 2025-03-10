@@ -1,4 +1,4 @@
-import type { UserData } from "@/components/models";
+import type { UserData, UserParamData } from "@/components/models";
 import axios from "axios";
 import { ref } from "vue";
 
@@ -60,10 +60,62 @@ const userSettings = () => {
     }
   }
 
+  const userParam = ref<UserParamData | null>(null);
+
+  const getUserParam = async () => {
+    try {
+      const response = await axios.get<UserParamData>("/api/users/preferences", {
+        headers: {
+          Authorization: userToken
+        }
+      });
+
+      const backendUserInfo = response.data;
+
+      userParam.value = {
+        city: backendUserInfo.city,
+        app: backendUserInfo.app,
+        theme: backendUserInfo.theme
+      };
+
+      return userParam.value;
+    } catch (error) {
+      console.error('Error fetching user parameters: ', error);
+      return null;
+    }
+  }
+
+  const updateUserParam = async (tempValues: {
+    city: string;
+    app: string;
+    theme: string
+  }) => {
+    try {
+      const response = await axios.put("/api/users/preferences", {
+        city: tempValues.city,
+        app: tempValues.app,
+        theme: tempValues.theme
+      }, {
+        headers: {
+          Authorization: userToken,
+        }
+      });
+      console.log("User parameters updated successfully:", response.data);
+      return response.data;
+
+    } catch (error) {
+      console.error('Could not update user parameters : ', error);
+      return null;
+    }
+  }
+
   return {
     getUserInfo,
     userInfo,
-    updateUserInfo
+    updateUserInfo,
+    getUserParam,
+    userParam,
+    updateUserParam
   }
 };
 

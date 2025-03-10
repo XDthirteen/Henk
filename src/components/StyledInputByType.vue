@@ -55,6 +55,7 @@ const handleInput = (event: Event) => {
 
 <style scoped>
 .input {
+  width: 13rem;
   border: 2px solid var(--primary-blue);
   border-radius: 0.5rem;
   padding: 0.5rem;
