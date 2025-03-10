@@ -7,7 +7,7 @@ export interface EditingState {
 
 export interface ParamEditingState {
   city: boolean,
-  defaultApp: boolean,
+  app: boolean,
   theme: boolean
 }
 
@@ -21,7 +21,7 @@ export interface SavedValues {
 
 export interface ParamSavedValues {
   city: string,
-  defaultApp: string,
+  app: string,
   theme: string
 }
 

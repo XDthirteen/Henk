@@ -19,7 +19,6 @@
 / 26/02/2025---Arno Defillet----Volledige uitwerking van pagina (gebaseerd op AccountUserSettings)
 /
 / To do:
-/ - Edit icon wordt niet veranderd naar save icon on click
 / -
 /
 / Opmerkingen:
@@ -32,8 +31,8 @@ import { onMounted, ref } from 'vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import StyledDropdown from '@/components/StyledDropdown.vue';
 import StyledButton from '@/components/StyledButton.vue';
-import { ParamSavedValues } from '@/components/models';
-import EditIcon from '@/components/EditIcon.vue';
+import type { ParamSavedValues, ParamEditingState } from '@/components/models';
+import FontAwesomeIcon from '@/components/FontAwasomeIcon.vue';
 import { userSettings } from '@/services/userSettings.service';
 
 const { getUserParam, userParam, updateUserParam } = userSettings();
@@ -51,7 +50,7 @@ const paramSavedValues = ref<ParamSavedValues>({
   theme: ''
 });
 
-const paramTempValues = ref<paramSavedValues>({ ...paramSavedValues.value });
+const paramTempValues = ref<ParamSavedValues>({ ...paramSavedValues.value });
 
 onMounted(async () => {
   await getUserParam();
@@ -70,7 +69,10 @@ function isSaveDisabled(): boolean {
   // Controleer of er een verschil is tussen paramparamTempValues en savedValues
   let hasChanges = false;
   for (const key in paramSavedValues.value) {
-    if (paramSavedValues.value[key as keyof paramSavedValues] !== paramTempValues.value[key as keyof paramSavedValues]) {
+    if (
+      paramSavedValues.value[key as keyof ParamSavedValues] !==
+      paramTempValues.value[key as keyof ParamSavedValues]
+    ) {
       hasChanges = true;
       break;
     }
@@ -116,7 +118,7 @@ function saveParamChanges(): void {
       <div class="field-container">
         <div v-if="!isEditingParam.city" class="text-field">{{ paramTempValues.city }}</div>
         <StyledInputByType input-type="text" v-else v-model="paramTempValues.city"></StyledInputByType>
-        <EditIcon :isEditingParam="isEditingParam.city" @toggle-edit="toggleEdit('city')" />
+        <FontAwesomeIcon :isEditing="isEditingParam.city" @toggle-edit="toggleEdit('city')" />
       </div>
       <h2 class="input-title">Default app on Home:</h2>
       <div class="field-container">
@@ -127,7 +129,7 @@ function saveParamChanges(): void {
           { value: 'translator', text: 'Translator' },
           { value: 'calendar', text: 'Calendar' }
         ]" />
-        <EditIcon :isEditingParam="isEditingParam.app" @toggle-edit="toggleEdit('app')" />
+        <FontAwesomeIcon :isEditing="isEditingParam.app" @toggle-edit="toggleEdit('app')" />
       </div>
       <h2 class="input-title">Default theme:</h2>
       <div class="field-container">
@@ -140,10 +142,10 @@ function saveParamChanges(): void {
             Dark
           </button>
         </div>
-        <EditIcon :isEditingParam="isEditingParam.language" @toggle-edit="toggleEdit('theme')" />
+        <!-- <EditIcon :isEditingParam="isEditingParam.theme" @toggle-edit="toggleEdit('theme')" /> -->
+        <FontAwesomeIcon :isEditing="isEditingParam.theme" @toggle-edit="toggleEdit('theme')" />
+        <!--Nog aan te passen zoals EditIcon-->
       </div>
-
-
     </div>
   </div>
 </template>
