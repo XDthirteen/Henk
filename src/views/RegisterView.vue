@@ -53,7 +53,7 @@ const selectedLanguage = ref<{ default: string }>({
 
 const toggleLanguage = () => {
   selectedLanguage.value.default = selectedLanguage.value.default === 'en' ? 'nl' : 'en';
-  userData.defaultLanguage = selectedLanguage.value.default;  // Update userData defaultLanguage
+  userData.defaultLanguage = selectedLanguage.value.default;
   console.log('Selected language:', selectedLanguage.value.default);
 };
 
@@ -63,7 +63,7 @@ const userData = reactive<UserData>({
   password: '',
   firstName: '',
   lastName: '',
-  defaultLanguage: 'en', // standaard waarde voor radio buttons
+  defaultLanguage: 'en',
 });
 
 const confirmPassword = ref<string>('');
@@ -136,11 +136,6 @@ const createUser = async () => {
         </div>
       </div>
     </div>
-
-    <!-- <label v-for="(language, index) in languages" :key="index">
-      <input type="radio" :value="language.code" v-model="userData.defaultLanguage" />
-      {{ language.label }}
-    </label> -->
   </form>
   <StyledButton :type="buttonType" @click="createUser()">Create account</StyledButton>
   <div v-if="correctRegisterPasswords">User succesfull created</div>
