@@ -32,13 +32,13 @@ import StyledInputByType from '@/components/StyledInputByType.vue';
 import StyledDropdown from '@/components/StyledDropdown.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import type { ParamSavedValues, ParamEditingState } from '@/components/models';
-import FontAwesomeIcon from '@/components/FontAwasomeIcon.vue';
+import FontAwesomeIconToggler from '@/components/FontAwasomeIconToggler.vue';
 import { userSettings } from '@/services/userSettings.service';
 
 const { getUserParam, userParam, updateUserParam } = userSettings();
 
 
-const isEditingParam = ref<ParamEditingState>({
+const iconTogglerParam = ref<ParamEditingState>({
   city: false,
   app: false,
   theme: false
@@ -79,20 +79,20 @@ function isSaveDisabled(): boolean {
   }
 
   // Controleer of er nog velden in bewerkmodus staan
-  const isEditingParamActive: boolean = Object.values(isEditingParam.value).includes(true);
+  const iconTogglerParamActive: boolean = Object.values(iconTogglerParam.value).includes(true);
 
-  return !hasChanges || isEditingParamActive;
+  return !hasChanges || iconTogglerParamActive;
 }
 
 const setTheme = (theme: string) => {
   paramTempValues.value.theme = theme;
 };
 
-function toggleEdit(field: keyof typeof isEditingParam.value) {
-  if (!isEditingParam.value[field]) {
+function toggleEdit(field: keyof typeof iconTogglerParam.value) {
+  if (!iconTogglerParam.value[field]) {
     paramTempValues.value[field] = paramSavedValues.value[field];
   }
-  isEditingParam.value[field] = !isEditingParam.value[field];
+  iconTogglerParam.value[field] = !iconTogglerParam.value[field];
 }
 
 const saveParamChangesToBackend = async (): Promise<void> => {
@@ -116,24 +116,26 @@ function saveParamChanges(): void {
     <div class="field-container-wrapper">
       <h2 class="input-title">Default city for 'Weather app':</h2>
       <div class="field-container">
-        <div v-if="!isEditingParam.city" class="text-field">{{ paramTempValues.city }}</div>
+        <div v-if="!iconTogglerParam.city" class="text-field">{{ paramTempValues.city }}</div>
         <StyledInputByType input-type="text" v-else v-model="paramTempValues.city"></StyledInputByType>
-        <FontAwesomeIcon :isEditing="isEditingParam.city" @toggle-edit="toggleEdit('city')" />
+        <FontAwesomeIconToggler :iconToggler="iconTogglerParam.city" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('city')" />
       </div>
       <h2 class="input-title">Default app on Home:</h2>
       <div class="field-container">
-        <div v-if="!isEditingParam.app" class="text-field">{{ paramTempValues.app }}</div>
+        <div v-if="!iconTogglerParam.app" class="text-field">{{ paramTempValues.app }}</div>
         <StyledDropdown v-else v-model="paramTempValues.app" :options="[
           { value: 'weather', text: 'Weather' },
           { value: 'myTasks', text: 'My Tasks' },
           { value: 'translator', text: 'Translator' },
           { value: 'calendar', text: 'Calendar' }
         ]" />
-        <FontAwesomeIcon :isEditing="isEditingParam.app" @toggle-edit="toggleEdit('app')" />
+        <FontAwesomeIconToggler :iconToggler="iconTogglerParam.app" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('app')" />
       </div>
       <h2 class="input-title">Default theme:</h2>
       <div class="field-container">
-        <div v-if="!isEditingParam.theme" class="text-field">{{ paramTempValues.theme }}</div>
+        <div v-if="!iconTogglerParam.theme" class="text-field">{{ paramTempValues.theme }}</div>
         <div v-else class="theme-selector">
           <button :class="{ active: paramTempValues.theme === 'Light' }" @click="setTheme('Light')">
             Light
@@ -142,8 +144,9 @@ function saveParamChanges(): void {
             Dark
           </button>
         </div>
-        <!-- <EditIcon :isEditingParam="isEditingParam.theme" @toggle-edit="toggleEdit('theme')" /> -->
-        <FontAwesomeIcon :isEditing="isEditingParam.theme" @toggle-edit="toggleEdit('theme')" />
+        <!-- <EditIcon :iconTogglerParam="iconTogglerParam.theme" @toggle-edit="toggleEdit('theme')" /> -->
+        <FontAwesomeIconToggler :iconToggler="iconTogglerParam.theme" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('theme')" />
         <!--Nog aan te passen zoals EditIcon-->
       </div>
     </div>

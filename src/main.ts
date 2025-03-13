@@ -6,7 +6,21 @@ import router from './router'
 import './assets/house-style.css'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faCalendarDays, faHouse, faLanguage, faListCheck, faPooStorm, faRightFromBracket, faUser, faPenToSquare, faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCalendarDays,
+  faHouse,
+  faLanguage,
+  faListCheck,
+  faPooStorm,
+  faRightFromBracket,
+  faUser,
+  faPenToSquare,
+  faFloppyDisk,
+  faCircle,
+  faCheckCircle,
+  faCircleNotch
+} from '@fortawesome/free-solid-svg-icons'
+
 // Search icons on https://fontawesome.com/icons
 // when class is fa-house, add faHouse to library.add
 // in template gebruik je dit zo:
@@ -23,7 +37,10 @@ library.add(
   faLanguage,
   faRightFromBracket,
   faPenToSquare,
-  faFloppyDisk
+  faFloppyDisk,
+  faCircle,
+  faCheckCircle,
+  faCircleNotch
 );
 
 const app = createApp(App)

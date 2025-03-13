@@ -34,14 +34,14 @@
 import { defineProps } from 'vue';
 
 defineProps({
-  isEditing: Boolean
+  iconToggler: Boolean
 });
 
 </script>
 
 <template>
-  <img class="edit-image" :src="isEditing ? '/images/save-icon.png' : '/images/edit-icon.png'"
-    :alt="isEditing ? 'save-icon' : 'edit-icon'" @click="$emit('toggle-edit')">
+  <img class="edit-image" :src="iconToggler ? '/images/save-icon.png' : '/images/edit-icon.png'"
+    :alt="iconToggler ? 'save-icon' : 'edit-icon'" @click="$emit('toggle-edit')">
 </template>
 
 <style scoped>

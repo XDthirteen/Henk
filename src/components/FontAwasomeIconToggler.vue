@@ -14,6 +14,7 @@
 / Changelog:
 / ----------
 / 15/01/2025---Arno Defillet----Start van de component
+/ 13/03/2025---Arno Defillet----Aanpassing: harcoded iconen in template aangepast naar variabelen in 'defineProps'
 /
 / To do:
 / -
@@ -28,14 +29,17 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
 
-defineProps<{ isEditing: boolean }>();
-const emit = defineEmits(['toggle-edit']);
-
+defineProps<{
+  iconToggler: boolean,
+  icon1: string,
+  icon2: string
+}>();
+const emit = defineEmits(['toggle']);
 </script>
 
 <template>
-  <font-awesome-icon class="icon" :icon="['fas', isEditing ? 'floppy-disk' : 'pen-to-square']"
-    @click="emit('toggle-edit')" /></template>
+  <font-awesome-icon class="icon" :icon="['fas', iconToggler ? icon1 : icon2]" @click="emit('toggle')" />
+</template>
 
 <style scoped>
 .icon {
