@@ -53,7 +53,7 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import CalenderEventView from '@/views/CalendarEventView.vue';
 
 // MODAL POP-UP
-const isVisible = ref(false);
+// const isVisible = ref(false);
 
 
 // TEST DATA
@@ -250,10 +250,10 @@ const onTouchEnd = () => {
 };
 
 // Event button
-const openEventDialogue = () => {
-    isVisible.value=true
-  	console.log("Event button clicked!");
-};
+// const openEventDialogue = () => {
+//     isVisible.value=true
+//   	console.log("Event button clicked!");
+// };
 
 // ? merge set event data and set event lines ?
 // Set event data
@@ -401,12 +401,14 @@ onMounted(() => {
 			</div>
 		</div>
 
-		<button class="add-event-button" @click="openEventDialogue">
+      <router-link to="/calendar/events" custom v-slot="{navigate}">
+		<button class="add-event-button" @click="navigate" role="link">
 			Event Button
 		</button>
+  </router-link>
   </div>
 </div>
-<CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView>
+<!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
 
 </template>
 

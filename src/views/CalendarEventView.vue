@@ -1,15 +1,8 @@
 <script setup lang="ts">
 import{ ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-const props = defineProps<{
-  isVisible: boolean;
-  defaultLocation: string;
-}>();
-
-const emit = defineEmits<{
-  (e: 'close'): void;
-}>();
-
+const router = useRouter()
 const event = ref({
   title: '',
   groupId: '',
@@ -35,18 +28,14 @@ const groups = ref([
   },
 ])
 
-// watch(() => props.defaultLocation, (newLocation) => {
-//   event.value.location = newLocation;
-// });
-
-const closeModal = () => {
-  emit('close');
+const returnToCalendar = () => {
+  router.push({ name: 'calendar' })
 };
 
 const submitEvent = () => {
   console.log('Event Created:', event.value);
   // TODO: call create event from the service as well
-  closeModal();
+  returnToCalendar()
 };
 
 </script>
@@ -54,7 +43,6 @@ const submitEvent = () => {
 //TODO: Time + button for whole day
 
 <template>
-<div v-if="isVisible" class="calendar-events" @click.self="closeModal">
   <div class="events-content">
 
     <h2>Create a new event</h2>
@@ -96,11 +84,10 @@ const submitEvent = () => {
   </div>
 
   <div class="event-buttons">
-    <button type="button" @click="closeModal">Cancel</button>
+    <button type="button" @click="returnToCalendar">Go Back to Calendar</button>
     <button type="submit">Save</button>
   </div>
   </form>
-</div>
 </div>
 </template>
 

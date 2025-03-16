@@ -86,13 +86,11 @@ const router = createRouter({
           name: 'calendar',
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/CalendarView.vue'),
-          children: [
-            {
-              path: '/calendar/events',
-              name: 'calenderEvents',
-              component: () => import('@/views/CalendarEventView.vue'),
-            },
-          ],
+        },
+        {
+          path: '/calendar/events',
+          name: 'calenderEvents',
+          component: () => import('@/views/CalendarEventView.vue'),
         },
       ],
     },
