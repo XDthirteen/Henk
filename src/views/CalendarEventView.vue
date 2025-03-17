@@ -76,17 +76,22 @@ const submitEvent = () => {
 
   <div>
     <label for="eventTime">Time event</label>
-    <input v-model="event.time" id="eventTime" type="time" required>
+    <input v-model="event.time" id="eventTime" type="time">
+  </div>
+
+  <div>
+    <label for="eventAllDay">All day</label>
+    <input type="checkbox">
   </div>
 
   <div>
     <label for="eventDescription">Notes</label>
-    <textarea v-model="event.description" id="eventDescription" placeholder="Add notes..."></textarea>
+    <textarea v-model="event.description" id="eventDescription" placeholder="Add notes..." rows="4" cols="30"></textarea>
   </div>
 
   <div class="event-buttons">
+    <button type="submit" onclick="alert('Event added')">Save</button>
     <button type="button" @click="returnToCalendar">Go Back to Calendar</button>
-    <button type="submit">Save</button>
   </div>
   </form>
 </div>
@@ -99,7 +104,6 @@ const submitEvent = () => {
   justify-content: center;
   align-items: center;
   z-index: 4;
-  height: 100vh;
   width: 100%;
 }
 
@@ -113,8 +117,6 @@ const submitEvent = () => {
 }
 
 .event-buttons {
-  display: flex;
-  justify-content: space-between;
   margin-top: 10px;
 }
 
@@ -122,18 +124,25 @@ button {
   padding: 8px 16px;
   border: none;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
 }
 
 button[type='submit'] {
   background-color: #453d83;
   color: white;
+  width: 160px;
 }
 
 button[type='button'] {
   background-color: #f44336;
   color: white;
+  display: flex;
+  width: 160px;
 }
+
 label {
-  padding-right: 5px;
+  padding-right: 10px;
+  display: flex;
 }
 </style>
