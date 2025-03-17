@@ -43,6 +43,7 @@ const submitEvent = () => {
 //TODO: Time + button for whole day
 
 <template>
+  <div class="calendar-events">
   <div class="events-content">
 
     <h2>Create a new event</h2>
@@ -64,12 +65,12 @@ const submitEvent = () => {
   </div>
 
  <div>
-    <label for="eventStart">Time event</label>
+    <label for="eventStart">Start date</label>
     <input v-model="event.start" id="eventStart" type="date" required>
   </div>
 
   <div>
-    <label for="eventEnd">Time event</label>
+    <label for="eventEnd">End date</label>
     <input v-model="event.end" id="eventEnd" type="date" required>
   </div>
 
@@ -79,7 +80,7 @@ const submitEvent = () => {
   </div>
 
   <div>
-    <label for="eventDescription">Note event</label>
+    <label for="eventDescription">Notes</label>
     <textarea v-model="event.description" id="eventDescription" placeholder="Add notes..."></textarea>
   </div>
 
@@ -89,20 +90,17 @@ const submitEvent = () => {
   </div>
   </form>
 </div>
+</div>
 </template>
 
 <style scoped>
 .calendar-events {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 4;
+  height: 100vh;
+  width: 100%;
 }
 
 .events-content {
@@ -110,6 +108,8 @@ const submitEvent = () => {
   padding: 20px;
   border-radius: 8px;
   width: 350px;
+  background-color: #5f55af;
+  color: #e9f3fe;
 }
 
 .event-buttons {
