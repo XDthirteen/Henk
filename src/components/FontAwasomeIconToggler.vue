@@ -31,14 +31,14 @@ import { defineProps, defineEmits } from 'vue';
 
 defineProps<{
   iconToggler: boolean,
-  icon1: string,
-  icon2: string
+  iconDone: string,
+  iconNotDone: string
 }>();
 const emit = defineEmits(['toggle']);
 </script>
 
 <template>
-  <font-awesome-icon class="icon" :icon="['fas', iconToggler ? icon1 : icon2]" @click="emit('toggle')" />
+  <font-awesome-icon class="icon" :icon="['fas', iconToggler ? iconDone : iconNotDone]" @click="emit('toggle')" />
 </template>
 
 <style scoped>

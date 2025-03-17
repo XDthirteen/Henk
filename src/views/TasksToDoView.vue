@@ -43,8 +43,8 @@ const toggleCompleted = () => {
 <template>
   <div>
     <transition name="scale" mode="out-in">
-      <FontAwesomeIconToggler :key="completed ? 'iconNotDone' : 'iconDone'" :iconToggler="completed" :icon1="iconDone"
-        :icon2="iconNotDone" @toggle="toggleCompleted" />
+      <FontAwesomeIconToggler :key="completed ? 'iconNotDone' : 'iconDone'" :iconToggler="completed"
+        :iconDone="iconDone" :iconNotDone="iconNotDone" @toggle="toggleCompleted" />
     </transition>
   </div>
 </template>
