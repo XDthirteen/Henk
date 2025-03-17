@@ -1,10 +1,38 @@
+/*#####################################
+/
+/ # TaskToDoView.vue
+/ # ==================
+/ # Beschrijving:
+/ # ------------
+/ # Een view om uw openstaande taken te controleren
+/
+/ # Auteur: Arno Defillet
+/ # Datum aangemaakt: 13/03/2025
+/
+#################
+/
+/ Changelog:
+/ ----------
+/ 13/03/2025---Arno Defillet----Start van de view + toevoegen van icon toggler
+/ 17/03/2025---Arno Defillet----Aanpassing van icoon variabelen
+/
+/ To do:
+/ -
+/ -
+/
+/ Opmerkingen:
+/ ------------
+/ Enige opmerkingen?
+/
+#####################################*/
+
 <script setup lang="ts">
 import { ref } from "vue";
 import FontAwesomeIconToggler from "@/components/FontAwasomeIconToggler.vue";
 
 const completed = ref(false);
-const icon1 = 'check-circle';
-const icon2 = 'circle-notch';
+const iconDone = 'check-circle';
+const iconNotDone = 'circle-notch';
 
 const toggleCompleted = () => {
   completed.value = !completed.value;
@@ -15,8 +43,8 @@ const toggleCompleted = () => {
 <template>
   <div>
     <transition name="scale" mode="out-in">
-      <FontAwesomeIconToggler :key="completed ? 'icon2' : 'icon1'" :iconToggler="completed" :icon1="icon1"
-        :icon2="icon2" @toggle="toggleCompleted" />
+      <FontAwesomeIconToggler :key="completed ? 'iconNotDone' : 'iconDone'" :iconToggler="completed" :icon1="iconDone"
+        :icon2="iconNotDone" @toggle="toggleCompleted" />
     </transition>
   </div>
 </template>
