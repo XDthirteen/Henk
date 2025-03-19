@@ -250,7 +250,7 @@ const onTouchEnd = () => {
 };
 
 // Event button
-// const openEventDialogue = () => {
+// const openEventDialogue = () => {       // Modal visibility
 //     isVisible.value=true
 //   	console.log("Event button clicked!");
 // };
@@ -400,7 +400,7 @@ onMounted(() => {
 				<p v-else>No events for this date... yet :P</p>
 			</div>
 		</div>
-
+      <!-- <button class="add-event-button" @click="openEventDialogue"> -->
       <router-link to="/calendar/events" custom v-slot="{navigate}">
 		<button class="add-event-button" @click="navigate" role="link">
 			Event Button
