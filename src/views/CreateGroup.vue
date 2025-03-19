@@ -13,16 +13,13 @@
 			</div>
 		</header>
 
-		<!-- Navigatiebalk -->
 		<nav class="navigation-bar">
-			<button @click="showAddGroupForm">➕ Add Group</button>
+			<button @click="openAddGroupPopup">➕ Add Group</button>
 			<button @click="toggleInviteMode">📨 Invite Members</button>
-			<button @click="leaveGroup">🚪 Leave Group</button>
+			<button @click="toggleLeaveMode">🚪 Leave Group</button>
 		</nav>
 
-		<!-- Groepen weergave -->
 		<div class="group-container">
-			<!-- Me Group (Navigatie naar persoonlijke agenda) -->
 			<div class="main-group" @click="navigateToAgenda('me')">
 				<img :src="groupStore.meGroup?.icon || defaultIcon" alt="Me" />
 				<span>{{ groupStore.meGroup?.name || 'My Agenda' }}</span>
@@ -33,8 +30,17 @@
 					v-for="group in groups"
 					:key="group.id"
 					class="group-item"
-					:class="{ selectable: inviteMode, selected: selectedGroup?.id === group.id }"
-					@click="inviteMode ? selectGroup(group) : navigateToAgenda(group.id)"
+					:class="{
+						selectable: inviteMode || leaveMode,
+						selected: selectedGroup?.id === group.id,
+					}"
+					@click="
+						inviteMode
+							? selectGroupForInvite(group)
+							: leaveMode
+								? selectGroupForLeave(group)
+								: navigateToAgenda(group.id)
+					"
 				>
 					<img :src="group.icon || defaultIcon" :alt="group.name" />
 					<span>{{ group.name }}</span>
@@ -42,9 +48,8 @@
 			</div>
 		</div>
 
-		<!-- Invite formulier -->
-		<div v-if="selectedGroup" class="invite-form">
-			<h3>Invite to: {{ selectedGroup.name }}</h3>
+		<div v-if="showInvitePopup" class="popup">
+			<h3>Invite to: {{ selectedGroup?.name }}</h3>
 			<input
 				type="text"
 				v-model="inviteInput"
@@ -53,20 +58,29 @@
 			/>
 			<button class="send-btn" @click="sendInvite">Send Invite</button>
 			<button class="cancel-btn" @click="cancelInvite">Cancel</button>
+
+			<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 		</div>
 
-		<!-- Succesbericht -->
-		<p v-if="inviteSent" class="invite-sent-message">
-			Invite Sent to {{ selectedGroup?.name }} ✅
-		</p>
+		<div v-if="showLeavePopup" class="popup">
+			<h3>Wil je {{ selectedGroup?.name }} verlaten?</h3>
+			<button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
+			<button class="cancel-btn" @click="cancelLeave">Annuleer</button>
 
-		<!-- Groep Toevoegen Formulier -->
-		<div v-if="isAddGroupFormOpen" class="add-group-form">
-			<!-- Voeg hier je formulier content toe -->
-			<h2>Add New Group</h2>
-			<input v-model="newGroupName" placeholder="Group Name" class="input-field" />
-			<button @click="addGroup">Add Group</button>
-			<button @click="closeAddGroupForm">Cancel</button>
+			<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+		</div>
+
+		<div v-if="showAddGroupPopup" class="popup">
+			<h3>Nieuwe Groep Aanmaken</h3>
+			<input v-model="newGroupName" placeholder="Groepsnaam" class="input-field" />
+			<select v-model="selectedGroupIcon" class="input-field">
+				<option disabled value="">Selecteer een icoon</option>
+				<option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
+			</select>
+			<button class="send-btn" @click="addGroup">Groep Toevoegen</button>
+			<button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
+
+			<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 		</div>
 	</div>
 </template>
@@ -76,34 +90,34 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
-import { useGroupStore } from '@/stores/groupStore' // ✅ Import store
+import { useGroupStore } from '@/stores/groupStore'
 
-/* ✅ TypeScript interface voor groepen */
 interface Group {
 	id: string
 	name: string
 	icon: string
 }
 
-/* ✅ API Setup */
 const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
 
-/* ✅ Vue & Router setup */
 const router = useRouter()
 const { getAuthToken, isAuthenticated } = useAuth()
-const groupStore = useGroupStore() // ✅ Gebruik de store voor groepsdata
+const groupStore = useGroupStore()
 
-/* ✅ Reactieve variabelen */
 const groups = ref<Group[]>([])
 const selectedGroup = ref<Group | null>(null)
 const inviteMode = ref(false)
+const leaveMode = ref(false)
 const inviteInput = ref('')
-const inviteSent = ref(false)
-const isAddGroupFormOpen = ref(false) // ✅ Formulier status
-const newGroupName = ref('') // ✅ Voor nieuwe groep naam
+const showInvitePopup = ref(false)
+const showLeavePopup = ref(false)
+const showAddGroupPopup = ref(false)
+const newGroupName = ref('')
+const selectedGroupIcon = ref('')
+const availableIcons = ref(['/images/icon1.png', '/images/icon2.png', '/images/icon3.png'])
+const successMessage = ref('')
 
-/* ✅ Groepen ophalen bij opstarten */
 onMounted(async () => {
 	await fetchGroups()
 })
@@ -120,44 +134,40 @@ const fetchGroups = async () => {
 	}
 }
 
-/* ✅ Ga naar de invites-pagina */
 const navigateToInvites = () => {
 	router.push({ name: 'invites' })
 }
 
-/* ✅ Ga naar een groep of persoonlijke agenda */
 const navigateToAgenda = (groupId: string) => {
 	router.push({ name: 'agenda', params: { id: groupId } })
 }
 
-/* ✅ Invite Mode activeren */
 const toggleInviteMode = () => {
 	inviteMode.value = !inviteMode.value
-	selectedGroup.value = null
-	inviteInput.value = ''
+	leaveMode.value = false
+	showInvitePopup.value = false
+	showLeavePopup.value = false
 }
 
-/* ✅ Selecteer een groep voor uitnodigingen */
-const selectGroup = (group: Group) => {
+const toggleLeaveMode = () => {
+	leaveMode.value = !leaveMode.value
+	inviteMode.value = false
+	showInvitePopup.value = false
+	showLeavePopup.value = false
+}
+
+const selectGroupForInvite = (group: Group) => {
 	selectedGroup.value = group
+	showInvitePopup.value = true
 }
 
-/* ✅ Nodig een gebruiker uit */
+const selectGroupForLeave = (group: Group) => {
+	selectedGroup.value = group
+	showLeavePopup.value = true
+}
+
 const sendInvite = async () => {
-	if (!inviteInput.value.trim()) {
-		alert('Please enter a valid User ID or Email.')
-		return
-	}
-
-	if (!selectedGroup.value) {
-		alert('Please select a group first.')
-		return
-	}
-
-	if (!isAuthenticated.value) {
-		alert('You are not authenticated. Please log in again.')
-		return
-	}
+	if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
 
 	const token = getAuthToken()
 
@@ -167,12 +177,11 @@ const sendInvite = async () => {
 			{},
 			{ headers: { Authorization: `Bearer ${token}` } },
 		)
+		successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
 
-		inviteSent.value = true
-		inviteMode.value = false // Zet inviteMode uit na versturen
 		setTimeout(() => {
-			inviteSent.value = false
-			cancelInvite()
+			successMessage.value = ''
+			showInvitePopup.value = false
 		}, 2000)
 	} catch (error) {
 		console.error('Error sending invite:', error)
@@ -180,23 +189,14 @@ const sendInvite = async () => {
 	}
 }
 
-/* ✅ Annuleer uitnodiging */
 const cancelInvite = () => {
+	showInvitePopup.value = false
 	selectedGroup.value = null
-	inviteInput.value = ''
+	inviteMode.value = false
 }
 
-/* ✅ Groep verlaten */
-const leaveGroup = async () => {
-	if (!selectedGroup.value) {
-		alert('Please select a group to leave.')
-		return
-	}
-
-	if (!isAuthenticated.value) {
-		alert('You are not authenticated. Please log in again.')
-		return
-	}
+const confirmLeaveGroup = async () => {
+	if (!selectedGroup.value) return
 
 	const token = getAuthToken()
 
@@ -204,26 +204,39 @@ const leaveGroup = async () => {
 		await axios.delete(`${API_URL}/${selectedGroup.value.id}`, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
+		successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
 
-		alert(`Successfully left ${selectedGroup.value.name}`)
-		await fetchGroups() // Refresh groepenlijst
-		cancelInvite()
+		setTimeout(() => {
+			successMessage.value = ''
+			showLeavePopup.value = false
+		}, 2000)
+
+		await fetchGroups()
 	} catch (error) {
 		console.error('Error leaving group:', error)
 		alert('Failed to leave group.')
 	}
 }
 
-/* ✅ Groep toevoegen formulier openen */
-const showAddGroupForm = () => {
-	console.log('Button clicked, opening form')
-	isAddGroupFormOpen.value = true
+const cancelLeave = () => {
+	showLeavePopup.value = false
+	selectedGroup.value = null
+	leaveMode.value = false
 }
 
-/* ✅ Groep toevoegen */
+const openAddGroupPopup = () => {
+	showAddGroupPopup.value = true
+}
+
+const closeAddGroupPopup = () => {
+	showAddGroupPopup.value = false
+	newGroupName.value = ''
+	selectedGroupIcon.value = ''
+}
+
 const addGroup = async () => {
-	if (!newGroupName.value.trim()) {
-		alert('Please enter a valid group name.')
+	if (!newGroupName.value.trim() || !selectedGroupIcon.value) {
+		alert('Vul alle velden in.')
 		return
 	}
 
@@ -232,39 +245,40 @@ const addGroup = async () => {
 	try {
 		await axios.post(
 			API_URL,
-			{ name: newGroupName.value },
+			{ name: newGroupName.value, icon: selectedGroupIcon.value },
 			{ headers: { Authorization: `Bearer ${token}` } },
 		)
+		successMessage.value = 'Groep succesvol toegevoegd!'
 
-		alert('Group added successfully!')
-		await fetchGroups() // Refresh groepenlijst
-		closeAddGroupForm()
+		setTimeout(() => {
+			successMessage.value = ''
+			closeAddGroupPopup()
+		}, 2000)
+
+		await fetchGroups()
 	} catch (error) {
 		console.error('Error adding group:', error)
 		alert('Failed to add group.')
 	}
 }
-
-/* ✅ Sluit formulier voor toevoegen van groep */
-const closeAddGroupForm = () => {
-	isAddGroupFormOpen.value = false
-	newGroupName.value = ''
-}
 </script>
 
 <style scoped>
-/* Algemene container */
 .container {
 	text-align: center;
 	padding: 20px;
+	font-family: 'Inter', sans-serif;
+	background: #f9fafb;
+	min-height: 100vh;
 }
 
-/* Header */
 header {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	position: relative;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #e0e0e0;
 }
 
 .header-buttons {
@@ -272,6 +286,127 @@ header {
 	right: 10px;
 	display: flex;
 	align-items: center;
+}
+
+.invite-button {
+	background: none;
+	border: none;
+	cursor: pointer;
+	position: relative;
+}
+
+.invite-badge {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	background-color: #4caf50;
+	color: white;
+	font-size: 14px;
+	font-weight: bold;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navigation-bar {
+	display: flex;
+	justify-content: center;
+	gap: 15px;
+	background: white;
+	padding: 12px;
+	margin: 20px auto;
+	border-radius: 10px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	width: fit-content;
+}
+
+.navigation-bar button {
+	background: #008cba;
+	color: white;
+	border: none;
+	padding: 12px 18px;
+	cursor: pointer;
+	font-size: 14px;
+	border-radius: 6px;
+	transition:
+		background 0.3s ease,
+		transform 0.2s ease;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.navigation-bar button:hover {
+	background: #0078a5;
+	transform: scale(1.05);
+}
+
+.group-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.main-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+}
+
+.main-group img {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.main-group:hover {
+	transform: scale(1.05);
+}
+
+.group-items-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+	gap: 15px;
+	width: 100%;
+	max-width: 600px;
+	margin-top: 10px;
+}
+
+.group-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	background: white;
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.group-item img {
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+.group-item:hover {
+	transform: scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Selecteerbare groepen */
@@ -283,156 +418,81 @@ header {
 
 .selected {
 	border: 3px solid #0078a5;
-	background-color: rgba(0, 120, 165, 0.2);
-}
-
-/* Groep-item wanneer Invite Mode is ingeschakeld */
-.group-item.selectable:hover {
 	background-color: rgba(0, 120, 165, 0.1);
-	border: 2px dashed #0078a5;
 }
 
-.group-item.selected {
-	background-color: rgba(0, 120, 165, 0.2);
-	border: 3px solid #0078a5;
+.popup {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	padding: 25px;
+	border-radius: 12px;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+	width: 320px;
+	text-align: center;
+	z-index: 1000;
 }
 
-.invite-button {
-	background: none;
+.popup h3 {
+	margin-bottom: 15px;
+	color: #333;
+}
+
+.popup button {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
 	border: none;
+	border-radius: 5px;
 	cursor: pointer;
-}
-
-.invite-badge {
-	position: absolute;
-	top: -5px;
-	right: -5px;
-	background-color: green;
-	color: white;
 	font-size: 14px;
 	font-weight: bold;
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 1;
 }
 
-/* 🚀 Nieuwe Navigatiebalk */
-.navigation-bar {
-	display: flex;
-	justify-content: center;
-	gap: 15px;
-	background-color: #f4f4f4;
-	padding: 12px;
-	margin-bottom: 20px;
-	border-radius: 8px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.navigation-bar button {
-	background: #008cba;
-	color: white;
-	border: none;
-	padding: 10px 15px;
-	cursor: pointer;
-	font-size: 14px;
-	border-radius: 5px;
-	transition:
-		background 0.3s,
-		transform 0.2s;
-}
-
-.navigation-bar button:hover {
-	background: #0078a5;
-	transform: scale(1.05);
-}
-
-.group-container {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 15px;
-	justify-content: center;
-	margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-/* Main Group (Me Group) */
-.main-group {
-	display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  cursor: pointer;
-}
-
-.main-group img {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-/* Groep Items */
-.group-items-container {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr); /* Twee iconen per rij voor de andere groepen */
-	gap: 15px;
-	justify-content: center;
-}
-
-/* Groep Item */
-.group-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
-}
-
-.group-item img {
-	width: 70px;
-	height: 70px;
-	border-radius: 50%;
-	object-fit: cover;
-}
-
-
-.invite-form {
-	background: white;
-	padding: 20px;
-	border-radius: 8px;
-	width: 300px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-	text-align: center;
-	margin: 20px auto;
-}
-
-.input-field {
-	width: 100%;
-	padding: 8px;
-	margin-bottom: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-}
-
-.send-btn {
+.confirm-btn {
 	background-color: #4caf50;
 	color: white;
-	border: none;
-	padding: 10px;
-	border-radius: 5px;
-	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.confirm-btn:hover {
+	background-color: #45a049;
 }
 
 .cancel-btn {
 	background-color: #f44336;
 	color: white;
+	transition: background 0.3s ease;
+}
+
+.cancel-btn:hover {
+	background-color: #d32f2f;
+}
+
+.input-field {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	font-size: 14px;
+}
+
+.send-btn {
+	background-color: #008cba;
+	color: white;
 	border: none;
 	padding: 10px;
 	border-radius: 5px;
 	cursor: pointer;
+	margin-top: 10px;
+	transition: background 0.3s ease;
+}
+
+.send-btn:hover {
+	background-color: #0078a5;
 }
 
 .invite-sent-message {
@@ -441,14 +501,60 @@ header {
 	font-weight: bold;
 }
 
-/* 📌 Groep Toevoegen Formulier */
+.success-message {
+	margin-top: 10px;
+	color: #4caf50;
+	font-weight: bold;
+	font-size: 14px;
+}
+
 .add-group-form {
 	background: white;
 	padding: 20px;
-	border-radius: 8px;
-	width: 300px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+	width: 320px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 	text-align: center;
 	margin: 20px auto;
+}
+
+.add-group-form input {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	font-size: 14px;
+}
+
+.add-group-form button {
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.add-group-form button:first-child {
+	background-color: #008cba;
+	color: white;
+	transition: background 0.3s ease;
+}
+
+.add-group-form button:first-child:hover {
+	background-color: #0078a5;
+}
+
+.add-group-form button:last-child {
+	background-color: #f44336;
+	color: white;
+	transition: background 0.3s ease;
+}
+
+.add-group-form button:last-child:hover {
+	background-color: #d32f2f;
 }
 </style>
