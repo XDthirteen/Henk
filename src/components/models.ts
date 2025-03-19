@@ -1,3 +1,7 @@
+///////////////////
+// USER SETTINGS //
+///////////////////
+
 export interface EditingState {
   firstname: boolean;
   lastname: boolean;
@@ -40,6 +44,9 @@ export interface UserParamData {
   theme: string
 }
 
+//////////////
+// CALENDAR //
+//////////////
 export interface CalendarDay {
   day: number
   month: number
@@ -51,7 +58,9 @@ export interface CalendarDay {
   eventLines: string[]
 }
 
-// local weather
+/////////////
+// WEATHER //
+/////////////
 export interface WeatherData {
   name: string;
   sys: {
@@ -69,7 +78,6 @@ export interface WeatherData {
   };
 }
 
-// 4 day forecast
 export interface ForecastData{
   dt_txt: string;
   main:{
@@ -82,4 +90,16 @@ export interface ForecastData{
   wind:{
     speed: number;
   };
+}
+
+///////////
+// TASKS //
+///////////
+
+export interface Task {
+  id?: number,
+  title: string,
+  description: string,
+  dueDate?: string,
+  userId?: number
 }

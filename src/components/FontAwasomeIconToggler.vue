@@ -26,25 +26,38 @@
 /
 #####################################*/
 
-<script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
 
-defineProps<{
-  iconToggler: boolean,
-  iconDone: string,
-  iconNotDone: string
-}>();
-const emit = defineEmits(['toggle']);
+<script setup lang="ts">
+import { ref } from 'vue';
+
+defineProps<{ icon1: string, icon2: string }>();
+
+const iconToggler = ref(false);
+const toggleIcon = () => iconToggler.value = !iconToggler.value;
 </script>
 
 <template>
-  <font-awesome-icon class="icon" :icon="['fas', iconToggler ? iconDone : iconNotDone]" @click="emit('toggle')" />
+  <transition name="scale" mode="out-in">
+    <font-awesome-icon class="icon" :key="iconToggler ? 'icon1' : 'icon2'" :icon="['fas', iconToggler ? icon1 : icon2]"
+      @click="toggleIcon" />
+  </transition>
 </template>
 
 <style scoped>
 .icon {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   margin-bottom: 3px;
+  cursor: pointer;
+}
+
+.scale-enter-active,
+.scale-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.scale-enter,
+.scale-leave-to {
+  transform: scale(0.5);
 }
 </style>
