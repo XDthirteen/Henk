@@ -2,10 +2,10 @@ import type { Task } from "@/components/models";
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
-const userToken = `Bearer ${localStorage.getItem("token")}`;
 
 
 const useTasks = () => {
+  const userToken = `Bearer ${localStorage.getItem("token")}`;
   const tasks = ref<Task[]>([]);
 
   const fetchTasks = async () => {

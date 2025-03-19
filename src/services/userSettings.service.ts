@@ -2,10 +2,8 @@ import type { UserData, UserParamData } from "@/components/models";
 import axios from "axios";
 import { ref } from "vue";
 
-const userToken = `Bearer ${localStorage.getItem("token")}`;
-
-
 const userSettings = () => {
+  const userToken = `Bearer ${localStorage.getItem("token")}`;
   const userInfo = ref<UserData | null>(null);
 
   const getUserInfo = async () => {
