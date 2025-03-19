@@ -35,6 +35,7 @@ const useTasks = () => {
       }
       );
       console.log('Task succesfully created:', response.data);
+      await fetchTasks();
     } catch(error) {
       console.error('Error creating new task: ', error);
       throw error
