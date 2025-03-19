@@ -70,12 +70,17 @@ const submitEvent = () => {
   </div>
 
   <div>
+    <label for="eventTime">Start time</label>
+    <input v-model="event.time" id="eventTime" type="time">
+  </div>
+
+  <div>
     <label for="eventEnd">End date</label>
     <input v-model="event.end" id="eventEnd" type="date" required>
   </div>
 
   <div>
-    <label for="eventTime">Time event</label>
+    <label for="eventTime">End time</label>
     <input v-model="event.time" id="eventTime" type="time">
   </div>
 
