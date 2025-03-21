@@ -29,6 +29,9 @@
 
 <script setup lang="ts">
 import { ref, computed, defineProps } from "vue";
+import { swipe } from '@/services/swipeDetection.service.ts';
+
+const { onTouchStart, onTouchEnd } = swipe();
 
 const props = defineProps({
 	events: {
@@ -47,32 +50,9 @@ const toggleExpand = () => {
   	isExpanded.value = !isExpanded.value;
 };
 
-// Swipe detection
-let touchStartY = 0;
-let touchEndY = 0;
-const onTouchStart = (event: TouchEvent) => {
-  	touchStartY = event.touches[0].clientY;
-};
-
-const onTouchMove = (event: TouchEvent) => {
-  	touchEndY = event.touches[0].clientY;
-};
-
-const onTouchEnd = () => {
-  	// Swipe up
-  	if (touchStartY - touchEndY > 50) {
-    	isExpanded.value = true;
-  	} 
-	// Swipe down
-	else if (touchEndY - touchStartY > 50) {
-    	isExpanded.value = false;
-  	}
-};
-
 // Selected date event data
 const getEventsForSelectedDate = computed(() => {
 	if (props.selectedDate?.events) {
-		console.log('here', props.selectedDate)
 		return props.selectedDate.events
   	}
   	return [];
@@ -80,6 +60,7 @@ const getEventsForSelectedDate = computed(() => {
 
 const eventClick = (eventData) => {
   	console.log("Clicked event:", eventData);
+    console.log("x",props.selectedDate)
 };
 
 </script>
@@ -88,12 +69,15 @@ const eventClick = (eventData) => {
     <div
     :class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']"
     @click="toggleExpand"
-    @touch="toggleExpand">
-    <!-- ?fix later touch does not work well together with
+    @touch="toggleExpand"
     @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"> 
-    -->
+    @touchend="(event) => {
+        const direction = onTouchEnd(event);
+        if (direction === 'up') isExpanded = true;
+        if (direction === 'down') isExpanded = false;
+        console.log('Swiped:', direction, 'isExpanded:', isExpanded);
+    }"
+    >
     
         <div class="line">
             <button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
@@ -113,7 +97,7 @@ const eventClick = (eventData) => {
                     <!-- Event circle and time -->
                     <div class="event-details" >
                         <div class="event-circle" :class="event.eventType"></div>
-                        <span>{{ event.startTime }} - {{ event.endTime }} {{ event.title }}</span>
+                        <span>{{ event.startTime }} - {{ event.endTime }} {{ event.groupId }} {{ event.title }}</span>
                     </div>
                 </li>
             </ul>
@@ -152,7 +136,7 @@ button{
 .expand-wrapper.minimized {
     top: auto;
     bottom: 0;
-    height: calc(100vh - var(--calendar-bottom)); /* Calculate height */
+    height: calc(100dvh - var(--calendar-bottom)); /* Calculate height */
 }
 
 .expand-wrapper.expanded {

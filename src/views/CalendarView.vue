@@ -40,17 +40,21 @@
 /      28/02/2025 - Jorn Vierbergen
 /          - Toegevoegd: Datum en tijd in ISO + omvormen naar visueel tijdstip
 /          - Fixed: Event lines enkel eenmaal toevoegen in HTML element
+/      13/03/2025 - Jorn Vierbergen
+/          - Fixed: expandableDiv mobile browser adress makes screen smaller
+/      15/03/2025 - Jorn Vierbergen
+/          - Toegevoegd: SwipeDirection service
 /
 /      To do:
 /      - Make group calendars
-/      - Change month to specified month. Click on month, drop down menu
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Remove test data
+/      - NTH Change month to specified month. Click on month, drop down menu
 /
 /      Opmerkingen:
 /      ------------
-/      Enige opmerkingen?   ---- set events in calendarDay interface
+/      Enige opmerkingen?
 /      
 #####################################*/
 
@@ -59,12 +63,15 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
+import { swipe } from '@/services/swipeDetection.service.ts';
 
+const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
 
 // TEST DATA
-let group = 4
-// TIME SETTINGS FROM USER SETTINGS
+let groupAgenda = 13 //group id, changes when changing groups
+
+// TIME SETTINGS FROM USER SETTINGS 
 const notationDateTime = {
 	dateNotation: 'nl-BE', //'nl-BE', 'en-US', ...
 	timeNotation: 'nl-BE', // same as dateNotation if not provided
@@ -72,7 +79,7 @@ const notationDateTime = {
 }
 const { dateNotation, timeNotation, monthNotation } = notationDateTime;
 type MonthNotation = 'numeric' | 'short' | 'long' | '2-digit';
-
+// -------
 
 const events = ref([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
@@ -155,7 +162,9 @@ const fetchEventsForMonth = async () => {
       			allEvents.push({ ...item, eventType: 'personal' });
     		});
 
-			const groupEvents = await getData(`events?from=${fromDate}&to=${toDate}`);
+			// get all group events when checking personal agenda
+			const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
+			const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
     		groupEvents.forEach((item: any) => {
 				allEvents.push({ ...item, eventType: 'group' });
 			});
@@ -238,14 +247,14 @@ const generateCalendarDays = (): CalendarDay[] => {
 
 			days.push({
 				day: targetDay,
-				month: targetMonth,
-				year: targetYear,
+				//month: targetMonth,
+				//year: targetYear,
 				date: fullDate,
 				convertedDate: convertedDate,
 				faded,
 				isToday:
 					!faded && targetDate.toDateString() === new Date().toDateString(),
-				dayOfWeek: weekdays[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1],
+				//dayOfWeek: weekdays[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1],
 				// Add eventLine to each day (events or not)
 				eventLines: getEventLinesForDay(fullDate),
 			});
@@ -263,20 +272,21 @@ const calendarDays = ref<CalendarDay[]>(generateCalendarDays());
 
 // Expandable div calculation
 const calculateExpandableDiv = () => {
-	const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
-	if (calendarElement) {
-		const calendarPosition = calendarElement.getBoundingClientRect();
-		document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
-		document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
-	};
+		// ensure measurement happen on the next frame, after layout and styles are applied.
+		requestAnimationFrame(() => {
+			const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
+			if (calendarElement) {
+				const calendarPosition = calendarElement.getBoundingClientRect();
+				document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
+				document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
+			};
+		});
 };
 
 // Select today on startup
 const selectToday = () => {
 	const today = calendarDays.value.find(day => day.isToday);
-	if (today) {
-		selectDate(today);
-	};
+	if (today) selectDate(today);
 };
 
 // Event button
@@ -301,7 +311,7 @@ const goToNextMonth = () => {
 
 // Select date
 const selectDate = (date: CalendarDay) => {
-	console.log(`Clicked on: ${date.date} ${date.dayOfWeek}`);
+	console.log(`Clicked on: ${date.date}`);
 
 	const eventsForSelectedDate = [];
 
@@ -323,10 +333,8 @@ const selectDate = (date: CalendarDay) => {
 
 onMounted(() => {
 	fetchEventsForMonth();
-	nextTick(() => {
-		selectToday();
-  		calculateExpandableDiv();
-	});
+	calculateExpandableDiv();
+	selectToday();
 });
 
 </script>
@@ -334,7 +342,14 @@ onMounted(() => {
 <template>
 <div class="center">
 	<div class="calendar-wrapper">
-		<div class="calendar">
+		<div class="calendar"
+		@touchstart="onTouchStart"
+		@touchend="(event) => {
+			const direction = onTouchEnd(event);
+			if (direction === 'right') goToNextMonth();
+			if (direction === 'left') goToPrevMonth();
+		}"
+		>
       		<!-- Header -->
       		<div class="calendar-header">
         		<button @click="goToPrevMonth" class="nav-button">◀</button>
@@ -388,6 +403,7 @@ onMounted(() => {
 }
 
 .calendar {
+	margin: 2%;
     border: 1px solid black;
     border-radius: 10px;
     overflow: hidden;
