@@ -9,13 +9,9 @@ export interface UserData {
 
 export interface CalendarDay {
     day: number
-    //month: number
-    //year: number
     date: string
-	  convertedDate: string
     faded: boolean
     isToday?: boolean
-    //dayOfWeek: string
     eventLines: string[]
 }
 

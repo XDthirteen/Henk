@@ -28,8 +28,8 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
-import { swipe } from '@/services/swipeDetection.service.ts';
+import { ref, computed } from "vue";
+import { swipe } from '@/utils/swipeDetection';
 
 const { onTouchStart, onTouchEnd } = swipe();
 
@@ -74,7 +74,8 @@ const eventClick = (eventData) => {
     @touchend="(event) => {
         const direction = onTouchEnd(event);
         if (direction === 'up') isExpanded = true;
-        if (direction === 'down') isExpanded = false;
+        else if (direction === 'down') isExpanded = false;
+        //else if (direction === null) isExpanded = false;
         console.log('Swiped:', direction, 'isExpanded:', isExpanded);
     }"
     >
@@ -83,7 +84,7 @@ const eventClick = (eventData) => {
             <button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
         </div>
         <div class="event-selected-date">
-            {{ props.selectedDate?.convertedDate }}
+            {{ props.selectedDate?.date }}
         </div>
         <div class="event-container">
             <ul v-if="getEventsForSelectedDate.length">

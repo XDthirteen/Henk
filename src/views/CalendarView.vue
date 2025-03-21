@@ -44,13 +44,24 @@
 /          - Fixed: expandableDiv mobile browser adress makes screen smaller
 /      15/03/2025 - Jorn Vierbergen
 /          - Toegevoegd: SwipeDirection service
+/          - Fixed: TimeZones correct convertion from UTC/ISO time from api
+/
+/          - BUG: events don't show up at the today, not loaded yet
+/          - Annoying: swiping down to minimalize expandable div refreshes page
 /
 /      To do:
 /      - Make group calendars
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Remove test data
+/
+/      - Optimalization:
+/      	- Update only calendar days that have events instead of all days on api loaded
+/      	- API get only the events for the dates needed, now we get the events for 3 months
+/      	- Use filter() instead of forEach and push for arrays
+/
 /      - NTH Change month to specified month. Click on month, drop down menu
+/      - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
 /      Opmerkingen:
 /      ------------
@@ -63,7 +74,8 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
-import { swipe } from '@/services/swipeDetection.service.ts';
+import { swipe } from '@/utils/swipeDetection';
+import { all } from "axios";
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
@@ -72,19 +84,34 @@ const { getData } = eventService();
 let groupAgenda = 13 //group id, changes when changing groups
 
 // TIME SETTINGS FROM USER SETTINGS 
-const notationDateTime = {
-	dateNotation: 'nl-BE', //'nl-BE', 'en-US', ...
-	timeNotation: 'nl-BE', // same as dateNotation if not provided
-	monthNotation: '2-digit' as MonthNotation //2-digit, short, long
+const dateTimeSettings = {
+	//timeZone: 'America/New_York', //'Europe/Brussels', 'America/New_York', ...
+	timeZone: 'Europe/Brussels',
+	// date/time displayed per locale format
+	dateTimeNotation: 'en-GB', // 'en-GB' D M Y, 'be-NL' M D Y, 'en-US', ...
+	// console.log(navigator.language);
+
+	hour12Notation: false,
+	hourNotation: '2-digit' as NumberNotation,
+    minuteNotation: '2-digit' as NumberNotation,
+	secondNotation: '2-digit' as NumberNotation,
+
+	dayNotation: '2-digit' as NumberNotation,
+	monthNotation: 'long' as MonthNotation,
+	yearNotation: 'numeric' as NumberNotation,
 }
-const { dateNotation, timeNotation, monthNotation } = notationDateTime;
-type MonthNotation = 'numeric' | 'short' | 'long' | '2-digit';
+
+const { timeZone,  dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
+type NumberNotation = 'numeric' | '2-digit';
+type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
 // -------
 
 const events = ref([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
-const currentYear = ref(new Date().getFullYear());
-const currentMonth = ref(new Date().getMonth());
+
+const currentDate = new Date();
+const currentYear = ref(new Intl.DateTimeFormat('en-GB', {year: 'numeric', timeZone: timeZone}).format(currentDate));
+const currentMonth = ref((new Intl.DateTimeFormat('en-GB', {month: 'numeric', timeZone: timeZone}).format(currentDate)-1));
 
 const eventCache = ref<{ [key: string]: any[] }>({});
 
@@ -113,31 +140,38 @@ const months = [
 	"December"
 ];
 
-const formatDate = (isoDateTime: string) => {
-	const date = new Date(isoDateTime);
-	// date.toLocaleString("en-US", { timeZone: "Europe/Brussels" });
-	return date.toLocaleDateString(dateNotation || null, {
-		year: '2-digit',
+// If no isoDateTime string is given, use current date
+const formatDate = (isoDateTime?: string) => {
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleDateString(dateTimeNotation, {
+		timeZone,
+		year: yearNotation,
 		month: monthNotation,
-		day: '2-digit',
+		day: dayNotation,
 	});
 };
 
-const formatTime = (isoDateTime: string) => {
-	const date = new Date(isoDateTime);
-	// Set time format to user settings, same as date user settings or local
-	return date.toLocaleTimeString(timeNotation || dateNotation || null, {
-		hour: '2-digit',
-		minute: '2-digit',
+const formatTime = (isoDateTime?: string) => {
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleTimeString(dateTimeNotation, {
+		timeZone,
+		hour: hourNotation,
+		minute: minuteNotation,
+		hour12: hour12Notation,
 	});
 };
 
-// Convert ISO (UTC) time to local time or time selected in user settings
-const formatDateTime = (isoDateTime: string) => {
-	const formattedDate = formatDate(isoDateTime)
-	const formattedTime = formatTime(isoDateTime)
+const formatDateTime = (isoDateTime?: string) => {
+	const dateTime = isoDateTime ?? new Date().toISOString();
+	const formattedDate = formatDate(dateTime)
+	const formattedTime = formatTime(dateTime)
 	return { date: formattedDate, time: formattedTime };
-}
+};
+
+const dateTimeToISO = () =>{
+	const now = new Date();
+	console.log(now.toISOString()); 
+};
 
 // Fetch events selected month
 const fetchEventsForMonth = async () => {
@@ -153,7 +187,7 @@ const fetchEventsForMonth = async () => {
 		// Duplicate data also in caching...
 		const fromDate = new Date(year, month-1, 1).toISOString().split("T")[0];
 		const toDate = new Date(year, month+2, 0).toISOString().split("T")[0];
-		//console.log('from', fromDate, 'to', toDate);
+		console.log('from', fromDate, 'to', toDate);
 
 		try {
 			const allEvents = [];
@@ -196,6 +230,7 @@ const fetchEventsForMonth = async () => {
 	}
 	// Reload calendarDays
 	calendarDays.value = generateCalendarDays();
+	selectToday();
 };
 
 // Get event types for each day
@@ -203,7 +238,7 @@ const getEventLinesForDay = (date: string) => {
 	let eventLines: string[] = [];
 
 	events.value.forEach(event => {
-		if (date >= event.start.split('T')[0] && date <= event.end.split('T')[0]) {
+		if (date >= event.startDate && date <= event.endDate) {
       		const type = event.eventType;
 			if (!eventLines.includes(type)) {
 				eventLines.push(type);
@@ -214,9 +249,11 @@ const getEventLinesForDay = (date: string) => {
 };
 
 // Days for calendar
+// No need for time, except for finding today.
 const generateCalendarDays = (): CalendarDay[] => {
   	const year = currentYear.value;
   	const month = currentMonth.value;
+	const today = formatDate()
 
   	const daysInMonth = new Date(year, month + 1, 0).getDate();
 	const daysInPrevMonth = new Date(year, month, 0).getDate();
@@ -238,24 +275,17 @@ const generateCalendarDays = (): CalendarDay[] => {
 		for (let i = 0; i < count; i++) {
 			const day = startDay + i;
 			const targetDate = new Date(year, month + offsetMonth, day);
-			const targetMonth = targetDate.getMonth();
-			const targetYear = targetDate.getFullYear();
 			const targetDay = targetDate.getDate()
-			// fcking bull sh*t
-			const fullDate = targetDate.toLocaleDateString('en-GB', {year: 'numeric', month: '2-digit', day: '2-digit'}).split('/').reverse().join('-');
-   			const { date: convertedDate } = formatDateTime(fullDate);
+			// fcking bull sh*t this is
+			// Format all dates to selected date notation
+			const fullDate = formatDate(targetDate.toISOString());
 
 			days.push({
 				day: targetDay,
-				//month: targetMonth,
-				//year: targetYear,
 				date: fullDate,
-				convertedDate: convertedDate,
 				faded,
 				isToday:
-					!faded && targetDate.toDateString() === new Date().toDateString(),
-				//dayOfWeek: weekdays[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1],
-				// Add eventLine to each day (events or not)
+					!faded && fullDate === today,
 				eventLines: getEventLinesForDay(fullDate),
 			});
 		};
@@ -317,8 +347,8 @@ const selectDate = (date: CalendarDay) => {
 
 	events.value.forEach(event => {
 		// Check if event in selected date range
-		const eventStartDate = event.start.split('T')[0];
-		const eventEndDate = event.end.split('T')[0];
+		const eventStartDate = event.startDate;
+		const eventEndDate = event.endDate;
 
 		if (date.date >= eventStartDate && date.date <= eventEndDate) {
 			eventsForSelectedDate.push(event);
@@ -334,7 +364,6 @@ const selectDate = (date: CalendarDay) => {
 onMounted(() => {
 	fetchEventsForMonth();
 	calculateExpandableDiv();
-	selectToday();
 });
 
 </script>
