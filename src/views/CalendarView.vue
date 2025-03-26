@@ -50,10 +50,11 @@
 /          - Annoying: swiping down to minimalize expandable div refreshes page
 /
 /      To do:
-/      - Make group calendars
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Remove test data
+/
+/      - BUG: Timezones do not work correct.
 /
 /      - Optimalization:
 /      	- Update only calendar days that have events instead of all days on api loaded
@@ -70,12 +71,11 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, onMounted } from "vue";
 import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
-import { all } from "axios";
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
@@ -274,11 +274,16 @@ const generateCalendarDays = (): CalendarDay[] => {
   	) => {
 		for (let i = 0; i < count; i++) {
 			const day = startDay + i;
-			const targetDate = new Date(year, month + offsetMonth, day);
-			const targetDay = targetDate.getDate()
+			// set Date in UTC so it account for timezone
+			const targetDate = new Date(Date.UTC(year, month + offsetMonth, day));
+			const targetDay = targetDate.getUTCDate()
+			console.log('t',targetDate)
+			console.log(targetDate.toISOString())
 			// fcking bull sh*t this is
 			// Format all dates to selected date notation
 			const fullDate = formatDate(targetDate.toISOString());
+			console.log(today)
+			console.log(fullDate)
 
 			days.push({
 				day: targetDay,
