@@ -28,12 +28,17 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
 
 defineProps<{ icon1: string, icon2: string }>();
+const emit = defineEmits(['toggle']);
+
 
 const iconToggler = ref(false);
-const toggleIcon = () => iconToggler.value = !iconToggler.value;
+const toggleIcon = () => {
+  iconToggler.value = !iconToggler.value;
+  emit('toggle');
+}
 </script>
 
 <template>
