@@ -19,7 +19,8 @@ import {
   faCircle,
   faCheckCircle,
   faCircleNotch,
-  faPlus
+  faPlus,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons'
 
 // Search icons on https://fontawesome.com/icons
@@ -42,7 +43,8 @@ library.add(
   faCircle,
   faCheckCircle,
   faCircleNotch,
-  faPlus
+  faPlus,
+  faXmark
 );
 
 const app = createApp(App)

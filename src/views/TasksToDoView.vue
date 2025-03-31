@@ -31,6 +31,7 @@
 import { ref } from 'vue';
 import FontAwesomeIconToggler from "@/components/FontAwasomeIconToggler.vue";
 import StyledButton from "@/components/StyledButton.vue";
+import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 
@@ -43,48 +44,53 @@ const newTask: Task = {
 }
 
 const isCreatingNewTask = ref<boolean>(false);
-console.log(isCreatingNewTask.value)
-
 
 function toggleCreateNewTask() {
-  isCreatingNewTask.value = !isCreatingNewTask.value
-  console.log(isCreatingNewTask.value)
+  isCreatingNewTask.value = !isCreatingNewTask.value;
 }
 
 const PostTaskToBackend = async (): Promise<void> => {
   try {
     await postNewTask(newTask);
     isCreatingNewTask.value = false;
-    console.log("Update succesvol!");
+    console.log("Task successfully created!");
   } catch (error) {
     console.error("Error during task creation:", error);
   }
 };
-
 </script>
 
 <template>
   <div class="body">
     <div class="todo-item" v-for="task in tasks" :key="task.id">
       <FontAwesomeIconToggler icon1="check-circle" icon2="circle-notch" />
-      <div>{{ task.title }}</div>
+      <div class="task-title">{{ task.title }}</div>
     </div>
   </div>
-  <div v-if="isCreatingNewTask.valueOf()">
-    <div class="new-task-item">
-      <label for="taskTitle">Title: </label>
-      <input type="text" name="taskTitle" v-model="newTask.title">
+
+  <div v-if="isCreatingNewTask.valueOf()" class="modal-overlay" @click="toggleCreateNewTask">
+    <div class="new-task-form" @click.stop>
+      <button class="close-btn" @click="toggleCreateNewTask">
+        <font-awesome-icon :icon="['fas', 'xmark']" />
+      </button>
+
+      <div class="modal-items">
+        <div class="item-in-modal">
+          <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
+        </div>
+        <div class="item-in-modal">
+          <StyledInputByType label="Description" v-model="newTask.description" placeholder="Enter task description"
+            inputType="text" />
+        </div>
+        <div class="item-in-modal">
+          <StyledInputByType label="Due Date" v-model="newTask.dueDate" placeholder="YYYY-MM-DD" inputType="date" />
+        </div>
+        <button @click="PostTaskToBackend" class="submit-btn">Create Task</button>
+      </div>
+
     </div>
-    <div class="new-task-item">
-      <label for="taskDescription">Description: </label>
-      <input type="text" name="taskDescription" v-model="newTask.description">
-    </div>
-    <div class="new-task-item">
-      <label for="taskDueDate">DueDate: </label>
-      <input type="text" name="taskDueDate" v-model="newTask.dueDate">
-    </div>
-    <button @click="PostTaskToBackend">Create task</button>
   </div>
+
   <div class="new-item" @click="toggleCreateNewTask">
     <StyledButton class="new-item-btn" type="save">
       <FontAwesomeIconToggler icon1="plus" icon2="plus" />
@@ -94,7 +100,9 @@ const PostTaskToBackend = async (): Promise<void> => {
 
 <style scoped>
 .body {
-  margin: 1rem 2rem 1rem 2rem;
+  margin: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .todo-item {
@@ -102,6 +110,16 @@ const PostTaskToBackend = async (): Promise<void> => {
   gap: 1rem;
   justify-content: flex-start;
   align-items: center;
+  padding: 10px;
+  background-color: var(--primary-white);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.task-title {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .new-item {
@@ -112,13 +130,83 @@ const PostTaskToBackend = async (): Promise<void> => {
 }
 
 .new-item-btn {
-  width: 5rem;
-  height: 5rem;
-  margin: 5px;
-  padding: 5px;
+  width: 4rem;
+  height: 4rem;
+  padding: 10px;
+  background-color: var(--secundary-green);
+  border-radius: 50%;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.8);
+  transition: all 0.3s ease;
 }
 
-.new-task-item {
+.new-item-btn:hover {
+  background-color: var(--primary-green);
+  transform: scale(1.1);
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal content */
+.new-task-form {
+  display: flex;
+  justify-content: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--primary-purple);
+  cursor: pointer;
+}
+
+.modal-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-in-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+  background-color: #45a049;
 }
 </style>
