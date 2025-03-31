@@ -39,7 +39,7 @@
 							? selectGroupForInvite(group)
 							: leaveMode
 								? selectGroupForLeave(group)
-								: navigateToAgenda(group.id)
+								: navigateToAgenda(String(group.id))
 					"
 				>
 					<img :src="group.icon || defaultIcon" :alt="group.name" />
@@ -91,12 +91,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
 import { useGroupStore } from '@/services/groupservices'
-
-interface Group {
-	id: string
-	name: string
-	icon: string
-}
+import type { Group } from '@/components/models.ts'
 
 const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
@@ -115,7 +110,11 @@ const showLeavePopup = ref(false)
 const showAddGroupPopup = ref(false)
 const newGroupName = ref('')
 const selectedGroupIcon = ref('')
-const availableIcons = ref(['/images/icon1.png', '/images/icon2.png', '/images/icon3.png'])
+const availableIcons = ref([
+	'../assets/man-woman-boy.png',
+	'../assets/joy.png',
+	'../assets/bear.png',
+])
 const successMessage = ref('')
 
 onMounted(async () => {

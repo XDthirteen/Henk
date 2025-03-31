@@ -37,7 +37,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import type { Group } from '@/types/Group'
+import type { Group } from '@/components/models.ts'
 import { useAuth } from '@/services/auth.service'
 
 const invites = ref<Group[]>([])
