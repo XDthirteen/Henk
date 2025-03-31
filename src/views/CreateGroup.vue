@@ -90,7 +90,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
-import { useGroupStore } from '@/stores/groupStore'
+import { useGroupStore } from '@/services/groupservices'
 
 interface Group {
 	id: string

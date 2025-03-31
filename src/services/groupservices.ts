@@ -14,12 +14,12 @@ export const useGroupStore = defineStore('groupStore', {
     acceptedGroups: [] as Array<{ id: number; name: string; icon: string }>,
   }),
   actions: {
-    acceptGroup(group) {
+    acceptGroup(group: { id: number; name: string; icon: string }) {
       this.acceptedGroups.push(group)
       this.groups.push(group)
       this.invites = this.invites.filter((inv) => inv.id !== group.id)
     },
-    declineGroup(group) {
+    declineGroup(group: { id: number; name: string; icon: string }) {
       this.invites = this.invites.filter((inv) => inv.id !== group.id)
     },
   },
