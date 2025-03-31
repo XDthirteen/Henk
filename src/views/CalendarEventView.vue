@@ -34,7 +34,8 @@ const returnToCalendar = () => {
 
 const submitEvent = () => {
   console.log('Event Created:', event.value);
-  // TODO: call create event from the service as well
+    // TODO: call create event from the service as well
+  document.createEvent("Event")
   returnToCalendar()
 };
 
