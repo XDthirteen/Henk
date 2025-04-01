@@ -16,9 +16,10 @@
 / 13/03/2025---Arno Defillet----Start van de view + toevoegen van icon toggler
 / 17/03/2025---Arno Defillet----Aanpassing van icoon variabelen
 / 19/03/2025---Arno Defillet----Toevoeging: Begin taken op te halen en nieuwe taak aan te maken
+/ 31/01/2025---Arno Defillet----Aanpassing: taak bewerkbaar maken
 /
 / To do:
-/ - Bij aanmaak nieuwe taak, meteen de nieuwe taak tonen op het scherm
+/ - juiste id meegeven aan een taak waarop je klikt
 / -
 /
 / Opmerkingen:
@@ -28,7 +29,7 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, type Reactive } from 'vue';
 import FontAwesomeIconToggler from "@/components/FontAwasomeIconToggler.vue";
 import StyledButton from "@/components/StyledButton.vue";
 import StyledInputByType from "@/components/StyledInputByType.vue";
@@ -37,16 +38,37 @@ import type { Task } from '@/components/models';
 
 const { tasks, postNewTask } = useTasks();
 
-const newTask: Task = {
+const newTask: Reactive<Task> = {
   title: '',
   description: '',
   dueDate: '',
 }
 
+
 const isCreatingNewTask = ref<boolean>(false);
+const isEditingTask = ref<boolean>(false)
+const selectedTask = ref<Task | null>(null);
 
 function toggleCreateNewTask() {
   isCreatingNewTask.value = !isCreatingNewTask.value;
+}
+
+
+function toggleEditTask(taskID?: number) {
+  isEditingTask.value = !isEditingTask.value;
+
+  if (!taskID) {
+    selectedTask.value = null;
+    isEditingTask.value = false;
+    return;
+  }
+
+  selectedTask.value = tasks.value.find((task) => task.id === taskID) || null;
+  isEditingTask.value = !!selectedTask.value;
+}
+
+function closeEditTask() {
+  isEditingTask.value = false;
 }
 
 const PostTaskToBackend = async (): Promise<void> => {
@@ -64,7 +86,29 @@ const PostTaskToBackend = async (): Promise<void> => {
   <div class="body">
     <div class="todo-item" v-for="task in tasks" :key="task.id">
       <FontAwesomeIconToggler icon1="check-circle" icon2="circle-notch" />
-      <div class="task-title">{{ task.title }}</div>
+      <div class="task-title" @click=toggleEditTask(task.id)>{{ task.title }}</div>
+    </div>
+  </div>
+
+  <div v-if="isEditingTask.valueOf()" class="modal-overlay" @click="closeEditTask">
+    <div class="new-task-form" @click.stop>
+      <button class="close-btn" @click="closeEditTask">
+        <font-awesome-icon :icon="['fas', 'xmark']" />
+      </button>
+
+      <div class="modal-items">
+        <div class="item-in-modal">
+          <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
+        </div>
+        <div class="item-in-modal">
+          <StyledInputByType label="Description" v-model="newTask.description" placeholder="Enter task description"
+            inputType="text" />
+        </div>
+        <div class="item-in-modal">
+          <StyledInputByType label="Due Date" v-model="newTask.dueDate" placeholder="YYYY-MM-DD" inputType="date" />
+        </div>
+        <button @click="PostTaskToBackend" class="submit-btn">Create Task</button>
+      </div>
     </div>
   </div>
 
@@ -87,9 +131,9 @@ const PostTaskToBackend = async (): Promise<void> => {
         </div>
         <button @click="PostTaskToBackend" class="submit-btn">Create Task</button>
       </div>
-
     </div>
   </div>
+
 
   <div class="new-item" @click="toggleCreateNewTask">
     <StyledButton class="new-item-btn" type="save">
@@ -120,6 +164,7 @@ const PostTaskToBackend = async (): Promise<void> => {
 .task-title {
   font-size: 1.2rem;
   font-weight: bold;
+  width: 100%;
 }
 
 .new-item {
