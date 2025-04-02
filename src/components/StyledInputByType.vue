@@ -48,16 +48,30 @@ const handleInput = (event: Event) => {
 </script>
 
 <template>
-  <label v-if="label">{{ label }}</label>
-  <input class="input" :type='inputType' :autocomplete="autocomplete" :placeholder="placeholder" @input="handleInput"
-    :value="modelValue" />
+  <div class="input-container">
+    <div class="title" v-if="label">{{ label }}</div>
+    <input class="input" :type='inputType' :autocomplete="autocomplete" :placeholder="placeholder" @input="handleInput"
+      :value="modelValue" />
+  </div>
 </template>
 
 <style scoped>
+.input-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-weight: bold;
+  color: var(--primary-purple);
+}
+
 .input {
+  width: 13rem;
   border: 2px solid var(--primary-blue);
   border-radius: 0.5rem;
   padding: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .input:focus {

@@ -63,12 +63,12 @@ const authenticate = async () => {
 </script>
 
 <template>
+  <h2>Log in</h2>
   <div class="login-container">
     <form class="form-wrapper">
       <div class="error-message" v-if="wrongCredentials">Incorrect username - password combination</div>
       <StyledInputByType input-type="email" placeholder="example@example.com" v-model="inputUsername"
         autocomplete="email"></StyledInputByType>
-
       <StyledInputByType input-type="password" placeholder="Your password" v-model="inputPassword"
         autocomplete="current-password"></StyledInputByType>
     </form>

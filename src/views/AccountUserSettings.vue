@@ -31,6 +31,7 @@ save knop.
 / 24/02/2025---Arno Defillet----Aanpassing: Eigenschappen in Savedvalues aanpassen naar blanco strings, en strings met
 'Loading...' naar onMounted verplaatst
 / 24/02/2025---Arno Defillet----Toevoegen: Overal Typescript toepassen
+/ 10/03/2025---Arno Defillet----Aanpassing: "EditIcon"'s aangepast naar "FontAwasomeIcon"'s
 /
 /
 / To do:
@@ -44,11 +45,11 @@ save knop.
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import EditIcon from '@/components/EditIcon.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import { userSettings } from '@/services/userSettings.service';
-import { EditingState, SavedValues } from '@/components/models';
+import FontAwesomeIcon from '@/components/FontAwasomeIcon.vue';
+import type { EditingState, SavedValues } from '@/components/models';
 
 const { userInfo, updateUserInfo, getUserInfo } = userSettings();
 
@@ -169,19 +170,19 @@ function saveUserChanges(): void {
       <div class="field-container">
         <div v-if="!isEditing.firstname" class="text-field">{{ tempValues.firstname }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.firstname"></StyledInputByType>
-        <EditIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
+        <FontAwesomeIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
       </div>
       <h2 class="input-title">Last name: </h2>
       <div class="field-container">
         <div v-if="!isEditing.lastname" class="text-field">{{ tempValues.lastname }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.lastname"></StyledInputByType>
-        <EditIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
+        <FontAwesomeIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
       </div>
       <h2 class="input-title">Email: </h2>
       <div class="field-container">
         <div v-if="!isEditing.email" class="text-field">{{ tempValues.email }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.email"></StyledInputByType>
-        <EditIcon :isEditing="isEditing.email" @toggle-edit="toggleEdit('email')" />
+        <FontAwesomeIcon :isEditing="isEditing.email" @toggle-edit="toggleEdit('email')" />
       </div>
       <h2 class="input-title">Language: </h2>
       <div class="field-container">
@@ -194,7 +195,7 @@ function saveUserChanges(): void {
             English
           </button>
         </div>
-        <EditIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+        <FontAwesomeIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
       </div>
     </div>
   </div>
@@ -285,6 +286,7 @@ function saveUserChanges(): void {
 }
 
 .language-selector {
+  width: 13rem;
   display: flex;
   border: 1px solid #ccc;
   border-radius: 8px;
