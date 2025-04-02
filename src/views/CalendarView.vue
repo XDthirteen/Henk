@@ -1,11 +1,11 @@
 /*#####################################
-/      
+/
 /      #  CalendarView.vue
 /      #  ==================
 /      #  Beschrijving:
 /      #  ------------
 /      #  Het kunnen zien van datums en geplande events.
-/ 
+/
 /      #  Auteur: Jorn Vierbergen
 /      #  Datum aangemaakt: 16/11/2024
 /
@@ -39,17 +39,22 @@
 /      - Add events functionality to event button.
 /      - Add API
 /      - Remove test data
-/      -? Load events only for previous, current and next month. (optimalization) 
+/      -? Load events only for previous, current and next month. (optimalization)
 /
 /      Opmerkingen:
 /      ------------
 /      Enige opmerkingen?
-/      
+/
 #####################################*/
 
 <script setup lang="ts">
 import type { CalendarDay } from "@/components/models";
 import { ref, computed, onMounted, nextTick } from "vue";
+import CalenderEventView from '@/views/CalendarEventView.vue';
+
+// MODAL POP-UP
+// const isVisible = ref(false);
+
 
 // TEST DATA
 const events = {
@@ -98,12 +103,12 @@ const currentYear = ref(new Date().getFullYear());
 const currentMonth = ref(new Date().getMonth());
 
 const weekdays = [
-	"Mon", 
-	"Tue", 
-	"Wed", 
-	"Thu", 
-	"Fri", 
-	"Sat", 
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
 	"Sun"
 ];
 
@@ -237,7 +242,7 @@ const onTouchEnd = () => {
   	// Swipe up
   	if (touchStartY - touchEndY > 50) {
     	isExpanded.value = true;
-  	} 
+  	}
 	// Swipe down
 	else if (touchEndY - touchStartY > 50) {
     	isExpanded.value = false;
@@ -245,9 +250,10 @@ const onTouchEnd = () => {
 };
 
 // Event button
-const addEvent = () => {
-  	console.log("Event button clicked!");
-};
+// const openEventDialogue = () => {       // Modal visibility
+//     isVisible.value=true
+//   	console.log("Event button clicked!");
+// };
 
 // ? merge set event data and set event lines ?
 // Set event data
@@ -325,9 +331,9 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="center">
-	<div class="calendar-wrapper">
-		<div class="calendar">
+  <div class="center">
+    <div class="calendar-wrapper">
+      <div class="calendar">
       		<!-- Header -->
       		<div class="calendar-header">
         		<button @click="goToPrevMonth" class="nav-button">◀</button>
@@ -365,9 +371,9 @@ onMounted(() => {
 		<!-- ?fix later touch does not work well together with
 		@touchstart="onTouchStart"
 		@touchmove="onTouchMove"
-		@touchend="onTouchEnd"> 
+		@touchend="onTouchEnd">
 		-->
-		
+
 			<div class="line">
 				<button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
 			</div>
@@ -390,16 +396,20 @@ onMounted(() => {
 						</div>
 					</li>
 				</ul>
-			
+
 				<p v-else>No events for this date... yet :P</p>
 			</div>
 		</div>
-
-		<button class="add-event-button" @click="addEvent">
+      <!-- <button class="add-event-button" @click="openEventDialogue"> -->
+      <router-link to="/calendar/events" custom v-slot="{navigate}">
+		<button class="add-event-button" @click="navigate" role="link">
 			Event Button
 		</button>
-  	</div>
+  </router-link>
+  </div>
 </div>
+<!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
+
 </template>
 
 <style scoped>
@@ -472,7 +482,7 @@ button:hover {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    
+
     background: white;
     overflow-y: auto;
     max-height: 350px;

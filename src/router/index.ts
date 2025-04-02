@@ -87,6 +87,11 @@ const router = createRouter({
           beforeEnter: [authenticationGuard],
           component: () => import('@/views/CalendarView.vue'),
         },
+        {
+          path: '/calendar/events',
+          name: 'calenderEvents',
+          component: () => import('@/views/CalendarEventView.vue'),
+        },
       ],
     },
   ],
