@@ -88,3 +88,9 @@ export interface Language {
   code: string;
   label: string;
 }
+
+export interface Group {
+  id: number;
+  name: string;
+  icon: string;
+}
