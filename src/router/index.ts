@@ -86,6 +86,11 @@ const router = createRouter({
           component: () => import('@/views/CalendarView.vue'),
         },
         {
+          path: '/calendar/events',
+          name: 'calenderEvents',
+          component: () => import('@/views/CalendarEventView.vue'),
+        },
+        {
           path: '/tasks',
           name: 'tasks',
           beforeEnter: [authenticationGuard],
