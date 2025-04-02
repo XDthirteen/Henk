@@ -34,14 +34,28 @@
 import { useRouter } from 'vue-router';
 import { reactive, ref, type Ref } from 'vue';
 import axios, { AxiosError } from 'axios';
-import type { UserData } from '@/components/models';
+import type { Language, UserData } from '@/components/models';
+import StyledButton from '@/components/StyledButton.vue';
+import StyledInputByType from '@/components/StyledInputByType.vue';
 
 const router = useRouter();
 
-const languages = [
-  { code: 'nl', label: 'Nederlands' },
+const buttonType = "primary";
+
+const languages: Language[] = [
   { code: 'en', label: 'English' },
+  { code: 'nl', label: 'Nederlands' }
 ];
+
+const selectedLanguage = ref<{ default: string }>({
+  default: 'en'
+});
+
+const toggleLanguage = () => {
+  selectedLanguage.value.default = selectedLanguage.value.default === 'en' ? 'nl' : 'en';
+  userData.defaultLanguage = selectedLanguage.value.default;
+  console.log('Selected language:', selectedLanguage.value.default);
+};
 
 const userData = reactive<UserData>({
   username: '',
@@ -49,7 +63,7 @@ const userData = reactive<UserData>({
   password: '',
   firstName: '',
   lastName: '',
-  defaultLanguage: 'nl', // standaard waarde voor radio buttons
+  defaultLanguage: 'en',
 });
 
 const confirmPassword = ref<string>('');
@@ -75,8 +89,6 @@ const registerUser = async (user: UserData): Promise<string> => {
   }
 }
 
-
-
 const createUser = async () => {
   if (userData.password !== confirmPassword.value) {
     correctRegisterPasswords.value = false;
@@ -99,30 +111,33 @@ const createUser = async () => {
 <template>
   <h2>Create account</h2>
   <form>
-    <label for="username">Username: </label><br>
-    <input type="text" v-model="userData.username" name="username" placeholder="Choose an username"><br>
+    <StyledInputByType v-model="userData.username" label="Username:" placeholder="Choose an username">
+    </StyledInputByType>
+    <StyledInputByType v-model="userData.email" label="Email:" placeholder="Enter email" inputType="email">
+    </StyledInputByType>
+    <StyledInputByType v-model="userData.password" label="Password:" placeholder="Choose a password"
+      inputType="password" autocomplete="off">
+    </StyledInputByType>
+    <StyledInputByType v-model="confirmPassword" label="Confirm password:" placeholder="Confirm password"
+      inputType="password" autocomplete="off">
+    </StyledInputByType>
+    <StyledInputByType v-model="userData.firstName" label="First name:" placeholder="Your first name">
+    </StyledInputByType>
+    <StyledInputByType v-model="userData.lastName" label="Last name:" placeholder="Your last name">
+    </StyledInputByType>
 
-    <label for="email">Email: </label><br>
-    <input type="email" v-model="userData.email" name="email" autocomplete="off" placeholder="example@example.com"><br>
-
-    <label for="pwd">Password: </label><br>
-    <input type="password" v-model="userData.password" name="pwd" autocomplete="off" placeholder=""><br>
-
-    <label for="confirm_pwd">Confirm password: </label><br>
-    <input type="password" v-model="confirmPassword" name="confirm_pwd" autocomplete="off" placeholder=""><br>
-
-    <label for="fname">First name: </label><br>
-    <input type="text" v-model="userData.firstName" name="fname"><br>
-
-    <label for="lname">Last name: </label><br>
-    <input type="text" v-model="userData.lastName" name="lname"><br>
-
-    <label v-for="(language, index) in languages" :key="index">
-      <input type="radio" :value="language.code" v-model="userData.defaultLanguage" />
-      {{ language.label }}
-    </label>
+    <div class="container">
+      <div class="language-toggle" @click="toggleLanguage">
+        <div class="language-option" :class="{ active: selectedLanguage.default === languages[0].code }">
+          {{ languages[0].label }}
+        </div>
+        <div class="language-option" :class="{ active: selectedLanguage.default === languages[1].code }">
+          {{ languages[1].label }}
+        </div>
+      </div>
+    </div>
   </form>
-  <button @click="createUser()">Create account</button>
+  <StyledButton :type="buttonType" @click="createUser()">Create account</StyledButton>
   <div v-if="correctRegisterPasswords">User succesfull created</div>
   <div v-if="doubleUsernameOrEmail">Username or emailadres already registered.</div>
 </template>
@@ -144,22 +159,31 @@ input {
   border: 2px solid grey;
 }
 
-button {
-  color: white;
-  background-color: blue;
-  border-radius: 5%;
-  padding: 0.2rem 1rem 0.2rem 1rem;
-  text-align: center;
-  display: inline-block;
-  font-size: 16px;
-  transition-duration: 0.4s;
-  margin: 5px;
-  border: 2px solid blue;
+.container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
-button:hover {
-  color: blue;
-  background-color: white;
-  border: 2px solid blue
+.language-toggle {
+  display: flex;
+  width: 100%;
+  border: 2px solid var(--primary-purple);
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.language-option {
+  flex: 1;
+  padding: 0.4rem;
+  text-align: center;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.language-option.active {
+  background-color: var(--secundary-purple);
+  color: white;
 }
 </style>
