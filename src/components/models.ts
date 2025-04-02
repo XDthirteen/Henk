@@ -108,6 +108,7 @@ export interface Group {
 ///////////
 
 export interface Task {
+  completed: boolean,
   id?: number,
   title: string,
   description: string,

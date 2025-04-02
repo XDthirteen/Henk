@@ -18,9 +18,10 @@
 / 19/03/2025---Arno Defillet----Toevoeging: Begin taken op te halen en nieuwe taak aan te maken
 / 31/01/2025---Arno Defillet----Aanpassing: taak bewerkbaar maken
 / 02/04/2025---Arno Defillet----Aanpassing: Modal kunnen openen en de backend waarden ingeven voor de geselecteerde taak
+/ 02/04/2025---Arno Defillet----Toevoeging: toevoegen van update en delete functionaliteit
 /
 / To do:
-/ - Bewerking kunnen bewaren naar de backend
+/ - Eigenschap completed kunnen aanpassen wanneer vinkje aangevinkt wordt
 / -
 /
 / Opmerkingen:
@@ -30,16 +31,21 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref, type Reactive } from 'vue';
+import { ref, type Reactive, computed } from 'vue';
 import FontAwesomeIconToggler from "@/components/FontAwasomeIconToggler.vue";
 import StyledButton from "@/components/StyledButton.vue";
 import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 
-const { tasks, postNewTask } = useTasks();
+const { tasks, postNewTask, updateTask, deleteTask } = useTasks();
+
+const sortedTasks = computed(() => {
+  return [...tasks.value].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+});
 
 const newTask: Reactive<Task> = {
+  completed: false,
   title: '',
   description: '',
   dueDate: '',
@@ -48,6 +54,7 @@ const newTask: Reactive<Task> = {
 const isCreatingNewTask = ref<boolean>(false);
 const isEditingTask = ref<boolean>(false)
 const selectedTask = ref<Task>({
+  completed: false,
   id: undefined,
   title: '',
   description: '',
@@ -56,6 +63,7 @@ const selectedTask = ref<Task>({
 });
 
 const editedTask = ref<Task>({
+  completed: false,
   id: undefined,
   title: '',
   description: '',
@@ -79,16 +87,15 @@ function toggleEditTask(taskID: number) {
       ...taskToEdit,
       dueDate: taskToEdit.dueDate ? formatDueDate(taskToEdit.dueDate) : '',
     };
-    console.log(editedTask.value.dueDate);
   }
 
   isEditingTask.value = true;
-  console.log(taskToEdit);
 }
 
 function closeEditTask() {
   isEditingTask.value = false;
   selectedTask.value = {
+    completed: false,
     id: undefined,
     title: '',
     description: '',
@@ -96,6 +103,7 @@ function closeEditTask() {
     userId: undefined,
   };
   editedTask.value = {
+    completed: false,
     id: undefined,
     title: '',
     description: '',
@@ -114,12 +122,40 @@ const PostTaskToBackend = async (): Promise<void> => {
   }
 };
 
+const PutTaskToBackend = async (): Promise<void> => {
+  try {
+    if (editedTask.value.id) {
+      await updateTask(editedTask.value);
+      isEditingTask.value = false;
+      console.log("Task successfully updated!");
+    } else {
+      console.error("No task ID found for update.");
+    }
+  } catch (error) {
+    console.error("Error during updating task:", error);
+  }
+};
+
+const DeleteTaskToBackend = async (): Promise<void> => {
+  try {
+    if (editedTask.value.id) {
+      await deleteTask(editedTask.value);
+      isEditingTask.value = false;
+      console.log("Task successfully deleted!");
+    } else {
+      console.error("No task ID found for deletion.");
+    }
+  } catch (error) {
+    console.error("Error during deleting task:", error);
+  }
+};
+
 
 </script>
 
 <template>
   <div class="body">
-    <div class="todo-item" v-for="task in tasks" :key="task.id">
+    <div class="todo-item" v-for="task in sortedTasks" :key="task.id">
       <FontAwesomeIconToggler icon1="check-circle" icon2="circle-notch" />
       <div class="task-title" @click="task.id !== undefined ? toggleEditTask(task.id) : null">{{ task.title }}</div>
     </div>
@@ -144,8 +180,8 @@ const PostTaskToBackend = async (): Promise<void> => {
           <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
         </div>
         <div class="btn-container">
-          <button class="btn submit-btn">Update Task</button>
-          <button class="btn delete-btn">Delete Task</button>
+          <button @click="PutTaskToBackend" class="btn submit-btn">Update Task</button>
+          <button @click="DeleteTaskToBackend" class="btn delete-btn">Delete Task</button>
         </div>
       </div>
     </div>
@@ -254,6 +290,19 @@ const PostTaskToBackend = async (): Promise<void> => {
   max-width: 400px;
   width: 100%;
   position: relative;
+  animation: fadeInScale 0.5s ease-out;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Close button */

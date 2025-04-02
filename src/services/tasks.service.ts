@@ -17,14 +17,10 @@ const useTasks = () => {
       });
 
       tasks.value = response.data;
-      console.log(response.data)
     } catch (error) {
       console.error("Error fetching tasks: ", error);
     }
   };
-
-
-  onMounted(fetchTasks);
 
   const postNewTask = async (newTask: Task) => {
     try {
@@ -42,9 +38,48 @@ const useTasks = () => {
     }
   }
 
+  const updateTask = async (taskID: Task) => {
+    try {
+      const response = await axios.put(`/api/tasks/${taskID.id}`, {
+        title: taskID.title,
+        description: taskID.description,
+        dueDate: taskID.dueDate
+      }, {
+        headers: {
+          Authorization: userToken
+        }
+      });
+      console.log("Task updated successfully: ", response.data);
+      await fetchTasks();
+      return response.data;
+    } catch (error) {
+      console.error('Could not update task: ', error);
+      return null;
+    }
+  }
+
+  const deleteTask = async (taskID: Task) => {
+    try {
+      const response = await axios.delete(`/api/tasks/${taskID.id}`, {
+        headers: {
+          Authorization: userToken
+        }
+      });
+      console.log("Task deleted successfully: ", response.data);
+      await fetchTasks();
+      return response.data;
+    } catch (error) {
+      console.error('Could not delete task: ', error);
+      return null;
+    }
+  }
+
+  onMounted(fetchTasks);
   return {
     tasks,
-    postNewTask
+    postNewTask,
+    updateTask,
+    deleteTask
   };
 };
 
