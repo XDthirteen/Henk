@@ -17,9 +17,10 @@
 / 17/03/2025---Arno Defillet----Aanpassing van icoon variabelen
 / 19/03/2025---Arno Defillet----Toevoeging: Begin taken op te halen en nieuwe taak aan te maken
 / 31/01/2025---Arno Defillet----Aanpassing: taak bewerkbaar maken
+/ 02/04/2025---Arno Defillet----Aanpassing: Modal kunnen openen en de backend waarden ingeven voor de geselecteerde taak
 /
 / To do:
-/ - juiste id meegeven aan een taak waarop je klikt
+/ - Bewerking kunnen bewaren naar de backend
 / -
 /
 / Opmerkingen:
@@ -44,31 +45,63 @@ const newTask: Reactive<Task> = {
   dueDate: '',
 }
 
-
 const isCreatingNewTask = ref<boolean>(false);
 const isEditingTask = ref<boolean>(false)
-const selectedTask = ref<Task | null>(null);
+const selectedTask = ref<Task>({
+  id: undefined,
+  title: '',
+  description: '',
+  dueDate: '',
+  userId: undefined
+});
+
+const editedTask = ref<Task>({
+  id: undefined,
+  title: '',
+  description: '',
+  dueDate: '',
+  userId: undefined,
+});
+
+function formatDueDate(date: string): string {
+  return new Date(date).toISOString().slice(0, 16);
+}
 
 function toggleCreateNewTask() {
   isCreatingNewTask.value = !isCreatingNewTask.value;
 }
 
+function toggleEditTask(taskID: number) {
+  const taskToEdit = tasks.value.find((task) => task.id === taskID);
 
-function toggleEditTask(taskID?: number) {
-  isEditingTask.value = !isEditingTask.value;
-
-  if (!taskID) {
-    selectedTask.value = null;
-    isEditingTask.value = false;
-    return;
+  if (taskToEdit) {
+    editedTask.value = {
+      ...taskToEdit,
+      dueDate: taskToEdit.dueDate ? formatDueDate(taskToEdit.dueDate) : '',
+    };
+    console.log(editedTask.value.dueDate);
   }
 
-  selectedTask.value = tasks.value.find((task) => task.id === taskID) || null;
-  isEditingTask.value = !!selectedTask.value;
+  isEditingTask.value = true;
+  console.log(taskToEdit);
 }
 
 function closeEditTask() {
   isEditingTask.value = false;
+  selectedTask.value = {
+    id: undefined,
+    title: '',
+    description: '',
+    dueDate: '',
+    userId: undefined,
+  };
+  editedTask.value = {
+    id: undefined,
+    title: '',
+    description: '',
+    dueDate: '',
+    userId: undefined,
+  };
 }
 
 const PostTaskToBackend = async (): Promise<void> => {
@@ -80,13 +113,15 @@ const PostTaskToBackend = async (): Promise<void> => {
     console.error("Error during task creation:", error);
   }
 };
+
+
 </script>
 
 <template>
   <div class="body">
     <div class="todo-item" v-for="task in tasks" :key="task.id">
       <FontAwesomeIconToggler icon1="check-circle" icon2="circle-notch" />
-      <div class="task-title" @click=toggleEditTask(task.id)>{{ task.title }}</div>
+      <div class="task-title" @click="task.id !== undefined ? toggleEditTask(task.id) : null">{{ task.title }}</div>
     </div>
   </div>
 
@@ -98,16 +133,20 @@ const PostTaskToBackend = async (): Promise<void> => {
 
       <div class="modal-items">
         <div class="item-in-modal">
-          <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
+          <StyledInputByType label="Title" v-model="editedTask.title" placeholder="Enter task title" inputType="text" />
         </div>
         <div class="item-in-modal">
-          <StyledInputByType label="Description" v-model="newTask.description" placeholder="Enter task description"
-            inputType="text" />
+          <div class="textarea-title">Description</div>
+          <textarea class="textarea-input" v-model="editedTask.description" placeholder="Enter task description"
+            rows="4" cols="1"></textarea>
         </div>
         <div class="item-in-modal">
-          <StyledInputByType label="Due Date" v-model="newTask.dueDate" placeholder="YYYY-MM-DD" inputType="date" />
+          <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
         </div>
-        <button @click="PostTaskToBackend" class="submit-btn">Create Task</button>
+        <div class="btn-container">
+          <button class="btn submit-btn">Update Task</button>
+          <button class="btn delete-btn">Delete Task</button>
+        </div>
       </div>
     </div>
   </div>
@@ -123,13 +162,14 @@ const PostTaskToBackend = async (): Promise<void> => {
           <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
         </div>
         <div class="item-in-modal">
-          <StyledInputByType label="Description" v-model="newTask.description" placeholder="Enter task description"
-            inputType="text" />
+          <div class="textarea-title">Description</div>
+          <textarea class="textarea-input" v-model="newTask.description" placeholder="Enter task description" rows="4"
+            cols="1"></textarea>
         </div>
         <div class="item-in-modal">
-          <StyledInputByType label="Due Date" v-model="newTask.dueDate" placeholder="YYYY-MM-DD" inputType="date" />
+          <StyledInputByType label="Due Date" v-model="newTask.dueDate" inputType="datetime-local" />
         </div>
-        <button @click="PostTaskToBackend" class="submit-btn">Create Task</button>
+        <button @click="PostTaskToBackend" class="btn submit-btn">Create Task</button>
       </div>
     </div>
   </div>
@@ -237,12 +277,35 @@ const PostTaskToBackend = async (): Promise<void> => {
 .item-in-modal {
   display: flex;
   flex-direction: column;
+  align-content: center;
+  flex-wrap: wrap;
 }
 
-.submit-btn {
+.textarea-title {
+  font-weight: bold;
+  color: var(--primary-purple);
+}
+
+.textarea-input {
+  width: 13rem;
+  border: 2px solid var(--primary-blue);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.textarea-input:focus {
+  background-color: var(--tertiary-purple);
+}
+
+.btn-container {
+  display: flex;
+  width: 100%;
+}
+
+.btn {
   width: 100%;
   padding: 10px;
-  background-color: #4CAF50;
   color: white;
   font-size: 1.2rem;
   border: none;
@@ -251,7 +314,19 @@ const PostTaskToBackend = async (): Promise<void> => {
   transition: background-color 0.3s;
 }
 
+.submit-btn {
+  background-color: #4CAF50;
+}
+
+.delete-btn {
+  background-color: red;
+}
+
 .submit-btn:hover {
   background-color: #45a049;
+}
+
+.delete-btn:hover {
+  background-color: rgb(234, 36, 36);
 }
 </style>
