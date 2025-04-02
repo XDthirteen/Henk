@@ -32,10 +32,17 @@ const returnToCalendar = () => {
   router.push({ name: 'calendar' })
 };
 
-const submitEvent = () => {
+const submitEvent = async () => {
+  try{
   console.log('Event Created:', event.value);
+  if (event.value){
+    await createEvent(event.value);
+  }
+  returnToCalendar();
+  } catch (error) {
+    console.error("failed to create event:", error);
+  }
     // TODO: call create event from the service as well
-  document.createEvent("Event")
   returnToCalendar()
 };
 
