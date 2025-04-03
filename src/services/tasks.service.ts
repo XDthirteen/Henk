@@ -85,7 +85,7 @@ const useTasks = () => {
 
     try {
       //endpoint.startsWith('/') moeten toevoegen, aangezien de call gedaan wordt op path: '/tasks/todo
-      //Request URL zou dan "http://localhost:5173/tasks/api/tasks/taskID/complete" zijn (1 tasks teveel)
+      //Request URL zou dan "http://localhost:5173/tasks/api/tasks/taskID/complete" zijn (1 'tasks' teveel in URL)
       const response = await axios.post(endpoint.startsWith('/') ? endpoint : `/${endpoint}`, {}, {
         headers: { Authorization: userToken }
       });
