@@ -17,6 +17,7 @@ const useTasks = () => {
       });
 
       tasks.value = response.data;
+      console.log(response.data)
     } catch (error) {
       console.error("Error fetching tasks: ", error);
     }
@@ -41,6 +42,7 @@ const useTasks = () => {
   const updateTask = async (taskID: Task) => {
     try {
       const response = await axios.put(`/api/tasks/${taskID.id}`, {
+        completed: taskID.completed,
         title: taskID.title,
         description: taskID.description,
         dueDate: taskID.dueDate
@@ -74,12 +76,36 @@ const useTasks = () => {
     }
   }
 
+  const completeTask = async (task: Task) => {
+    console.log("Task:", task.id);
+
+    const endpoint = task.completed
+      ? `api/tasks/${task.id}/complete`
+      : `api/tasks/${task.id}/uncomplete`;
+
+    try {
+      //endpoint.startsWith('/') moeten toevoegen, aangezien de call gedaan wordt op path: '/tasks/todo
+      //Request URL zou dan "http://localhost:5173/tasks/api/tasks/taskID/complete" zijn (1 tasks teveel)
+      const response = await axios.post(endpoint.startsWith('/') ? endpoint : `/${endpoint}`, {}, {
+        headers: { Authorization: userToken }
+      });
+
+      console.log("Task completion toggled: ", response.data);
+      await fetchTasks();
+      return response.data;
+    } catch (error) {
+      console.error('Could not toggle complete: ', error);
+      return null;
+    }
+  };
+
   onMounted(fetchTasks);
   return {
     tasks,
     postNewTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    completeTask
   };
 };
 

@@ -15,6 +15,7 @@
 / ----------
 / 15/01/2025---Arno Defillet----Start van de component
 / 13/03/2025---Arno Defillet----Aanpassing: harcoded iconen in template aangepast naar variabelen in 'defineProps'
+/ 03/04/2025---Arno Defillet----Aanpassing: optionele parameter active toegevoegd ifv taken.completed
 /
 / To do:
 / -
@@ -28,13 +29,17 @@
 
 
 <script setup lang="ts">
-import { ref, defineEmits } from 'vue';
+import { ref, defineEmits, watch } from 'vue';
 
-defineProps<{ icon1: string, icon2: string }>();
+const props = defineProps<{ icon1: string, icon2: string, active?: boolean }>();
 const emit = defineEmits(['toggle']);
 
+const iconToggler = ref(props.active)
 
-const iconToggler = ref(false);
+watch(() => props.active, (newValue) => {
+  iconToggler.value = newValue;
+});
+
 const toggleIcon = () => {
   iconToggler.value = !iconToggler.value;
   emit('toggle');

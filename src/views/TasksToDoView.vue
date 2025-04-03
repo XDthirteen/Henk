@@ -19,9 +19,12 @@
 / 31/01/2025---Arno Defillet----Aanpassing: taak bewerkbaar maken
 / 02/04/2025---Arno Defillet----Aanpassing: Modal kunnen openen en de backend waarden ingeven voor de geselecteerde taak
 / 02/04/2025---Arno Defillet----Toevoeging: toevoegen van update en delete functionaliteit
+/ 03/04/2025---Arno Defillet----Toevoeging: FontAwasomeIconToggler kunnen aanduiden als completed
+/ 03/04/2025---Arno Defillet----Toevoeging: Task completed naar de backend kunnen versturen
+/ 03/04/2025---Arno Defillet----Toevoeging: Bij herladen van de pagina meteen kunnen aangeven of een taak completed is
 /
 / To do:
-/ - Eigenschap completed kunnen aanpassen wanneer vinkje aangevinkt wordt
+/ -
 / -
 /
 / Opmerkingen:
@@ -38,7 +41,7 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 
-const { tasks, postNewTask, updateTask, deleteTask } = useTasks();
+const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
 
 const sortedTasks = computed(() => {
   return [...tasks.value].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
@@ -150,13 +153,27 @@ const DeleteTaskToBackend = async (): Promise<void> => {
   }
 };
 
+const CompleteToggler = async (task: Task): Promise<void> => {
+  task.completed = !task.completed;
 
+  try {
+    if (task.id) {
+      await completeTask(task);
+      console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
+    } else {
+      console.error("No task ID found for completion toggle.");
+    }
+  } catch (error) {
+    console.error("Error toggling task completion:", error);
+  }
+};
 </script>
 
 <template>
   <div class="body">
     <div class="todo-item" v-for="task in sortedTasks" :key="task.id">
-      <FontAwesomeIconToggler icon1="check-circle" icon2="circle-notch" />
+      <FontAwesomeIconToggler @click="CompleteToggler(task)" :icon1="'check-circle'" :icon2="'circle-notch'"
+        :active="task.completed" />
       <div class="task-title" @click="task.id !== undefined ? toggleEditTask(task.id) : null">{{ task.title }}</div>
     </div>
   </div>
