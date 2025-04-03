@@ -21,6 +21,8 @@
 / 25/01/2025---Arno Defillet----Aanpassing : Styling aanpassen van de menu
 / 10/02/2025---Arno Defillet----Aanpassing : Toevoegen van FontAwesomeIcons
 / 12/02/2025---Arno Defillet----Aanpassing : Verwijderen van redirect to 'login' uit logout en in de service gestoken
+/ 03/04/2025---Arno Defillet----Aanpassing : hamburgermenu Tasks navigeren van navigate('tasks') naar
+navigate('todo_tasks')
 /
 /
 / Opmerkingen:
@@ -87,7 +89,7 @@ const logoutAndCloseMenu = () => {
             <font-awesome-icon class="icon" :icon="['fas', 'poo-storm']" />
             <div class="item-text">Weather</div>
           </div>
-          <div class="menu-item" @click="navigate('tasks')">
+          <div class="menu-item" @click="navigate('todo_tasks')">
             <font-awesome-icon class="icon" :icon="['fas', 'list-check']" />
             <div class="item-text">My Tasks</div>
           </div>
