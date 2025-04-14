@@ -22,10 +22,12 @@
 / 03/04/2025---Arno Defillet----Toevoeging: FontAwasomeIconToggler kunnen aanduiden als completed
 / 03/04/2025---Arno Defillet----Toevoeging: Task completed naar de backend kunnen versturen
 / 03/04/2025---Arno Defillet----Toevoeging: Bij herladen van de pagina meteen kunnen aangeven of een taak completed is
-/ 03/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
+/ 14/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
+/ 14/04/2025---Arno Defillet----Aanpassing: Opkuis van code + Huisstijl toepassen + animatie voorzien voor task
+completed
 /
 / To do:
-/ -
+/ - taak kunnen inplannen in de agenda
 / -
 /
 / Opmerkingen:
@@ -44,12 +46,12 @@ import type { Task } from '@/components/models';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
 
-const uncompletedTasks = computed(() =>
-  tasks.value.filter(task => !task.completed)
-);
+const justCompleted = ref<number[]>([]);
 
-const sortedTasks = computed(() => {
-  return [...uncompletedTasks.value].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+const visibleTasks = computed(() => {
+  return [...tasks.value]
+    .filter(task => !task.completed || justCompleted.value.includes(task.id!))
+    .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
 });
 
 const newTask: Reactive<Task> = {
@@ -159,14 +161,20 @@ const DeleteTaskToBackend = async (): Promise<void> => {
 };
 
 const CompleteToggler = async (task: Task): Promise<void> => {
+  if (!task.id) {
+    console.error("No task ID found for completion toggle.");
+    return;
+  }
+
   task.completed = !task.completed;
 
   try {
-    if (task.id) {
-      await completeTask(task);
-      console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
-    } else {
-      console.error("No task ID found for completion toggle.");
+    await completeTask(task);
+    console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
+
+    if (task.completed) {
+      justCompleted.value.push(task.id);
+      justCompleted.value = justCompleted.value.filter(id => id !== task.id);
     }
   } catch (error) {
     console.error("Error toggling task completion:", error);
@@ -174,13 +182,17 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 };
 </script>
 
+
 <template>
   <div class="body">
-    <div class="todo-item" v-for="task in sortedTasks" :key="task.id">
-      <FontAwesomeIconToggler @click="CompleteToggler(task)" :icon1="'check-circle'" :icon2="'circle-notch'"
-        :active="task.completed" />
-      <div class="task-title" @click="task.id !== undefined ? toggleEditTask(task.id) : null">{{ task.title }}</div>
-    </div>
+    <transition-group name="fade-slide" tag="div">
+      <div class="todo-item" v-for="task in visibleTasks" :key="task.id"
+        :class="{ completed: task.completed && justCompleted.includes(task.id!) }">
+        <FontAwesomeIconToggler @click="CompleteToggler(task)" :icon1="'check-circle'" :icon2="'circle-notch'"
+          :active="task.completed" />
+        <div class="task-title" @click="task.id !== undefined ? toggleEditTask(task.id) : null">{{ task.title }}</div>
+      </div>
+    </transition-group>
   </div>
 
   <div v-if="isEditingTask.valueOf()" class="modal-overlay" @click="closeEditTask">
@@ -202,8 +214,8 @@ const CompleteToggler = async (task: Task): Promise<void> => {
           <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
         </div>
         <div class="btn-container">
-          <button @click="PutTaskToBackend" class="btn submit-btn">Update Task</button>
-          <button @click="DeleteTaskToBackend" class="btn delete-btn">Delete Task</button>
+          <StyledButton @click="PutTaskToBackend" type="save">Update</StyledButton>
+          <StyledButton @click="DeleteTaskToBackend" type="negative">Delete</StyledButton>
         </div>
       </div>
     </div>
@@ -227,11 +239,10 @@ const CompleteToggler = async (task: Task): Promise<void> => {
         <div class="item-in-modal">
           <StyledInputByType label="Due Date" v-model="newTask.dueDate" inputType="datetime-local" />
         </div>
-        <button @click="PostTaskToBackend" class="btn submit-btn">Create Task</button>
+        <StyledButton @click="PostTaskToBackend" type="save">Create Task</StyledButton>
       </div>
     </div>
   </div>
-
 
   <div class="new-item" @click="toggleCreateNewTask">
     <StyledButton class="new-item-btn" type="save">
@@ -239,6 +250,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
     </StyledButton>
   </div>
 </template>
+
 
 <style scoped>
 .body {
@@ -257,6 +269,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   border-radius: 8px;
   margin-bottom: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease;
 }
 
 .task-title {
@@ -269,7 +282,6 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   position: fixed;
   bottom: 40px;
   right: 20px;
-  z-index: 1000;
 }
 
 .new-item-btn {
@@ -310,7 +322,6 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 400px;
-  /* width: 100%; */
   position: relative;
   animation: fadeInScale 0.5s ease-out;
 }
@@ -371,33 +382,33 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 
 .btn-container {
   display: flex;
+  justify-content: center;
   width: 100%;
 }
 
-.btn {
-  width: 100%;
-  padding: 0.5rem 0.2rem 0.5rem 0.2rem;
-  color: white;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+/*spelen met de animaties :)*/
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 1.0s ease;
 }
 
-.submit-btn {
-  background-color: #4CAF50;
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
-.delete-btn {
-  background-color: red;
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateX(0);
 }
 
-.submit-btn:hover {
-  background-color: #45a049;
+.fade-slide-leave-from {
+  opacity: 1;
+  transform: translateX(0);
 }
 
-.delete-btn:hover {
-  background-color: rgb(234, 36, 36);
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>

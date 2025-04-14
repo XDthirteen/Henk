@@ -15,7 +15,7 @@
 / ----------
 / 14/04/2025---Arno Defillet----Start van de view
 / 14/04/2025---Arno Defillet----Aanpassing: Toon completed taken
-
+/ 14/04/2025---Arno Defillet----Aanpassing: Animatie voorzien voor uncomplete task
 /
 / To do:
 / -
@@ -60,11 +60,13 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 </script>
 <template>
   <div class="body">
-    <div class="task-item" v-for="task in sortedTasks" :key="task.id">
-      <FontAwesomeIconToggler @click="CompleteToggler(task)" :icon1="'check-circle'" :icon2="'circle-notch'"
-        :active="task.completed" />
-      <div class="task-title">{{ task.title }}</div>
-    </div>
+    <transition-group name="fade-slide" tag="div">
+      <div class="task-item" v-for="task in sortedTasks" :key="task.id">
+        <FontAwesomeIconToggler @click="CompleteToggler(task)" :icon1="'check-circle'" :icon2="'circle-notch'"
+          :active="task.completed" />
+        <div class="task-title">{{ task.title }}</div>
+      </div>
+    </transition-group>
   </div>
 </template>
 
@@ -92,5 +94,30 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   font-weight: bold;
   width: 100%;
   text-decoration: line-through;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 1.0s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.fade-slide-enter-to {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-slide-leave-from {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>
