@@ -48,12 +48,12 @@ import { onMounted, ref } from 'vue';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import { userSettings } from '@/services/userSettings.service';
-import FontAwesomeIcon from '@/components/FontAwasomeIcon.vue';
+import FontAwesomeIconToggler from '@/components/FontAwasomeIconToggler.vue';
 import type { EditingState, SavedValues } from '@/components/models';
 
 const { userInfo, updateUserInfo, getUserInfo } = userSettings();
 
-const isEditing = ref<EditingState>({
+const iconToggler = ref<EditingState>({
   firstname: false,
   lastname: false,
   email: false,
@@ -102,11 +102,11 @@ const setLanguage = (lang: string) => {
   tempValues.value.language = lang;
 };
 
-function toggleEdit(field: keyof typeof isEditing.value) {
-  if (!isEditing.value[field]) {
+function toggleEdit(field: keyof typeof iconToggler.value) {
+  if (!iconToggler.value[field]) {
     tempValues.value[field] = savedValues.value[field];
   }
-  isEditing.value[field] = !isEditing.value[field];
+  iconToggler.value[field] = !iconToggler.value[field];
 }
 
 function isSaveDisabled(): boolean {
@@ -120,9 +120,9 @@ function isSaveDisabled(): boolean {
   }
 
   // Controleer of er nog velden in bewerkmodus staan
-  const isEditingActive: boolean = Object.values(isEditing.value).includes(true);
+  const iconTogglerActive: boolean = Object.values(iconToggler.value).includes(true);
 
-  return !hasChanges || isEditingActive;
+  return !hasChanges || iconTogglerActive;
 }
 
 function saveUserChanges(): void {
@@ -168,25 +168,28 @@ function saveUserChanges(): void {
     <div class="field-container-wrapper">
       <h2 class="input-title">First name: </h2>
       <div class="field-container">
-        <div v-if="!isEditing.firstname" class="text-field">{{ tempValues.firstname }}</div>
+        <div v-if="!iconToggler.firstname" class="text-field">{{ tempValues.firstname }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.firstname"></StyledInputByType>
-        <FontAwesomeIcon :isEditing="isEditing.firstname" @toggle-edit="toggleEdit('firstname')" />
+        <FontAwesomeIconToggler :iconToggler="iconToggler.firstname" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('firstname')" />
       </div>
       <h2 class="input-title">Last name: </h2>
       <div class="field-container">
-        <div v-if="!isEditing.lastname" class="text-field">{{ tempValues.lastname }}</div>
+        <div v-if="!iconToggler.lastname" class="text-field">{{ tempValues.lastname }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.lastname"></StyledInputByType>
-        <FontAwesomeIcon :isEditing="isEditing.lastname" @toggle-edit="toggleEdit('lastname')" />
+        <FontAwesomeIconToggler :iconToggler="iconToggler.lastname" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('lastname')" />
       </div>
       <h2 class="input-title">Email: </h2>
       <div class="field-container">
-        <div v-if="!isEditing.email" class="text-field">{{ tempValues.email }}</div>
+        <div v-if="!iconToggler.email" class="text-field">{{ tempValues.email }}</div>
         <StyledInputByType input-type="text" v-else v-model="tempValues.email"></StyledInputByType>
-        <FontAwesomeIcon :isEditing="isEditing.email" @toggle-edit="toggleEdit('email')" />
+        <FontAwesomeIconToggler :iconToggler="iconToggler.email" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('email')" />
       </div>
       <h2 class="input-title">Language: </h2>
       <div class="field-container">
-        <div v-if="!isEditing.language" class="text-field">{{ tempValues.language }}</div>
+        <div v-if="!iconToggler.language" class="text-field">{{ tempValues.language }}</div>
         <div v-else class="language-selector">
           <button :class="{ active: tempValues.language === 'Nederlands' }" @click="setLanguage('Nederlands')">
             Nederlands
@@ -195,7 +198,8 @@ function saveUserChanges(): void {
             English
           </button>
         </div>
-        <FontAwesomeIcon :isEditing="isEditing.language" @toggle-edit="toggleEdit('language')" />
+        <FontAwesomeIconToggler :iconToggler="iconToggler.language" icon1="floppy-disk" icon2="pen-to-square"
+          @toggle="toggleEdit('language')" />
       </div>
     </div>
   </div>
