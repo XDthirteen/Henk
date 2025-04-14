@@ -22,6 +22,7 @@
 / 03/04/2025---Arno Defillet----Toevoeging: FontAwasomeIconToggler kunnen aanduiden als completed
 / 03/04/2025---Arno Defillet----Toevoeging: Task completed naar de backend kunnen versturen
 / 03/04/2025---Arno Defillet----Toevoeging: Bij herladen van de pagina meteen kunnen aangeven of een taak completed is
+/ 03/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
 /
 / To do:
 / -
@@ -43,8 +44,12 @@ import type { Task } from '@/components/models';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
 
+const uncompletedTasks = computed(() =>
+  tasks.value.filter(task => !task.completed)
+);
+
 const sortedTasks = computed(() => {
-  return [...tasks.value].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+  return [...uncompletedTasks.value].sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
 });
 
 const newTask: Reactive<Task> = {
@@ -305,7 +310,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 400px;
-  width: 100%;
+  /* width: 100%; */
   position: relative;
   animation: fadeInScale 0.5s ease-out;
 }
@@ -371,9 +376,9 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 
 .btn {
   width: 100%;
-  padding: 10px;
+  padding: 0.5rem 0.2rem 0.5rem 0.2rem;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
   border: none;
   border-radius: 5px;
   cursor: pointer;
