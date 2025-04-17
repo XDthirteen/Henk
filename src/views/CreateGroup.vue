@@ -42,7 +42,10 @@
 								: navigateToAgenda(String(group.id))
 					"
 				>
-					<img :src="group.icon || defaultIcon" :alt="group.name" />
+					<!-- Toon de geselecteerde FontAwesome-icoon -->
+					<font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" />
+					<!-- Toon een standaardafbeelding als er geen icoon is -->
+					<img v-else :src="defaultIcon" alt="Group Icon" />
 					<span>{{ group.name }}</span>
 				</div>
 			</div>
@@ -73,10 +76,28 @@
 		<div v-if="showAddGroupPopup" class="popup">
 			<h3>Nieuwe Groep Aanmaken</h3>
 			<input v-model="newGroupName" placeholder="Groepsnaam" class="input-field" />
-			<select v-model="selectedGroupIcon" class="input-field">
-				<option disabled value="">Selecteer een icoon</option>
-				<option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
-			</select>
+
+			<!-- Aangepaste dropdown -->
+			<div class="custom-dropdown">
+				<div class="selected-icon" @click="toggleIconDropdown">
+					<font-awesome-icon
+						v-if="selectedGroupIcon"
+						:icon="['fas', selectedGroupIcon]"
+					/>
+					<span v-else>Selecteer een icoon</span>
+				</div>
+				<ul v-if="iconDropdownOpen" class="icon-list">
+					<li
+						v-for="icon in availableIcons"
+						:key="icon"
+						@click="selectIcon(icon)"
+						class="icon-item"
+					>
+						<font-awesome-icon :icon="['fas', icon]" /> {{ icon }}
+					</li>
+				</ul>
+			</div>
+
 			<button class="send-btn" @click="addGroup">Groep Toevoegen</button>
 			<button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
 
@@ -92,6 +113,24 @@ import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
 import { useGroupStore } from '@/services/groupservices'
 import type { Group } from '@/components/models.ts'
+
+// FontAwesome imports
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+	faUser,
+	faCoffee,
+	faCar,
+	faDog,
+	faBicycle,
+	faHome,
+	faTree,
+	faSun,
+	faMoon,
+	faRocket,
+} from '@fortawesome/free-solid-svg-icons'
+
+// Voeg iconen toe aan de FontAwesome bibliotheek
+library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
 
 const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
@@ -109,15 +148,43 @@ const showInvitePopup = ref(false)
 const showLeavePopup = ref(false)
 const showAddGroupPopup = ref(false)
 const newGroupName = ref('')
-const selectedGroupIcon = ref('')
-const availableIcons = ref([
-	'../assets/man-woman-boy.png',
-	'../assets/joy.png',
-	'../assets/bear.png',
-])
+const selectedGroupIcon = ref<string | null>(null)
+const availableIcons = ref<string[]>([])
+const iconDropdownOpen = ref(false)
 const successMessage = ref('')
 
+// Beschikbare iconen
+const iconList = [
+	faUser,
+	faCoffee,
+	faCar,
+	faDog,
+	faBicycle,
+	faHome,
+	faTree,
+	faSun,
+	faMoon,
+	faRocket,
+]
+
+// Functie om willekeurige iconen te genereren
+const generateRandomIcons = () => {
+	const shuffled = [...iconList].sort(() => 0.5 - Math.random()) // Shuffle
+	availableIcons.value = shuffled.slice(0, 10).map((icon) => icon.iconName) // Pak 10 willekeurige iconen
+}
+
+const toggleIconDropdown = () => {
+	iconDropdownOpen.value = !iconDropdownOpen.value
+}
+
+const selectIcon = (icon: string) => {
+	console.log('Geselecteerde icoon:', icon) // Controleer de geselecteerde icoon
+	selectedGroupIcon.value = icon
+	iconDropdownOpen.value = false
+}
+
 onMounted(async () => {
+	generateRandomIcons() // Genereer iconen bij het laden van de component
 	await fetchGroups()
 })
 
@@ -127,9 +194,16 @@ const fetchGroups = async () => {
 		const response = await axios.get<Group[]>(API_URL, {
 			headers: { Authorization: `Bearer ${token}` },
 		})
-		groups.value = response.data
+
+		console.log('Opgehaalde groepen:', response.data)
+
+		groups.value = response.data.map((group) => ({
+			...group,
+			icon: group.icon || '',
+		}))
 	} catch (error) {
 		console.error('Error fetching groups:', error)
+		alert('Failed to fetch groups.')
 	}
 }
 
@@ -230,7 +304,7 @@ const openAddGroupPopup = () => {
 const closeAddGroupPopup = () => {
 	showAddGroupPopup.value = false
 	newGroupName.value = ''
-	selectedGroupIcon.value = ''
+	selectedGroupIcon.value = null // Reset de geselecteerde icoon
 }
 
 const addGroup = async () => {
@@ -242,18 +316,26 @@ const addGroup = async () => {
 	const token = getAuthToken()
 
 	try {
-		await axios.post(
-			API_URL,
-			{ name: newGroupName.value, icon: selectedGroupIcon.value },
-			{ headers: { Authorization: `Bearer ${token}` } },
-		)
+		const newGroup = {
+			name: newGroupName.value,
+			icon: selectedGroupIcon.value, // Voeg de geselecteerde icoon toe
+		}
+
+		console.log('Nieuwe groep:', newGroup) // Controleer de gegevens die worden verzonden
+
+		await axios.post(API_URL, newGroup, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+
 		successMessage.value = 'Groep succesvol toegevoegd!'
 
+		// Reset de velden en sluit de popup
 		setTimeout(() => {
 			successMessage.value = ''
 			closeAddGroupPopup()
 		}, 2000)
 
+		// Haal de groepen opnieuw op om de nieuwe groep weer te geven
 		await fetchGroups()
 	} catch (error) {
 		console.error('Error adding group:', error)
@@ -555,5 +637,51 @@ header {
 
 .add-group-form button:last-child:hover {
 	background-color: #d32f2f;
+}
+
+.custom-dropdown {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.selected-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	cursor: pointer;
+	background: white;
+}
+
+.icon-list {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: 100%;
+	max-height: 200px;
+	overflow-y: auto;
+	background: white;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	z-index: 10;
+	list-style: none;
+	padding: 0;
+	margin: 5px 0 0;
+}
+
+.icon-item {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	cursor: pointer;
+	transition: background 0.2s ease;
+}
+
+.icon-item:hover {
+	background: #f0f0f0;
 }
 </style>
