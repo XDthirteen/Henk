@@ -128,6 +128,7 @@ function saveParamChanges(): void {
         <div v-if="!iconTogglerParam.app" class="text-field">
           {{
             {
+              home: 'home',
               weather: 'Weather',
               todo_tasks: 'My Tasks',
               translator: 'Translator',
@@ -136,6 +137,7 @@ function saveParamChanges(): void {
           }}
         </div>
         <StyledDropdown v-else v-model="paramTempValues.app" :options="[
+          { value: 'home', text: 'Home' },
           { value: 'weather', text: 'Weather' },
           { value: 'todo_tasks', text: 'My Tasks' },
           { value: 'translator', text: 'Translator' },
