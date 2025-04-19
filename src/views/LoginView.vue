@@ -70,7 +70,7 @@ const authenticate = async () => {
       <StyledInputByType input-type="email" placeholder="example@example.com" v-model="inputUsername"
         autocomplete="email"></StyledInputByType>
       <StyledInputByType input-type="password" placeholder="Your password" v-model="inputPassword"
-        autocomplete="current-password"></StyledInputByType>
+        autocomplete="current-password" @keyup.enter="authenticate()"></StyledInputByType>
     </form>
 
     <div class="button-container">
