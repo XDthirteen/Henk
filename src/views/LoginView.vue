@@ -30,6 +30,7 @@
 import { useAuth } from '@/services/auth.service';
 import { ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { userSettings } from '@/services/userSettings.service'
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import StyledButton from '@/components/StyledButton.vue';
 
@@ -53,8 +54,13 @@ const authenticate = async () => {
     wrongCredentials.value = false;
     console.log('Succesfull authenticated')
 
-    // Doorsturen naar een andere pagina
-    router.push({ name: 'home' })
+    const { getUserParam, userParam } = userSettings();
+
+    await getUserParam();
+
+    const favoriteApp = userParam.value?.app || 'home';
+    router.push({ name: favoriteApp });
+
   } catch (error) {
     wrongCredentials.value = true;
     console.error(error)
