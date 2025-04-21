@@ -44,7 +44,7 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 
-const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
+const { tasks, postNewTask, updateTask, deleteTask, completeTask, uncompletedTaskCount } = useTasks();
 
 const justCompleted = ref<number[]>([]);
 
@@ -179,6 +179,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 
 <template>
   <div class="body">
+    <div class="task-count">Uncompleted tasks: {{ uncompletedTaskCount }}</div>
     <transition-group name="fade-slide" tag="div">
       <div class="todo-item" v-for="task in visibleTasks" :key="task.id"
         :class="{ completed: task.completed && justCompleted.includes(task.id!) }">
@@ -251,6 +252,18 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   margin: 1rem 2rem;
   display: flex;
   flex-direction: column;
+}
+
+.task-count {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--secundary-white);
+  border-radius: 0.5rem;
+  font-size: large;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
 .todo-item {
