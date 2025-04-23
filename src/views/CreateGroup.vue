@@ -42,9 +42,7 @@
 								: navigateToAgenda(String(group.id))
 					"
 				>
-					<!-- Toon de geselecteerde FontAwesome-icoon -->
 					<font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" />
-					<!-- Toon een standaardafbeelding als er geen icoon is -->
 					<img v-else :src="defaultIcon" alt="Group Icon" />
 					<span>{{ group.name }}</span>
 				</div>
@@ -129,7 +127,6 @@ import {
 	faRocket,
 } from '@fortawesome/free-solid-svg-icons'
 
-// Voeg iconen toe aan de FontAwesome bibliotheek
 library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
 
 const API_URL = '/api/groups'
@@ -167,10 +164,9 @@ const iconList = [
 	faRocket,
 ]
 
-// Functie om willekeurige iconen te genereren
 const generateRandomIcons = () => {
-	const shuffled = [...iconList].sort(() => 0.5 - Math.random()) // Shuffle
-	availableIcons.value = shuffled.slice(0, 10).map((icon) => icon.iconName) // Pak 10 willekeurige iconen
+	const shuffled = [...iconList].sort(() => 0.5 - Math.random())
+	availableIcons.value = shuffled.slice(0, 10).map((icon) => icon.iconName)
 }
 
 const toggleIconDropdown = () => {
@@ -178,13 +174,13 @@ const toggleIconDropdown = () => {
 }
 
 const selectIcon = (icon: string) => {
-	console.log('Geselecteerde icoon:', icon) // Controleer de geselecteerde icoon
+	console.log('Geselecteerde icoon:', icon)
 	selectedGroupIcon.value = icon
 	iconDropdownOpen.value = false
 }
 
 onMounted(async () => {
-	generateRandomIcons() // Genereer iconen bij het laden van de component
+	generateRandomIcons()
 	await fetchGroups()
 })
 
@@ -329,13 +325,11 @@ const addGroup = async () => {
 
 		successMessage.value = 'Groep succesvol toegevoegd!'
 
-		// Reset de velden en sluit de popup
 		setTimeout(() => {
 			successMessage.value = ''
 			closeAddGroupPopup()
 		}, 2000)
 
-		// Haal de groepen opnieuw op om de nieuwe groep weer te geven
 		await fetchGroups()
 	} catch (error) {
 		console.error('Error adding group:', error)
