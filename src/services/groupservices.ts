@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import axios from "axios";
+
 
 export const useGroupStore = defineStore('groupStore', {
   state: () => ({
@@ -24,3 +26,6 @@ export const useGroupStore = defineStore('groupStore', {
     },
   },
 })
+
+
+export const GroupService = ()
