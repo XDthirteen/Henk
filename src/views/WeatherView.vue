@@ -121,12 +121,12 @@ h1{
     margin-bottom: 10px;
     color: #453d83;
   }
-  h2{
+h2{
     font-weight: bold;
     color: #453d83;
   }
 
-  h3{
+h3{
     font-weight: bold;
     font-size: large;
     color: #453d83;

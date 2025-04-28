@@ -1,47 +1,75 @@
 <script setup lang="ts">
-import{ ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { createEvent } from '@/services/eventService'
 
 const router = useRouter()
-const event = ref({
+
+interface EventFormData {
+  title: string
+  groupId: string
+  start: string
+  startTime: string
+  end: string
+  endTime: string
+  description: string
+  allDay: boolean
+}
+
+const event = ref<EventFormData>({
   title: '',
   groupId: '',
   start: new Date().toISOString().split('T')[0],
+  startTime: '',
   end: new Date().toISOString().split('T')[0],
-  // location: props.defaultLocation,
+  endTime: '',
   description: '',
-});
+  allDay: false,
+})
 
-// TODO: get the groups from the group service
 const groups = ref([
   {
-    id: "alaa",
-    name: "alaa",
-    createdAt: "2025-01-01",
-    updatedAt: "2025-01-02"
+    id: 'alaa',
+    name: 'alaa',
+    createdAt: '2025-01-01',
+    updatedAt: '2025-01-02',
   },
   {
-    id: "gert-jan",
-    name: "gert-jan",
-    createdAt: "2025-01-01",
-    updatedAt: "2025-01-02"
+    id: 'gert-jan',
+    name: 'gert-jan',
+    createdAt: '2025-01-01',
+    updatedAt: '2025-01-02',
   },
 ])
 
 const returnToCalendar = () => {
   router.push({ name: 'calendar' })
-};
+}
 
-const submitEvent = () => {
-  console.log('Event Created:', event.value);
-    // TODO: call create event from the service as well
-  document.createEvent("Event")
-  returnToCalendar()
-};
+const submitEvent = async () => {
+  try {
+    const eventToSend = {
+      title: event.value.title,
+      groupId: event.value.groupId,
+      start: event.value.allDay
+        ? event.value.start
+        : `${event.value.start}T${event.value.startTime || '00:00'}`,
+      end: event.value.allDay
+        ? event.value.end
+        : `${event.value.end}T${event.value.endTime || '23:59'}`,
+      description: event.value.description,
+    }
 
+    await createEvent(eventToSend)
+
+    alert('Event added')
+    returnToCalendar()
+  } catch (error) {
+    console.error('Failed to create event:', error)
+    alert('Failed to create event')
+  }
+}
 </script>
-
-//TODO: Time + button for whole day
 
 <template>
   <div class="calendar-events">
@@ -71,9 +99,9 @@ const submitEvent = () => {
   </div>
 
   <div>
-    <label for="eventTime">Start time</label>
-    <input v-model="event.time" id="eventTime" type="time">
-  </div>
+  <label for="eventStartTime">Start time</label>
+  <input v-model="event.startTime" :disabled="event.allDay" id="eventStartTime" type="time" />
+</div>
 
   <div>
     <label for="eventEnd">End date</label>
@@ -81,13 +109,13 @@ const submitEvent = () => {
   </div>
 
   <div>
-    <label for="eventTime">End time</label>
-    <input v-model="event.time" id="eventTime" type="time">
+  <label for="eventEndTime">End time</label>
+  <input v-model="event.endTime" :disabled="event.allDay" id="eventEndTime" type="time" />
   </div>
 
   <div>
-    <label for="eventAllDay">All day</label>
-    <input type="checkbox">
+  <label for="eventAllDay">All day</label>
+  <input v-model="event.allDay" id="eventAllDay" type="checkbox" />
   </div>
 
   <div>
@@ -96,7 +124,7 @@ const submitEvent = () => {
   </div>
 
   <div class="event-buttons">
-    <button type="submit" onclick="alert('Event added')">Save</button>
+    <button type="submit">Save</button>
     <button type="button" @click="returnToCalendar">Go Back to Calendar</button>
   </div>
   </form>
