@@ -106,7 +106,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
 import { useGroupStore } from '@/services/groupservices'
@@ -133,6 +133,10 @@ const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
 
 const router = useRouter()
+const route = useRoute()
+const groupId = route.query.group_id
+console.log('Group ID:', groupId)
+
 const { getAuthToken, isAuthenticated } = useAuth()
 const groupStore = useGroupStore()
 
@@ -208,7 +212,7 @@ const navigateToInvites = () => {
 }
 
 const navigateToAgenda = (groupId: string) => {
-	router.push({ name: 'agenda', params: { id: groupId } })
+	router.push({ name: 'calendar', query: { group_id: groupId } })
 }
 
 const toggleInviteMode = () => {
