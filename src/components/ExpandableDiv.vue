@@ -75,7 +75,6 @@ const eventClick = (eventData) => {
         const direction = onTouchEnd(event);
         if (direction === 'up') isExpanded = true;
         else if (direction === 'down') isExpanded = false;
-        //else if (direction === null) isExpanded = false;
         console.log('Swiped:', direction, 'isExpanded:', isExpanded);
     }"
     >
@@ -115,8 +114,8 @@ ul {
 }
 
 button{
-    background: #007BFF;
-    color: white;
+    background: var(--primary-purple);
+    color: var(--primary-white);
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -153,7 +152,7 @@ button{
     left: -2.5%;
     height: 4px;
 	margin-bottom: 20px;
-    background-color: lightgrey;
+    background-color: var(--primary-red);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -184,6 +183,7 @@ button{
   	margin-bottom: 2px;
   	border: 1px solid black;
   	border-radius: 10px;
+    background: var(--primary-white);
   	cursor: pointer;
 }
 

@@ -45,16 +45,20 @@
 /      15/03/2025 - Jorn Vierbergen
 /          - Toegevoegd: SwipeDirection service
 /          - Fixed: TimeZones correct convertion from UTC/ISO time from api
+/      17/03/2025 - Jorn Vierbergen
+/          - BUG: TimeZones do not work correct, asked for help, did not get.
+/      20/04/2025 - Jorn Vierbergen
+/          - Toegevoegd: UTC time api, to check if the local UTC time is correct.
 /
-/          - BUG: events don't show up at the today, not loaded yet
-/          - Annoying: swiping down to minimalize expandable div refreshes page
 /
 /      To do:
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Remove test data
+/      - Use house style css as var(--primary-blue) (in assets folder)
 /
 /      - BUG: Timezones do not work correct.
+/       - api to get utc independent from system time, compare api and system time
 /
 /      - Optimalization:
 /      	- Update only calendar days that have events instead of all days on api loaded
@@ -72,6 +76,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
@@ -82,6 +87,9 @@ const { getData } = eventService();
 
 // TEST DATA
 let groupAgenda = 13 //group id, changes when changing groups
+
+const route = useRoute()
+let groupAgenda = route.query.group_id
 
 // TIME SETTINGS FROM USER SETTINGS 
 const dateTimeSettings = {
@@ -109,9 +117,11 @@ type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
 const events = ref([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
 
+// System time
 const currentDate = new Date();
-const currentYear = ref(new Intl.DateTimeFormat('en-GB', {year: 'numeric', timeZone: timeZone}).format(currentDate));
-const currentMonth = ref((new Intl.DateTimeFormat('en-GB', {month: 'numeric', timeZone: timeZone}).format(currentDate)-1));
+const currentYear = ref(currentDate.getUTCFullYear());
+const currentMonth = ref(currentDate.getUTCMonth());
+const currentDay = ref(currentDate.getUTCDate());
 
 const eventCache = ref<{ [key: string]: any[] }>({});
 
@@ -168,10 +178,22 @@ const formatDateTime = (isoDateTime?: string) => {
 	return { date: formattedDate, time: formattedTime };
 };
 
+const getApiUTC = async () =>{
+	const response = await fetch("http://worldtimeapi.org/api/timezone/Etc/UTC");
+    const data = await response.json();
+    return new Date(data.utc_datetime);
+};
+
+
 const dateTimeToISO = () =>{
 	const now = new Date();
 	console.log(now.toISOString()); 
 };
+
+const dateTimeToUTC = (isoDateTime?: string) => {
+	const dateTime = isoDateTime ?? new Date();
+	const utcFormatted = dateTime.toLocaleString("en-GB", { timeZone: "UTC" });
+}
 
 // Fetch events selected month
 const fetchEventsForMonth = async () => {
@@ -185,8 +207,8 @@ const fetchEventsForMonth = async () => {
 	else {
 		// QUICK FIX, gets data from 3 months!, FIX LATER for less data each api call.
 		// Duplicate data also in caching...
-		const fromDate = new Date(year, month-1, 1).toISOString().split("T")[0];
-		const toDate = new Date(year, month+2, 0).toISOString().split("T")[0];
+		const fromDate = new Date(Date.UTC(year, month-1, 1)).toISOString().split("T")[0];
+		const toDate = new Date(Date.UTC(year, month+2, 0)).toISOString().split("T")[0];
 		console.log('from', fromDate, 'to', toDate);
 
 		try {
@@ -221,6 +243,7 @@ const fetchEventsForMonth = async () => {
 			// Update events
 			events.value = [...convertedEvents];
 			eventCache.value[cacheKey] = events.value;
+			// sorting only, UTC is not important here
 			events.value.sort((a, b) => new Date(a.start) > new Date(b.start) ? 1 : -1);
 
 		} 
@@ -255,13 +278,13 @@ const generateCalendarDays = (): CalendarDay[] => {
   	const month = currentMonth.value;
 	const today = formatDate()
 
-  	const daysInMonth = new Date(year, month + 1, 0).getDate();
-	const daysInPrevMonth = new Date(year, month, 0).getDate();
+  	const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getDate();
+	const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getDate();
 
-  	const firstDayOfWeek = new Date(year, month, 1).getDay();
+  	const firstDayOfWeek = new Date(Date.UTC(year, month, 1)).getDay();
   	const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-  	const lastDayOfWeek = new Date(year, month + 1, 0).getDay();
+  	const lastDayOfWeek = new Date(Date.UTC(year, month + 1, 0)).getDay();
   	const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
 
   	const days: CalendarDay[] = [];
@@ -274,19 +297,17 @@ const generateCalendarDays = (): CalendarDay[] => {
   	) => {
 		for (let i = 0; i < count; i++) {
 			const day = startDay + i;
-			// set Date in UTC so it account for timezone
+			// Create Date in UTC so it does not fuck up the god damned timezone things
 			const targetDate = new Date(Date.UTC(year, month + offsetMonth, day));
-			const targetDay = targetDate.getUTCDate()
-			console.log('t',targetDate)
-			console.log(targetDate.toISOString())
 			// fcking bull sh*t this is
 			// Format all dates to selected date notation
 			const fullDate = formatDate(targetDate.toISOString());
 			console.log(today)
+			console.log(targetDate)
 			console.log(fullDate)
 
 			days.push({
-				day: targetDay,
+				day: day,
 				date: fullDate,
 				faded,
 				isToday:
@@ -451,8 +472,8 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background: #007BFF;
-    color: white;
+    background: var(--primary-purple);
+    color: var(--primary-white);
 }
 
 #month-year{
@@ -462,8 +483,8 @@ onMounted(() => {
 
 /* change button, also duplicate in ExpandableDiv.vue component */
 button{
-    background: #007BFF;
-    color: white;
+    background: var(--primary-purple);
+    color: var(--primary-white);
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -471,7 +492,7 @@ button{
 }
 
 button:hover {
-    background: #0056b3;
+    background: var(--secundary-purple);
 }
 
 .nav-button {
@@ -490,7 +511,7 @@ button:hover {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: white;
+    background: var(--primary-white);
     overflow-y: auto;
     max-height: 350px;
     /* Adjust height to fit 5-6 rows */
@@ -527,7 +548,7 @@ button:hover {
 .today {
     background: grey;
     border-radius: 4px;
-    color: white;
+    color: var(--primary-white);
     font-weight: bold;
 }
 
