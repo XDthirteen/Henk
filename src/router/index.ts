@@ -54,13 +54,9 @@ const router = createRouter({
           component: () => import('@/components/GroupInvites.vue'),
         },
         {
-          path: '/signin',
-          name: 'signin',
-          component: () => import('@/views/RegisterView.vue'),
-        },
-        {
           path: '/weather',
           name: 'weather',
+          beforeEnter: [authenticationGuard],
           component: () => import('@/views/WeatherView.vue'),
         },
         {
@@ -72,11 +68,13 @@ const router = createRouter({
             {
               path: '/myAccount/settings',
               name: 'settings',
+              beforeEnter: [authenticationGuard],
               component: () => import('@/views/AccountUserSettings.vue'),
             },
             {
               path: '/myAccount/parameters',
               name: 'parameters',
+              beforeEnter: [authenticationGuard],
               component: () => import('@/views/AccountParameters.vue'),
             },
           ],
@@ -91,6 +89,26 @@ const router = createRouter({
           path: '/calendar/events',
           name: 'calenderEvents',
           component: () => import('@/views/CalendarEventView.vue'),
+        },
+        {
+          path: '/tasks',
+          name: 'tasks',
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/layouts/TasksView.vue'),
+          children: [
+            {
+              path: '/tasks/todo',
+              name: 'todo_tasks',
+              beforeEnter: [authenticationGuard],
+              component: () => import('@/views/TasksToDoView.vue'),
+            },
+            {
+              path: '/tasks/done',
+              name: 'done_tasks',
+              beforeEnter: [authenticationGuard],
+              component: () => import('@/views/TasksDoneView.vue'),
+            },
+          ],
         },
       ],
     },
