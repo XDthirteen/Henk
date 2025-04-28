@@ -71,9 +71,6 @@ const submitEvent = async () => {
 }
 </script>
 
-
-//TODO: Time + button for whole day
-
 <template>
   <div class="calendar-events">
   <div class="events-content">
