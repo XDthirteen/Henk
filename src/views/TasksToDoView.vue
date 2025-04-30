@@ -25,10 +25,12 @@
 / 14/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
 / 14/04/2025---Arno Defillet----Aanpassing: Opkuis van code + Huisstijl toepassen + animatie voorzien voor task
 completed
+/ 30/04/2025---Arno Defillet----Toevoeging: Nieuwe taak maakt event aan indien dueDate is ingevuld
+/ 30/04/2025---Arno Defillet----Aanpassing: Velden terug leegmaken nadat taak wordt aangemaakt
 /
 / To do:
-/ - taak kunnen inplannen in de agenda
-/ -
+/ - Er bestaat nog geen functie om event te updaten
+/ - Event nog kunnen tonen in agenda
 /
 / Opmerkingen:
 / ------------
@@ -44,6 +46,7 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 import PopUpComponent from '@/components/PopUpComponent.vue';
+import { createEvent, type EventInput } from '@/services/eventService';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask, uncompletedTaskCount } = useTasks();
 
@@ -81,6 +84,13 @@ const editedTask = ref<Task>({
   dueDate: '',
   userId: undefined,
 });
+
+const resetNewTask = () => {
+  newTask.completed = false;
+  newTask.title = '';
+  newTask.description = '';
+  newTask.dueDate = '';
+};
 
 function formatDueDate(date: string): string {
   return new Date(date).toISOString().slice(0, 16);
@@ -126,8 +136,27 @@ function closeEditTask() {
 const PostTaskToBackend = async (): Promise<void> => {
   try {
     await postNewTask(newTask);
+
+    //Event aanmaken
+    if (newTask.dueDate) {
+      const startDate = new Date(newTask.dueDate);
+      const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // event end default op 30 minuten erna zetten
+
+      const event: EventInput = {
+        title: newTask.title,
+        description: newTask.description,
+        groupId: 'me',
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      };
+
+      await createEvent(event)
+      console.log("Task successfully created!");
+    } else {
+      console.log("No due date provided, skipping event creation.");
+    }
+    resetNewTask()
     isCreatingNewTask.value = false;
-    console.log("Task successfully created!");
   } catch (error) {
     console.error("Error during task creation:", error);
   }
