@@ -48,14 +48,11 @@ export interface UserParamData {
 // CALENDAR //
 //////////////
 export interface CalendarDay {
-  day: number
-  month: number
-  year: number
-  date: string
-  faded: boolean
-  isToday?: boolean
-  dayOfWeek: string
-  eventLines: string[]
+    day: number
+    date: string
+    faded: boolean
+    isToday?: boolean
+    eventLines: string[]
 }
 
 /////////////

@@ -32,14 +32,41 @@
 /          - Toegevoegd: Event items klikbaar
 /      13/02/2025 - Jorn Vierbergen
 /          - Toegevoegd: scrollable event items in case of unable to display all.
+/          - Aangepast: expandable div verplaatst naar component ExpandableDiv.vue
+/      24/02/2025 - Jorn Vierbergen
+/          - Toegevoegd: API integratie event.service.ts
+/          - Aangepast: Optimalizeren calender functie gebruik.
+/          - Aangepast: API data cachen
+/      28/02/2025 - Jorn Vierbergen
+/          - Toegevoegd: Datum en tijd in ISO + omvormen naar visueel tijdstip
+/          - Fixed: Event lines enkel eenmaal toevoegen in HTML element
+/      13/03/2025 - Jorn Vierbergen
+/          - Fixed: expandableDiv mobile browser adress makes screen smaller
+/      15/03/2025 - Jorn Vierbergen
+/          - Toegevoegd: SwipeDirection service
+/          - Fixed: TimeZones correct convertion from UTC/ISO time from api
+/      17/03/2025 - Jorn Vierbergen
+/          - BUG: TimeZones do not work correct, asked for help, did not get.
+/      20/04/2025 - Jorn Vierbergen
+/          - Toegevoegd: UTC time api, to check if the local UTC time is correct.
+/
 /
 /      To do:
-/      - Change month to specified month. Click on month, drop down menu
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
-/      - Add API
 /      - Remove test data
-/      -? Load events only for previous, current and next month. (optimalization)
+/      - Use house style css as var(--primary-blue) (in assets folder)
+/
+/      - BUG: Timezones do not work correct.
+/       - api to get utc independent from system time, compare api and system time
+/
+/      - Optimalization:
+/      	- Update only calendar days that have events instead of all days on api loaded
+/      	- API get only the events for the dates needed, now we get the events for 3 months
+/      	- Use filter() instead of forEach and push for arrays
+/
+/      - NTH Change month to specified month. Click on month, drop down menu
+/      - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
 /      Opmerkingen:
 /      ------------
@@ -48,59 +75,55 @@
 #####################################*/
 
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
-import { ref, computed, onMounted, nextTick } from "vue";
-import CalenderEventView from '@/views/CalendarEventView.vue';
+import expandableDiv from "@/components/ExpandableDiv.vue";
+import { swipe } from '@/utils/swipeDetection';
 
-// MODAL POP-UP
-// const isVisible = ref(false);
-
+const { onTouchStart, onTouchEnd } = swipe();
+const { getData } = eventService();
 
 // TEST DATA
-const events = {
-	personal: [
-		{ startDate: "01/02/2025", startTime: "08:00", endDate: "02/02/2025", endTime: "08:00" , title: "test title", description: "desceription < Spelling :/"},
-		{ startDate: "04/02/2025", startTime: "09:00", endDate: "14/03/2025", endTime: "09:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-		{ startDate: "05/02/2025", startTime: "08:00", endDate: "05/02/2025", endTime: "08:00" },
-	],
-	group: [
-    	{ startDate: "02/02/2025", startTime: "08:02", endDate: "02/02/2025", endTime: "08:02" },
-    	{ startDate: "05/02/2025", startTime: "09:02", endDate: "05/02/2025", endTime: "09:05" },
-  	],
-	planned: [
-    	{ startDate: "10/02/2025", startTime: "08:00", endDate: "10/02/2025", endTime: "08:00" },
-    	{ startDate: "11/02/2025", startTime: "09:00", endDate: "11/02/2025", endTime: "09:00" },
-  	],
-};
+let groupAgenda = 13 //group id, changes when changing groups
 
-const currentYear = ref(new Date().getFullYear());
-const currentMonth = ref(new Date().getMonth());
+const route = useRoute()
+let groupAgenda = route.query.group_id
+
+// TIME SETTINGS FROM USER SETTINGS 
+const dateTimeSettings = {
+	//timeZone: 'America/New_York', //'Europe/Brussels', 'America/New_York', ...
+	timeZone: 'Europe/Brussels',
+	// date/time displayed per locale format
+	dateTimeNotation: 'en-GB', // 'en-GB' D M Y, 'be-NL' M D Y, 'en-US', ...
+	// console.log(navigator.language);
+
+	hour12Notation: false,
+	hourNotation: '2-digit' as NumberNotation,
+    minuteNotation: '2-digit' as NumberNotation,
+	secondNotation: '2-digit' as NumberNotation,
+
+	dayNotation: '2-digit' as NumberNotation,
+	monthNotation: 'long' as MonthNotation,
+	yearNotation: 'numeric' as NumberNotation,
+}
+
+const { timeZone,  dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
+type NumberNotation = 'numeric' | '2-digit';
+type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
+// -------
+
+const events = ref([]);
+const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
+
+// System time
+const currentDate = new Date();
+const currentYear = ref(currentDate.getUTCFullYear());
+const currentMonth = ref(currentDate.getUTCMonth());
+const currentDay = ref(currentDate.getUTCDate());
+
+const eventCache = ref<{ [key: string]: any[] }>({});
 
 const weekdays = [
 	"Mon",
@@ -127,24 +150,141 @@ const months = [
 	"December"
 ];
 
-// Format date to dd/mm/yyyy
-const formatDate = (day: number, month: number, year: number): string => {
-	const formattedDay = day < 10 ? `0${day}` : `${day}`;
-  	const formattedMonth = month + 1 < 10 ? `0${month + 1}` : `${month + 1}`;
-  	return `${formattedDay}/${formattedMonth}/${year}`;
+// If no isoDateTime string is given, use current date
+const formatDate = (isoDateTime?: string) => {
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleDateString(dateTimeNotation, {
+		timeZone,
+		year: yearNotation,
+		month: monthNotation,
+		day: dayNotation,
+	});
+};
+
+const formatTime = (isoDateTime?: string) => {
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleTimeString(dateTimeNotation, {
+		timeZone,
+		hour: hourNotation,
+		minute: minuteNotation,
+		hour12: hour12Notation,
+	});
+};
+
+const formatDateTime = (isoDateTime?: string) => {
+	const dateTime = isoDateTime ?? new Date().toISOString();
+	const formattedDate = formatDate(dateTime)
+	const formattedTime = formatTime(dateTime)
+	return { date: formattedDate, time: formattedTime };
+};
+
+const getApiUTC = async () =>{
+	const response = await fetch("http://worldtimeapi.org/api/timezone/Etc/UTC");
+    const data = await response.json();
+    return new Date(data.utc_datetime);
+};
+
+
+const dateTimeToISO = () =>{
+	const now = new Date();
+	console.log(now.toISOString()); 
+};
+
+const dateTimeToUTC = (isoDateTime?: string) => {
+	const dateTime = isoDateTime ?? new Date();
+	const utcFormatted = dateTime.toLocaleString("en-GB", { timeZone: "UTC" });
+}
+
+// Fetch events selected month
+const fetchEventsForMonth = async () => {
+	const year = currentYear.value;
+	const month = currentMonth.value;
+	const cacheKey = `${year}-${month}`;
+
+	if (eventCache.value[cacheKey]) {
+		events.value = eventCache.value[cacheKey];
+	}
+	else {
+		// QUICK FIX, gets data from 3 months!, FIX LATER for less data each api call.
+		// Duplicate data also in caching...
+		const fromDate = new Date(Date.UTC(year, month-1, 1)).toISOString().split("T")[0];
+		const toDate = new Date(Date.UTC(year, month+2, 0)).toISOString().split("T")[0];
+		console.log('from', fromDate, 'to', toDate);
+
+		try {
+			const allEvents = [];
+			const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+			personalEvents.forEach((item: any) => {
+      			allEvents.push({ ...item, eventType: 'personal' });
+    		});
+
+			// get all group events when checking personal agenda
+			const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
+			const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
+    		groupEvents.forEach((item: any) => {
+				allEvents.push({ ...item, eventType: 'group' });
+			});
+
+			const convertedEvents = [];
+			
+			allEvents.forEach(event => {
+				const { date: startDate, time: startTime } = formatDateTime(event.start);
+				const { date: endDate, time: endTime } = formatDateTime(event.end);
+
+				convertedEvents.push({
+					...event,
+					startDate,
+					startTime,
+					endDate,
+					endTime,
+				});
+			});
+
+			// Update events
+			events.value = [...convertedEvents];
+			eventCache.value[cacheKey] = events.value;
+			// sorting only, UTC is not important here
+			events.value.sort((a, b) => new Date(a.start) > new Date(b.start) ? 1 : -1);
+
+		} 
+		catch (error) {
+			console.error("Error fetching and processing events:", error);
+		}
+	}
+	// Reload calendarDays
+	calendarDays.value = generateCalendarDays();
+	selectToday();
+};
+
+// Get event types for each day
+const getEventLinesForDay = (date: string) => {
+	let eventLines: string[] = [];
+
+	events.value.forEach(event => {
+		if (date >= event.startDate && date <= event.endDate) {
+      		const type = event.eventType;
+			if (!eventLines.includes(type)) {
+				eventLines.push(type);
+			};
+		};
+	});
+	return eventLines;
 };
 
 // Days for calendar
-const calendarDays = computed(() => {
+// No need for time, except for finding today.
+const generateCalendarDays = (): CalendarDay[] => {
   	const year = currentYear.value;
   	const month = currentMonth.value;
+	const today = formatDate()
 
-  	const daysInMonth = new Date(year, month + 1, 0).getDate();
+  	const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getDate();
+	const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getDate();
 
-  	const firstDayOfWeek = new Date(year, month, 1).getDay();
+  	const firstDayOfWeek = new Date(Date.UTC(year, month, 1)).getDay();
   	const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-  	const lastDayOfWeek = new Date(year, month + 1, 0).getDay();
+  	const lastDayOfWeek = new Date(Date.UTC(year, month + 1, 0)).getDay();
   	const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
 
   	const days: CalendarDay[] = [];
@@ -157,96 +297,52 @@ const calendarDays = computed(() => {
   	) => {
 		for (let i = 0; i < count; i++) {
 			const day = startDay + i;
-			const targetDate = new Date(year, month + offsetMonth, day);
-			const targetMonth = targetDate.getMonth();
-			const targetYear = targetDate.getFullYear();
-			const fullDate = formatDate(day, targetMonth, targetYear);
+			// Create Date in UTC so it does not fuck up the god damned timezone things
+			const targetDate = new Date(Date.UTC(year, month + offsetMonth, day));
+			// fcking bull sh*t this is
+			// Format all dates to selected date notation
+			const fullDate = formatDate(targetDate.toISOString());
+			console.log(today)
+			console.log(targetDate)
+			console.log(fullDate)
 
 			days.push({
-				day: targetDate.getDate(),
-				month: targetMonth,
-				year: targetYear,
+				day: day,
 				date: fullDate,
 				faded,
 				isToday:
-					!faded &&
-					targetDate.getDate() === new Date().getDate() &&
-					targetYear === new Date().getFullYear() &&
-					targetMonth === new Date().getMonth(),
-				dayOfWeek: weekdays[targetDate.getDay() === 0 ? 6 : targetDate.getDay() - 1],
-				// Add event-line info to each day (whether it has events or not)
-				eventLines: getEventLinesForDay(fullDate), // Get event types for this date
+					!faded && fullDate === today,
+				eventLines: getEventLinesForDay(fullDate),
 			});
-		}
+		};
   	};
 
-	const daysInPrevMonth = new Date(year, month, 0).getDate();
 	addDays(startOffset, daysInPrevMonth - startOffset + 1, true, -1);
 	addDays(daysInMonth, 1, false, 0);
 	addDays(endOffset, 1, true, 1);
 
 	return days;
-});
-
-// Go to previous and next month
-const goToPrevMonth = () => {
-  	currentMonth.value = (currentMonth.value - 1 + 12) % 12;
-  	if (currentMonth.value === 11) currentYear.value--;
-  	calculateExpandableDiv();
 };
 
-const goToNextMonth = () => {
-  	currentMonth.value = (currentMonth.value + 1) % 12;
-  	if (currentMonth.value === 0) currentYear.value++;
-  	calculateExpandableDiv();
-};
+const calendarDays = ref<CalendarDay[]>(generateCalendarDays());
 
 // Expandable div calculation
 const calculateExpandableDiv = () => {
-	nextTick(() => {
-    	const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
-    	if (calendarElement) {
-      		const calendarPosition = calendarElement.getBoundingClientRect();
-      		document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
-      		document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
-    	}
-  	});
+		// ensure measurement happen on the next frame, after layout and styles are applied.
+		requestAnimationFrame(() => {
+			const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
+			if (calendarElement) {
+				const calendarPosition = calendarElement.getBoundingClientRect();
+				document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
+				document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
+			};
+		});
 };
 
 // Select today on startup
-const todayClick = () => {
-  	const today = document.querySelector('.today');
-  	if (today) {
-    	today.click();
-  	}
-};
-
-// Expandable div toggle
-const isExpanded = ref(false);
-const toggleExpand = () => {
-  	isExpanded.value = !isExpanded.value;
-};
-
-// Swipe detection
-let touchStartY = 0;
-let touchEndY = 0;
-const onTouchStart = (event: TouchEvent) => {
-  	touchStartY = event.touches[0].clientY;
-};
-
-const onTouchMove = (event: TouchEvent) => {
-  	touchEndY = event.touches[0].clientY;
-};
-
-const onTouchEnd = () => {
-  	// Swipe up
-  	if (touchStartY - touchEndY > 50) {
-    	isExpanded.value = true;
-  	}
-	// Swipe down
-	else if (touchEndY - touchStartY > 50) {
-    	isExpanded.value = false;
-  	}
+const selectToday = () => {
+	const today = calendarDays.value.find(day => day.isToday);
+	if (today) selectDate(today);
 };
 
 // Event button
@@ -255,85 +351,61 @@ const onTouchEnd = () => {
 //   	console.log("Event button clicked!");
 // };
 
-// ? merge set event data and set event lines ?
-// Set event data
-const getEventsForSelectedDate = () => {
-  	if (!selectedDate.value) return [];
-
-  	let allEvents: any[] = [];
-  	const selectedDateFormatted = selectedDate.value.date; // DD/MM/YYYY format -OLD REMOVE LATER
-
-  	// Find every date per event type
-  	Object.entries(events).forEach(([type, eventList]) => {
-    	eventList.forEach(event => {
-     	 	const { startDate, endDate } = event;
-
-			// Convert startDate, endDate back to date objects to compare
-			const start = new Date(startDate.split("/").reverse().join("-"));
-			const end = new Date(endDate.split("/").reverse().join("-"));
-			const selected = new Date(selectedDateFormatted.split("/").reverse().join("-"));
-
-			// Check if selected date is within event range
-			if (selected >= start && selected <= end) {
-				allEvents.push({ ...event, type });
-			}
-    	});
-  	});
-
-  	// Sort events by startTime (sorded by backend?)
-  	return allEvents.sort((a, b) => a.startTime.localeCompare(b.startTime));
+// Go to previous and next month
+const goToPrevMonth = () => {
+  	currentMonth.value = (currentMonth.value - 1 + 12) % 12;
+  	if (currentMonth.value === 11) currentYear.value--;
+  	calculateExpandableDiv();
+	fetchEventsForMonth();
 };
 
-// Set event-lines on calendar
-const getEventLinesForDay = (date: string) => {
-  	let eventLines = [];
-
-  	Object.entries(events).forEach(([type, eventList]) => {
-    	eventList.forEach(event => {
-      	const { startDate, endDate } = event;
-
-      	// Convert startDate, endDate back to date objects to compare
-		const start = new Date(startDate.split("/").reverse().join("-"));
-		const end = new Date(endDate.split("/").reverse().join("-"));
-		const current = new Date(date.split("/").reverse().join("-"));
-
-		// Check if selected date is within event range
-		if (current >= start && current <= end) {
-			eventLines.push(type); // Add event type for styling
-		}
-		});
-	});
-
-  	return eventLines;
+const goToNextMonth = () => {
+  	currentMonth.value = (currentMonth.value + 1) % 12;
+  	if (currentMonth.value === 0) currentYear.value++;
+  	calculateExpandableDiv();
+	fetchEventsForMonth();
 };
-
-// Selected date
-const selectedDate = ref<CalendarDay>();
 
 // Select date
 const selectDate = (date: CalendarDay) => {
-  	selectedDate.value = date;
-  	console.log(`Clicked on: ${date.date} ${date.dayOfWeek}`);
+	console.log(`Clicked on: ${date.date}`);
 
-  	// Get events for selected date
-  	const eventsForDate = getEventsForSelectedDate();
-  	console.log(`Events for ${date.date}:`, eventsForDate);
-};
+	const eventsForSelectedDate = [];
 
-const eventClick = (eventData) => {
-  	console.log("Clicked event:", eventData);
+	events.value.forEach(event => {
+		// Check if event in selected date range
+		const eventStartDate = event.startDate;
+		const eventEndDate = event.endDate;
+
+		if (date.date >= eventStartDate && date.date <= eventEndDate) {
+			eventsForSelectedDate.push(event);
+		};
+	});
+	selectedDate.value = {
+		...date,
+		events: eventsForSelectedDate,
+	};
+	console.log("Selected Date Events:", selectedDate.value.events);
 };
 
 onMounted(() => {
-  	calculateExpandableDiv();
-  	todayClick();
+	fetchEventsForMonth();
+	calculateExpandableDiv();
 });
+
 </script>
 
 <template>
-  <div class="center">
-    <div class="calendar-wrapper">
-      <div class="calendar">
+<div class="center">
+	<div class="calendar-wrapper">
+		<div class="calendar"
+		@touchstart="onTouchStart"
+		@touchend="(event) => {
+			const direction = onTouchEnd(event);
+			if (direction === 'right') goToNextMonth();
+			if (direction === 'left') goToPrevMonth();
+		}"
+		>
       		<!-- Header -->
       		<div class="calendar-header">
         		<button @click="goToPrevMonth" class="nav-button">◀</button>
@@ -357,52 +429,16 @@ onMounted(() => {
 				>
 					<span>{{ date.day }}</span>
 					<div class="event-lines">
-						<div v-for="eventType in getEventLinesForDay(date.date)" :key="eventType" :class="['event-line', eventType]"></div>
+						<div v-for="eventType in date.eventLines" :key="eventType" :class="['event-line', eventType]"></div>
 					</div>
 				</div>
       		</div>
     	</div>
 
     	<!-- Expandable Div -->
-		<div
-		:class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']"
-		@click="toggleExpand"
-		@touch="toggleExpand">
-		<!-- ?fix later touch does not work well together with
-		@touchstart="onTouchStart"
-		@touchmove="onTouchMove"
-		@touchend="onTouchEnd">
-		-->
+		<expandableDiv :events="events" :selectedDate="selectedDate" />
 
-			<div class="line">
-				<button class="expand-button">{{ isExpanded ? '▼' : '▲' }}</button>
-			</div>
-			<div class="event-selected-date">
-				{{ selectedDate?.date }}
-			</div>
-			<div class="event-container">
-				<ul v-if="getEventsForSelectedDate().length">
-					<li v-for="(event, index) in getEventsForSelectedDate()" :key="index" class="event-item" @click.stop="eventClick(event)">
-						<div v-if="event.startDate !== event.endDate">
-							<div class="event-date-range">
-								{{ event.startDate }} - {{ event.endDate }}
-							</div>
-						</div>
-
-						<!-- Event circle and time -->
-						<div class="event-details" >
-							<div class="event-circle" :class="event.type"></div>
-							<span>{{ event.startTime }} - {{ event.endTime }} {{ event.title }}</span>
-						</div>
-					</li>
-				</ul>
-
-				<p v-else>No events for this date... yet :P</p>
-			</div>
-		</div>
-      <!-- <button class="add-event-button" @click="openEventDialogue"> -->
-      <router-link to="/calendar/events" custom v-slot="{navigate}">
-		<button class="add-event-button" @click="navigate" role="link">
+		<button class="add-event-button" @click="addEvent">
 			Event Button
 		</button>
   </router-link>
@@ -413,11 +449,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-ul {
-  	padding-left: 0%;
-  	padding-right: 0%;
-}
-
 .center {
     font-family: Arial;
     display: flex;
@@ -431,6 +462,7 @@ ul {
 }
 
 .calendar {
+	margin: 2%;
     border: 1px solid black;
     border-radius: 10px;
     overflow: hidden;
@@ -444,8 +476,8 @@ ul {
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    background: #007BFF;
-    color: white;
+    background: var(--primary-purple);
+    color: var(--primary-white);
 }
 
 #month-year{
@@ -453,9 +485,10 @@ ul {
     align-items: center;
 }
 
+/* change button, also duplicate in ExpandableDiv.vue component */
 button{
-    background: #007BFF;
-    color: white;
+    background: var(--primary-purple);
+    color: var(--primary-white);
     border: none;
     cursor: pointer;
     border-radius: 5px;
@@ -463,7 +496,7 @@ button{
 }
 
 button:hover {
-    background: #0056b3;
+    background: var(--secundary-purple);
 }
 
 .nav-button {
@@ -482,8 +515,7 @@ button:hover {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-
-    background: white;
+    background: var(--primary-white);
     overflow-y: auto;
     max-height: 350px;
     /* Adjust height to fit 5-6 rows */
@@ -502,6 +534,10 @@ button:hover {
     border: 2px solid transparent;
 }
 
+.date{
+	cursor: pointer;
+}
+
 .date span{
     position: relative;
     z-index: 2;
@@ -516,7 +552,7 @@ button:hover {
 .today {
     background: grey;
     border-radius: 4px;
-    color: white;
+    color: var(--primary-white);
     font-weight: bold;
 }
 
@@ -554,77 +590,6 @@ button:hover {
     bottom: 1px;
 }
 
-.expand-wrapper {
-    position: fixed;
-    left: 0;
-    right: 0;
-    background-color: white;
-    padding: 10px;
-    padding-top: 20px;
-    box-sizing: border-box;
-    z-index: 3;
-}
-
-.expand-wrapper.minimized {
-    top: auto;
-    bottom: 0;
-    height: calc(100vh - var(--calendar-bottom)); /* Calculate height */
-}
-
-.expand-wrapper.expanded {
-    top: var(--calendar-top); /* Start at top calendar-wrapper */
-    bottom: 0;
-    height: auto;
-    z-index: 3;
-}
-
-.line {
-    position: relative;
-    width: 105%;
-    left: -2.5%;
-    height: 4px;
-	margin-bottom: 20px;
-    background-color: lightgrey;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.expand-button {
-    position: absolute;
-    top: -10px;
-    padding: 5px 10px;
-    z-index: 4;
-}
-
-.event-selected-date {
-    position: absolute;
-    top: 20px;
-	left: 20px;
-    font-size: 18px;
-}
-.event-container {
-  	padding-bottom: 50px;
-  	max-height: 90%;
-  	overflow-y: auto;
-}
-
-.event-item {
-  	display: flex;
-  	flex-direction: column;
-  	margin-bottom: 2px;
-  	border: 1px solid black;
-  	border-radius: 10px;
-  	cursor: pointer;
-}
-
-.event-circle {
-  	width: 12px;
-  	height: 12px;
-  	border-radius: 50%;
-  	margin-right: 10px;
-}
-
 /* Colors based on event type */
 .personal {
   	background-color: red;
@@ -636,25 +601,6 @@ button:hover {
 
 .planned {
   	background-color: blue;
-}
-
-
-.event-date-range {
-  	font-size: 12px;
-  	margin-bottom: 5px;
-  	text-align: left;
-	padding-left: 11px;
-}
-
-.event-details {
-  	display: flex;
-  	align-items: center;
-  	padding: 3px 10px;
-}
-
-.event-time {
-  	display: flex;
-  	flex-direction: column;
 }
 
 </style>

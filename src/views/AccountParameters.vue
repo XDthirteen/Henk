@@ -17,6 +17,8 @@
 / -------------------------------------------------------------------
 / 15/01/2025---Arno Defillet----Start van de view met 1 div ter testing
 / 26/02/2025---Arno Defillet----Volledige uitwerking van pagina (gebaseerd op AccountUserSettings)
+/ 19/04/2025---Arno Defillet----Aanpassing: zorgen dat de benaming van Default app weergegeven wordt als mooie tekst, en
+dat er een waarde wordt weggeschreven die in de router gebruikt wordt
 /
 / To do:
 / -
@@ -123,10 +125,21 @@ function saveParamChanges(): void {
       </div>
       <h2 class="input-title">Default app on Home:</h2>
       <div class="field-container">
-        <div v-if="!iconTogglerParam.app" class="text-field">{{ paramTempValues.app }}</div>
+        <div v-if="!iconTogglerParam.app" class="text-field">
+          {{
+            {
+              home: 'home',
+              weather: 'Weather',
+              todo_tasks: 'My Tasks',
+              translator: 'Translator',
+              calendar: 'Calendar'
+            }[paramTempValues.app] || paramTempValues.app
+          }}
+        </div>
         <StyledDropdown v-else v-model="paramTempValues.app" :options="[
+          { value: 'home', text: 'Home' },
           { value: 'weather', text: 'Weather' },
-          { value: 'myTasks', text: 'My Tasks' },
+          { value: 'todo_tasks', text: 'My Tasks' },
           { value: 'translator', text: 'Translator' },
           { value: 'calendar', text: 'Calendar' }
         ]" />

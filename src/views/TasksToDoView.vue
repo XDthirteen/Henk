@@ -43,6 +43,7 @@ import StyledButton from "@/components/StyledButton.vue";
 import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
+import PopUpComponent from '@/components/PopUpComponent.vue';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask, uncompletedTaskCount } = useTasks();
 
@@ -190,54 +191,42 @@ const CompleteToggler = async (task: Task): Promise<void> => {
     </transition-group>
   </div>
 
-  <div v-if="isEditingTask.valueOf()" class="modal-overlay" @click="closeEditTask">
-    <div class="new-task-form" @click.stop>
-      <button class="close-btn" @click="closeEditTask">
-        <font-awesome-icon :icon="['fas', 'xmark']" />
-      </button>
-
-      <div class="modal-items">
-        <div class="item-in-modal">
-          <StyledInputByType label="Title" v-model="editedTask.title" placeholder="Enter task title" inputType="text" />
-        </div>
-        <div class="item-in-modal">
-          <div class="textarea-title">Description</div>
-          <textarea class="textarea-input" v-model="editedTask.description" placeholder="Enter task description"
-            rows="4" cols="1"></textarea>
-        </div>
-        <div class="item-in-modal">
-          <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
-        </div>
-        <div class="btn-container">
-          <StyledButton @click="PutTaskToBackend" type="save">Update</StyledButton>
-          <StyledButton @click="DeleteTaskToBackend" type="negative">Delete</StyledButton>
-        </div>
+  <PopUpComponent v-if="isEditingTask" @close="closeEditTask">
+    <div class="modal-items">
+      <div class="item-in-modal">
+        <StyledInputByType label="Title" v-model="editedTask.title" placeholder="Enter task title" inputType="text" />
+      </div>
+      <div class="item-in-modal">
+        <div class="textarea-title">Description</div>
+        <textarea class="textarea-input" v-model="editedTask.description" placeholder="Enter task description" rows="4"
+          cols="1" />
+      </div>
+      <div class="item-in-modal">
+        <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
+      </div>
+      <div class="btn-container">
+        <StyledButton @click="PutTaskToBackend" type="save">Update</StyledButton>
+        <StyledButton @click="DeleteTaskToBackend" type="negative">Delete</StyledButton>
       </div>
     </div>
-  </div>
+  </PopUpComponent>
 
-  <div v-if="isCreatingNewTask.valueOf()" class="modal-overlay" @click="toggleCreateNewTask">
-    <div class="new-task-form" @click.stop>
-      <button class="close-btn" @click="toggleCreateNewTask">
-        <font-awesome-icon :icon="['fas', 'xmark']" />
-      </button>
-
-      <div class="modal-items">
-        <div class="item-in-modal">
-          <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
-        </div>
-        <div class="item-in-modal">
-          <div class="textarea-title">Description</div>
-          <textarea class="textarea-input" v-model="newTask.description" placeholder="Enter task description" rows="4"
-            cols="1"></textarea>
-        </div>
-        <div class="item-in-modal">
-          <StyledInputByType label="Due Date" v-model="newTask.dueDate" inputType="datetime-local" />
-        </div>
-        <StyledButton @click="PostTaskToBackend" type="save">Create Task</StyledButton>
+  <PopUpComponent v-if="isCreatingNewTask" @close="toggleCreateNewTask">
+    <div class="modal-items">
+      <div class="item-in-modal">
+        <StyledInputByType label="Title" v-model="newTask.title" placeholder="Enter task title" inputType="text" />
       </div>
+      <div class="item-in-modal">
+        <div class="textarea-title">Description</div>
+        <textarea class="textarea-input" v-model="newTask.description" placeholder="Enter task description" rows="4"
+          cols="1" />
+      </div>
+      <div class="item-in-modal">
+        <StyledInputByType label="Due Date" v-model="newTask.dueDate" inputType="datetime-local" />
+      </div>
+      <StyledButton @click="PostTaskToBackend" type="save">Create Task</StyledButton>
     </div>
-  </div>
+  </PopUpComponent>
 
   <div class="new-item" @click="toggleCreateNewTask">
     <StyledButton class="new-item-btn" type="save">
@@ -304,20 +293,6 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 .new-item-btn:hover {
   background-color: var(--primary-green);
   transform: scale(1.1);
-}
-
-/* Modal Overlay */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
 }
 
 /* Modal content */
