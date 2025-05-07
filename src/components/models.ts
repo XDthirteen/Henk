@@ -100,7 +100,7 @@ export interface Language {
 export interface Group {
   id: number;
   name: string;
-  icon: string;
+  image: string;
 }
 
 ///////////
