@@ -49,6 +49,8 @@
 / - BUG: TimeZones do not work correct, asked for help, did not get.
 / 20/04/2025 - Jorn Vierbergen
 / - Toegevoegd: UTC time api, to check if the local UTC time is correct.
+/ 07/05/2025 - Arno Defillet
+/ - Toegevoegd: GroupNavigation Component om te kunnen navigeren naar de groepen
 /
 /
 / To do:
