@@ -42,8 +42,9 @@
 								: navigateToAgenda(String(group.id))
 					"
 				>
-					<font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" />
-					<img v-else :src="defaultIcon" alt="Group Icon" />
+					<!-- Toon het juiste icoon -->
+					<font-awesome-icon v-if="group.image" :icon="['fas', group.image]" />
+					<img v-else :src="defaultIcon" alt="Default Group Icon" />
 					<span>{{ group.name }}</span>
 				</div>
 			</div>
@@ -197,10 +198,15 @@ const fetchGroups = async () => {
 
 		console.log('Opgehaalde groepen:', response.data)
 
-		groups.value = response.data.map((group) => ({
-			...group,
-			icon: group.icon || '',
-		}))
+		groups.value = response.data.map((group) => {
+			// Controleer of de opgehaalde image-tekst overeenkomt met een bestaand icoon in de library
+			const isValidIcon = group.image && library.get({ prefix: 'fas', iconName: group.image })
+			console.log('Group image:', group.image, 'Is valid:', isValidIcon)
+			return {
+				...group,
+				icon: isValidIcon ? group.image : '', // Gebruik de opgehaalde image-tekst als deze geldig is
+			}
+		})
 	} catch (error) {
 		console.error('Error fetching groups:', error)
 		alert('Failed to fetch groups.')
@@ -318,7 +324,7 @@ const addGroup = async () => {
 	try {
 		const newGroup = {
 			name: newGroupName.value,
-			icon: selectedGroupIcon.value, // Voeg de geselecteerde icoon toe
+			image: selectedGroupIcon.value, // Voeg de geselecteerde icoon toe als string
 		}
 
 		console.log('Nieuwe groep:', newGroup) // Controleer de gegevens die worden verzonden
