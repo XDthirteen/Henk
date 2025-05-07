@@ -91,7 +91,7 @@ let groupAgenda = 13 //group id, changes when changing groups
 const route = useRoute()
 let groupAgenda = route.query.group_id
 
-// TIME SETTINGS FROM USER SETTINGS 
+// TIME SETTINGS FROM USER SETTINGS
 const dateTimeSettings = {
 	//timeZone: 'America/New_York', //'Europe/Brussels', 'America/New_York', ...
 	timeZone: 'Europe/Brussels',
@@ -187,7 +187,7 @@ const getApiUTC = async () =>{
 
 const dateTimeToISO = () =>{
 	const now = new Date();
-	console.log(now.toISOString()); 
+	console.log(now.toISOString());
 };
 
 const dateTimeToUTC = (isoDateTime?: string) => {
@@ -226,7 +226,7 @@ const fetchEventsForMonth = async () => {
 			});
 
 			const convertedEvents = [];
-			
+
 			allEvents.forEach(event => {
 				const { date: startDate, time: startTime } = formatDateTime(event.start);
 				const { date: endDate, time: endTime } = formatDateTime(event.end);
@@ -246,7 +246,7 @@ const fetchEventsForMonth = async () => {
 			// sorting only, UTC is not important here
 			events.value.sort((a, b) => new Date(a.start) > new Date(b.start) ? 1 : -1);
 
-		} 
+		}
 		catch (error) {
 			console.error("Error fetching and processing events:", error);
 		}
@@ -441,7 +441,6 @@ onMounted(() => {
 		<button class="add-event-button" @click="addEvent">
 			Event Button
 		</button>
-  </router-link>
   </div>
 </div>
 <!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
