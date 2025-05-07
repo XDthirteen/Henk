@@ -21,7 +21,8 @@ import {
   faCircleNotch,
   faPlus,
   faXmark,
-  faBars
+  faBars,
+  faUserGroup
 } from '@fortawesome/free-solid-svg-icons'
 
 // Search icons on https://fontawesome.com/icons
@@ -46,7 +47,8 @@ library.add(
   faCircleNotch,
   faPlus,
   faXmark,
-  faBars
+  faBars,
+  faUserGroup
 );
 
 const app = createApp(App)
