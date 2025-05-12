@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createEvent } from '@/services/eventService'
 import { fetchGroups } from '@/services/groupservices'

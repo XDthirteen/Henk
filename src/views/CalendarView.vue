@@ -86,7 +86,7 @@ const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
 
 // TEST DATA
-let groupAgenda = 13 //group id, changes when changing groups
+// let groupAgenda = 13 //group id, changes when changing groups
 
 const route = useRoute()
 let groupAgenda = route.query.group_id
