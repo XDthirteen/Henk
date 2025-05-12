@@ -46,7 +46,6 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 import PopUpComponent from '@/components/PopUpComponent.vue';
-import { createEvent, type EventInput } from '@/services/eventService';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask, uncompletedTaskCount } = useTasks();
 
@@ -136,25 +135,7 @@ function closeEditTask() {
 const PostTaskToBackend = async (): Promise<void> => {
   try {
     await postNewTask(newTask);
-
-    //Event aanmaken
-    if (newTask.dueDate) {
-      const startDate = new Date(newTask.dueDate);
-      const endDate = new Date(startDate.getTime() + 30 * 60 * 1000); // event end default op 30 minuten erna zetten
-
-      const event: EventInput = {
-        title: newTask.title,
-        description: newTask.description,
-        groupId: 'me',
-        start: startDate.toISOString(),
-        end: endDate.toISOString(),
-      };
-
-      await createEvent(event)
-      console.log("Task successfully created!");
-    } else {
-      console.log("No due date provided, skipping event creation.");
-    }
+    console.log("Task successfully created!");
     resetNewTask()
     isCreatingNewTask.value = false;
   } catch (error) {
