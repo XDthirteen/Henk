@@ -55,18 +55,25 @@
 /      - Selecting event in expandable div opens event description.
 /      - Add events functionality to event button.
 /      - Remove test data
-/      - Use house style css as var(--primary-blue) (in assets folder)
+/      - Use date instead of lists for months and weekdays. 
+/		 This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 /
 /      - BUG: Timezones do not work correct.
 /       - api to get utc independent from system time, compare api and system time
 /
-/      - Optimalization:
+/      - Optimalization calendar:
 /      	- Update only calendar days that have events instead of all days on api loaded
 /      	- API get only the events for the dates needed, now we get the events for 3 months
 /      	- Use filter() instead of forEach and push for arrays
 /
 /      - NTH Change month to specified month. Click on month, drop down menu
 /      - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
+/
+/      - Optimalization and NTH HENK: Helpful Event Note Keeper:
+/      	- Create 1 general service file for api calls
+/      	- Create 1 general service file for error handeling
+/      	- Refactor every await and loop as in file optimal.js
+/      	- Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
 /
 /      Opmerkingen:
 /      ------------
@@ -85,11 +92,13 @@ import { swipe } from '@/utils/swipeDetection';
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
 
-// TEST DATA
-let groupAgenda = 13 //group id, changes when changing groups
-
+// Set calendar for groups, personal as default
 const route = useRoute()
-let groupAgenda = route.query.group_id
+let groupAgenda = 'personal' //group id, changes when changing groups
+if (route.query.group_id){
+	groupAgenda = route.query.group_id
+	console.log(groupAgenda)
+};
 
 // TIME SETTINGS FROM USER SETTINGS 
 const dateTimeSettings = {
@@ -112,7 +121,6 @@ const dateTimeSettings = {
 const { timeZone,  dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
 type NumberNotation = 'numeric' | '2-digit';
 type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
-// -------
 
 const events = ref([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
@@ -184,7 +192,6 @@ const getApiUTC = async () =>{
     return new Date(data.utc_datetime);
 };
 
-
 const dateTimeToISO = () =>{
 	const now = new Date();
 	console.log(now.toISOString()); 
@@ -214,6 +221,7 @@ const fetchEventsForMonth = async () => {
 		try {
 			const allEvents = [];
 			const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+			console.log("XXXX", personalEvents)
 			personalEvents.forEach((item: any) => {
       			allEvents.push({ ...item, eventType: 'personal' });
     		});
@@ -254,6 +262,7 @@ const fetchEventsForMonth = async () => {
 	// Reload calendarDays
 	calendarDays.value = generateCalendarDays();
 	selectToday();
+	calculateExpandableDiv();
 };
 
 // Get event types for each day
@@ -302,9 +311,9 @@ const generateCalendarDays = (): CalendarDay[] => {
 			// fcking bull sh*t this is
 			// Format all dates to selected date notation
 			const fullDate = formatDate(targetDate.toISOString());
-			console.log(today)
-			console.log(targetDate)
-			console.log(fullDate)
+			// console.log(today)
+			// console.log(targetDate)
+			// console.log(fullDate)
 
 			days.push({
 				day: day,
@@ -345,6 +354,8 @@ const selectToday = () => {
 	if (today) selectDate(today);
 };
 
+// <!-- Wat is dit? - Jorn  -->
+
 // Event button
 // const openEventDialogue = () => {       // Modal visibility
 //     isVisible.value=true
@@ -355,14 +366,12 @@ const selectToday = () => {
 const goToPrevMonth = () => {
   	currentMonth.value = (currentMonth.value - 1 + 12) % 12;
   	if (currentMonth.value === 11) currentYear.value--;
-  	calculateExpandableDiv();
 	fetchEventsForMonth();
 };
 
 const goToNextMonth = () => {
   	currentMonth.value = (currentMonth.value + 1) % 12;
   	if (currentMonth.value === 0) currentYear.value++;
-  	calculateExpandableDiv();
 	fetchEventsForMonth();
 };
 
@@ -390,7 +399,6 @@ const selectDate = (date: CalendarDay) => {
 
 onMounted(() => {
 	fetchEventsForMonth();
-	calculateExpandableDiv();
 });
 
 </script>
@@ -421,11 +429,11 @@ onMounted(() => {
 
 				<!-- Calendar Days -->
 				<div
-				v-for="date in calendarDays"
-				:key="date.date"
-				:id="date.date"
-				:class="['date', {faded: date.faded, today: date.isToday}, {'selected-day': selectedDate?.date === date.date}]"
-				@click="selectDate(date)"
+					v-for="date in calendarDays"
+					:key="date.date"
+					:id="date.date"
+					:class="['date', {faded: date.faded, today: date.isToday}, {'selected-day': selectedDate?.date === date.date}]"
+					@click="selectDate(date)"
 				>
 					<span>{{ date.day }}</span>
 					<div class="event-lines">
@@ -441,9 +449,9 @@ onMounted(() => {
 		<button class="add-event-button" @click="addEvent">
 			Event Button
 		</button>
-  </router-link>
   </div>
 </div>
+<!-- Wat is dit? - Jorn  -->
 <!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
 
 </template>
