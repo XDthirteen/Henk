@@ -42,8 +42,7 @@
 								: navigateToAgenda(String(group.id))
 					"
 				>
-					<!-- Toon het juiste icoon -->
-					<font-awesome-icon v-if="group.image" :icon="['fas', group.image]" />
+					<font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" />
 					<img v-else :src="defaultIcon" alt="Default Group Icon" />
 					<span>{{ group.name }}</span>
 				</div>
@@ -130,6 +129,20 @@ import {
 
 library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
 
+const iconList = [
+	faUser,
+	faCoffee,
+	faCar,
+	faDog,
+	faBicycle,
+	faHome,
+	faTree,
+	faSun,
+	faMoon,
+	faRocket,
+]
+
+
 const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
 
@@ -155,20 +168,6 @@ const availableIcons = ref<string[]>([])
 const iconDropdownOpen = ref(false)
 const successMessage = ref('')
 
-// Beschikbare iconen
-const iconList = [
-	faUser,
-	faCoffee,
-	faCar,
-	faDog,
-	faBicycle,
-	faHome,
-	faTree,
-	faSun,
-	faMoon,
-	faRocket,
-]
-
 const generateRandomIcons = () => {
 	const shuffled = [...iconList].sort(() => 0.5 - Math.random())
 	availableIcons.value = shuffled.slice(0, 10).map((icon) => icon.iconName)
@@ -190,28 +189,36 @@ onMounted(async () => {
 })
 
 const fetchGroups = async () => {
-	try {
-		const token = getAuthToken()
-		const response = await axios.get<Group[]>(API_URL, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
+  try {
+    const token = getAuthToken()
+    const response = await axios.get(API_URL, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
 
-		console.log('Opgehaalde groepen:', response.data)
+    console.log('Opgehaalde groepen:', response.data)
 
-		groups.value = response.data.map((group) => {
-			// Controleer of de opgehaalde image-tekst overeenkomt met een bestaand icoon in de library
-			const isValidIcon = group.image && library.get({ prefix: 'fas', iconName: group.image })
-			console.log('Group image:', group.image, 'Is valid:', isValidIcon)
-			return {
-				...group,
-				icon: isValidIcon ? group.image : '', // Gebruik de opgehaalde image-tekst als deze geldig is
-			}
-		})
-	} catch (error) {
-		console.error('Error fetching groups:', error)
-		alert('Failed to fetch groups.')
-	}
+    groups.value = response.data.map((group: Group) => {  // Gebruik de Group interface
+      const image = (group.image || '').toString()  // 'image' is optioneel
+      const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
+
+      // Converteer image naar icon (en behoud andere properties)
+      const iconGroup: Group = {
+        id: group.id,
+        name: group.name,
+        icon: isValidIcon ? image : 'user',
+        tasks: group.tasks ?? [],
+        image: group.image,  // Voeg image toe als je die wilt bewaren
+      }
+
+      return iconGroup
+    })
+  } catch (error) {
+    console.error('Error fetching groups:', error)
+    alert('Failed to fetch groups.')
+  }
 }
+
+
 
 const navigateToInvites = () => {
 	router.push({ name: 'invites' })
@@ -310,7 +317,7 @@ const openAddGroupPopup = () => {
 const closeAddGroupPopup = () => {
 	showAddGroupPopup.value = false
 	newGroupName.value = ''
-	selectedGroupIcon.value = null // Reset de geselecteerde icoon
+	selectedGroupIcon.value = null
 }
 
 const addGroup = async () => {
@@ -324,10 +331,10 @@ const addGroup = async () => {
 	try {
 		const newGroup = {
 			name: newGroupName.value,
-			image: selectedGroupIcon.value, // Voeg de geselecteerde icoon toe als string
+			image: selectedGroupIcon.value, // API expects 'image'
 		}
 
-		console.log('Nieuwe groep:', newGroup) // Controleer de gegevens die worden verzonden
+		console.log('Nieuwe groep:', newGroup)
 
 		await axios.post(API_URL, newGroup, {
 			headers: { Authorization: `Bearer ${token}` },

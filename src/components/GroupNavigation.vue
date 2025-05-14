@@ -29,7 +29,7 @@
 import router from '@/router';
 
 const toggleGroups = () => {
-  router.push({ name: 'groups' })
+  router.push({ name: 'createGroup' })
 };
 </script>
 
