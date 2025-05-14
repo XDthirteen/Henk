@@ -16,14 +16,44 @@
   --tertiary-purple: #afa8df;
 
   --test-color: deeppink;
+
+  /* --main-background: #f1d2ff;
+  --second-background: #afa8df;
+  --item-background: #d5b9dd;
+
+  --main-text: #e9f3fe;
+  --black-text: #151417;
+  --purple-text: #2c265b;
+
+  --primary-button: #453d83;
+  --hover-button: #c1aae7;
+
+  --input-border: #9776fa;
+  --input-focus: #afa8df;
+
+  --main-red: #f7997c; */
 }
 
 #app{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    
-  }
-  } */
+
+body.dark-theme {
+  --primary-purple: #453d83;
+  --primary-blue: #76b6fa;
+  --primary-white: #e9f3fe;
+  --primary-orange: #ffcdbe;
+  --primary-red: #f7997c;
+  --primary-green: #5be95b;
+
+  --secundary-purple: #897fdb;
+  --secundary-blue: #a7d0fc;
+  --secundary-white: #ffeee5;
+  --secundary-orange: #ffbeaa;
+  --secundary-green: #8beb8b;
   
+  --tertiary-orange: #faa68e;
+  --tertiary-purple: #afa8df;
+
+  --test-color: deeppink;
+}

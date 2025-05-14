@@ -35,7 +35,7 @@ import StyledDropdown from '@/components/StyledDropdown.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import type { ParamSavedValues, ParamEditingState } from '@/components/models';
 import FontAwesomeIconToggler from '@/components/FontAwasomeIconToggler.vue';
-import { userSettings } from '@/services/userSettings.service';
+import { userSettings, applyTheme } from '@/services/userSettings.service';
 
 const { getUserParam, userParam, updateUserParam } = userSettings();
 
@@ -86,9 +86,6 @@ function isSaveDisabled(): boolean {
   return !hasChanges || iconTogglerParamActive;
 }
 
-const setTheme = (theme: string) => {
-  paramTempValues.value.theme = theme;
-};
 
 function toggleEdit(field: keyof typeof iconTogglerParam.value) {
   if (!iconTogglerParam.value[field]) {
@@ -108,6 +105,11 @@ function saveParamChanges(): void {
   paramSavedValues.value = { ...paramTempValues.value };
   saveParamChangesToBackend();
 }
+
+const setTheme = (theme: string) => {
+  paramTempValues.value.theme = theme;
+  applyTheme(theme);
+};
 </script>
 
 <template>

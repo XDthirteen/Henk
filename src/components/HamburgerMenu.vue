@@ -139,7 +139,7 @@ const logoutAndCloseMenu = () => {
   width: 80%;
   min-width: 240px;
   max-width: 320px;
-  background: var(--tertiary-purple);
+  background: var(--second-background);
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.4);
   padding: 30px;
   display: flex;
@@ -176,7 +176,7 @@ const logoutAndCloseMenu = () => {
   gap: 3rem;
   width: 100%;
   height: 15%;
-  border-bottom: 4px solid var(--secundary-purple);
+  border-bottom: 4px solid var(--input-border);
   margin-bottom: 1rem;
 }
 
@@ -189,8 +189,8 @@ const logoutAndCloseMenu = () => {
   height: 2.5rem;
   width: 2.5rem;
   border-radius: 100%;
-  background: var(--primary-purple);
-  color: var(--primary-white);
+  background: var(--primary-button);
+  color: var(--main-text);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   display: flex;
@@ -229,7 +229,7 @@ const logoutAndCloseMenu = () => {
   align-items: center;
   padding: 10px;
   border-radius: 12px;
-  background: var(--secundary-blue);
+  background: var(--item-background);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
@@ -244,13 +244,13 @@ const logoutAndCloseMenu = () => {
 }
 
 .logout-container {
-  border-top: 4px solid var(--secundary-purple);
+  border-top: 4px solid var(--input-border);
   padding-top: 1rem;
   margin-top: 1rem;
 }
 
 .logout-button {
-  background: var(--secundary-orange);
+  background: var(--main-red);
   padding: 10px;
   height: 5rem;
   gap: 0;

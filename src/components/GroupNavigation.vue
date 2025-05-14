@@ -53,8 +53,8 @@ const toggleGroups = () => {
   height: 2.5rem;
   width: 2.5rem;
   border-radius: 100%;
-  background: var(--primary-purple);
-  color: var(--primary-white);
+  background: var(--primary-button);
+  color: var(--main-text);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
   display: flex;

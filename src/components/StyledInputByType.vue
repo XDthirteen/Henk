@@ -63,18 +63,19 @@ const handleInput = (event: Event) => {
 
 .title {
   font-weight: bold;
-  color: var(--primary-purple);
+  color: var(--purple-text);
 }
 
 .input {
+  background-color: var(--item-background);
   width: 13rem;
-  border: 2px solid var(--primary-blue);
+  border: 2px solid var(--input-border);
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .input:focus {
-  background-color: var(--tertiary-purple);
+  background-color: var(--input-focus);
 }
 </style>

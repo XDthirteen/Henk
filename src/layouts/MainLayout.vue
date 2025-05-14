@@ -33,7 +33,7 @@ navigate('todo_tasks')
 #####################################*/
 
 <script setup lang="ts">
-import Hamburgermenu from '@/components/Hamburgermenu.vue';
+import Hamburgermenu from '@/components/HamburgerMenu.vue';
 </script>
 
 <template>
@@ -46,7 +46,7 @@ import Hamburgermenu from '@/components/Hamburgermenu.vue';
 
 <style scoped>
 .body {
-  margin: 8px;
-  margin-top: 3rem;
+  /* margin: 8px; */
+  padding-top: 3rem;
 }
 </style>
