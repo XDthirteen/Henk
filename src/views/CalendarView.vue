@@ -549,7 +549,7 @@ button:hover {
 }
 
 .today {
-  background: var(--hover-button);
+  background: var(--title-background);
   border-radius: 4px;
   color: var(--main-text);
   font-weight: bold;

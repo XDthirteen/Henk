@@ -73,7 +73,7 @@ button:hover {
 
 .primary:hover {
   background-color: var(--hover-button);
-  color: var(--primary-button);
+  color: var(--main-text);
   border: 2px solid var(--primary-button)
 }
 
@@ -88,7 +88,7 @@ button:hover {
 }
 
 .save {
-  background-color: var(--primary-green);
+  background-color: var(--green-button);
   color: var(--black-text);
 }
 

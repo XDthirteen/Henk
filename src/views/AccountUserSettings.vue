@@ -228,6 +228,7 @@ function saveUserChanges(): void {
 }
 
 .row {
+  color: var(--purple-text);
   display: flex;
 }
 
@@ -250,6 +251,7 @@ function saveUserChanges(): void {
 }
 
 .user-fullname {
+  color: var(--purple-text);
   text-decoration: underline;
   font-weight: 700;
 }
@@ -262,6 +264,7 @@ function saveUserChanges(): void {
 }
 
 .field-container-wrapper {
+  color: var(--purple-text);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;

@@ -77,5 +77,6 @@ const handleInput = (event: Event) => {
 
 .input:focus {
   background-color: var(--input-focus);
+  box-shadow: 3px 3px 10px var(--title-border);
 }
 </style>

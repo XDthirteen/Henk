@@ -90,6 +90,9 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 }
 
 .task-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 1.2rem;
   font-weight: bold;
   width: 100%;

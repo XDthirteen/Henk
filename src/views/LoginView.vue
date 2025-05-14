@@ -86,6 +86,10 @@ const authenticate = async () => {
 </template>
 
 <style scoped>
+h2 {
+  color: var(--black-text);
+}
+
 .login-container {
   padding-top: 0.5rem;
   display: flex;

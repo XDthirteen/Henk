@@ -45,6 +45,7 @@
 
 <style scoped>
 main {
+  color: var(--purple-text);
   display: flex;
   flex-direction: column;
   align-items: center;

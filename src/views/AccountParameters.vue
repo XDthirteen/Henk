@@ -179,6 +179,7 @@ const setTheme = (theme: string) => {
 }
 
 .field-container-wrapper {
+  color: var(--purple-text);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -220,7 +221,7 @@ const setTheme = (theme: string) => {
   flex: 1;
   padding: 10px;
   border: none;
-  background: var(--second-background);
+  background: var(--item-background);
   transition: background 0.3s;
 }
 
