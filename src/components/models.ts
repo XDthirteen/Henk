@@ -97,11 +97,6 @@ export interface Language {
   label: string;
 }
 
-export interface Group {
-  id: number;
-  name: string;
-  image: string;
-}
 
 ///////////
 // TASKS //
@@ -115,3 +110,31 @@ export interface Task {
   dueDate?: string,
   userId?: number
 }
+
+// create group interface
+
+
+export interface icon {
+  id: number;
+  name: string;
+  image: string;
+}
+
+
+export interface Group {
+  id: number
+  name: string
+  icon: string
+  tasks: {
+    completed: boolean
+    id?: number
+    title: string
+    description: string
+    dueDate?: string
+    userId?: number
+  }[]
+  image?: string  // Voeg 'image' als optioneel toe
+}
+
+
+
