@@ -198,7 +198,7 @@ const setTheme = (theme: string) => {
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem;
-  border-bottom: 2px solid var(--primary-purple);
+  border-bottom: 2px solid var(--title-border);
 }
 
 .text-field {
@@ -211,7 +211,7 @@ const setTheme = (theme: string) => {
 .theme-selector {
   width: 13rem;
   display: flex;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -220,17 +220,17 @@ const setTheme = (theme: string) => {
   flex: 1;
   padding: 10px;
   border: none;
-  background: var(--primary-white);
+  background: var(--second-background);
   transition: background 0.3s;
 }
 
 .theme-selector button.active {
-  background: var(--secundary-purple);
-  color: white;
+  background: var(--primary-button);
+  color: var(--main-text);
   font-weight: bold;
 }
 
 .theme-selector button:not(.active):hover {
-  background: var(--primary-white);
+  background: var(--main-text);
 }
 </style>

@@ -53,9 +53,9 @@ const router = useRouter();
 <style scoped>
 .view-title {
   display: flex;
-  border: 2px solid var(--primary-purple);
+  border: 2px solid var(--title-border);
   border-radius: 10px;
-  background-color: var(--secundary-purple);
+  background-color: var(--title-background);
   margin: 1rem 2rem 1rem 2rem;
   padding: 0.5rem;
   justify-content: center;

@@ -143,22 +143,6 @@ const createUser = async () => {
 </template>
 
 <style scoped>
-.signup-header {
-  color: blue;
-  font-weight: bold;
-  font-size: 23px;
-}
-
-label {
-  color: blue;
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-input {
-  border: 2px solid grey;
-}
-
 .container {
   display: flex;
   justify-content: center;
@@ -169,7 +153,7 @@ input {
 .language-toggle {
   display: flex;
   width: 100%;
-  border: 2px solid var(--primary-purple);
+  border: 2px solid var(--input-border);
   border-radius: 5px;
   cursor: pointer;
   overflow: hidden;
@@ -183,7 +167,8 @@ input {
 }
 
 .language-option.active {
-  background-color: var(--secundary-purple);
-  color: white;
+  background-color: var(--primary-button);
+  color: var(--main-text);
+  font-weight: bold;
 }
 </style>

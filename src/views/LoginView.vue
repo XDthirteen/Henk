@@ -104,7 +104,7 @@ const authenticate = async () => {
 .error-message {
   border: 3px solid black;
   padding: 0.5rem;
-  background-color: var(--primary-red);
+  background-color: var(--main-red);
   border-radius: 10px;
 }
 </style>

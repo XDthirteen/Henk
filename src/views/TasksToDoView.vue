@@ -258,7 +258,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background-color: var(--secundary-white);
+  background-color: var(--info-background);
   border-radius: 0.5rem;
   font-size: large;
   font-weight: 700;
@@ -271,7 +271,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   justify-content: flex-start;
   align-items: center;
   padding: 10px;
-  background-color: var(--primary-white);
+  background-color: var(--tasktodo-background);
   border-radius: 8px;
   margin-bottom: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -294,28 +294,10 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   width: 4rem;
   height: 4rem;
   padding: 10px;
-  background-color: var(--secundary-green);
+  background-color: var(--green-button);
   border-radius: 50%;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.8);
   transition: all 0.3s ease;
-}
-
-.new-item-btn:hover {
-  background-color: var(--primary-green);
-  transform: scale(1.1);
-}
-
-/* Modal content */
-.new-task-form {
-  display: flex;
-  justify-content: center;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  position: relative;
-  animation: fadeInScale 0.5s ease-out;
 }
 
 @keyframes fadeInScale {
@@ -328,18 +310,6 @@ const CompleteToggler = async (task: Task): Promise<void> => {
     opacity: 1;
     transform: scale(1);
   }
-}
-
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--primary-purple);
-  cursor: pointer;
 }
 
 .modal-items {
@@ -357,19 +327,20 @@ const CompleteToggler = async (task: Task): Promise<void> => {
 
 .textarea-title {
   font-weight: bold;
-  color: var(--primary-purple);
+  color: var(--purple-text);
 }
 
 .textarea-input {
+  background-color: var(--item-background);
   width: 13rem;
-  border: 2px solid var(--primary-blue);
+  border: 2px solid var(--input-border);
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
 .textarea-input:focus {
-  background-color: var(--tertiary-purple);
+  background-color: var(--input-focus);
 }
 
 .btn-container {
