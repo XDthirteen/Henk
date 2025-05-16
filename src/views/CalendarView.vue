@@ -70,7 +70,7 @@
 /      - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
 /      - Optimalization and NTH HENK: Helpful Event Note Keeper:
-/      	- Create 1 general service file for api calls
+/      	- Create 1 general service file for api calls for the same backend
 /      	- Create 1 general service file for error handeling
 /      	- Refactor every await and loop as in file optimal.js
 /      	- Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
@@ -88,6 +88,7 @@ import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
+import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
@@ -97,8 +98,9 @@ const route = useRoute()
 let groupAgenda = 'personal' //group id, changes when changing groups
 if (route.query.group_id){
 	groupAgenda = route.query.group_id
-	console.log(groupAgenda)
+	console.log('Group selected:', groupAgenda)
 };
+groupAgenda = 'personal'
 
 // TIME SETTINGS FROM USER SETTINGS 
 const dateTimeSettings = {
@@ -192,16 +194,6 @@ const getApiUTC = async () =>{
     return new Date(data.utc_datetime);
 };
 
-const dateTimeToISO = () =>{
-	const now = new Date();
-	console.log(now.toISOString()); 
-};
-
-const dateTimeToUTC = (isoDateTime?: string) => {
-	const dateTime = isoDateTime ?? new Date();
-	const utcFormatted = dateTime.toLocaleString("en-GB", { timeZone: "UTC" });
-}
-
 // Fetch events selected month
 const fetchEventsForMonth = async () => {
 	const year = currentYear.value;
@@ -216,12 +208,12 @@ const fetchEventsForMonth = async () => {
 		// Duplicate data also in caching...
 		const fromDate = new Date(Date.UTC(year, month-1, 1)).toISOString().split("T")[0];
 		const toDate = new Date(Date.UTC(year, month+2, 0)).toISOString().split("T")[0];
-		console.log('from', fromDate, 'to', toDate);
+		//console.log('from', fromDate, 'to', toDate);
 
 		try {
 			const allEvents = [];
 			const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
-			console.log("XXXX", personalEvents)
+			console.log("Personal events:", personalEvents)
 			personalEvents.forEach((item: any) => {
       			allEvents.push({ ...item, eventType: 'personal' });
     		});
@@ -229,10 +221,20 @@ const fetchEventsForMonth = async () => {
 			// get all group events when checking personal agenda
 			const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
 			const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
+            console.log("Group events:", groupEvents)
     		groupEvents.forEach((item: any) => {
 				allEvents.push({ ...item, eventType: 'group' });
 			});
-
+            
+			const tasks = await getData(`tasks?completed=false`);
+            console.log("Tasks:", tasks)
+    		tasks.forEach((item: any) => {
+                // change dueDate to start and end, re-use event functions
+                item.start = item.dueDate;
+                item.end = item.dueDate;
+				allEvents.push({ ...item, eventType: 'task' });
+			});
+            
 			const convertedEvents = [];
 			
 			allEvents.forEach(event => {
@@ -260,6 +262,7 @@ const fetchEventsForMonth = async () => {
 		}
 	}
 	// Reload calendarDays
+    console.log(events.value)
 	calendarDays.value = generateCalendarDays();
 	selectToday();
 	calculateExpandableDiv();
@@ -270,7 +273,10 @@ const getEventLinesForDay = (date: string) => {
 	let eventLines: string[] = [];
 
 	events.value.forEach(event => {
-		if (date >= event.startDate && date <= event.endDate) {
+        const dateDate = new Date(date)
+        const startDate = new Date(event.startDate)
+        const endDate = new Date(event.endDate)
+		if (dateDate >= startDate && dateDate <= endDate) {
       		const type = event.eventType;
 			if (!eventLines.includes(type)) {
 				eventLines.push(type);
@@ -312,8 +318,8 @@ const generateCalendarDays = (): CalendarDay[] => {
 			// Format all dates to selected date notation
 			const fullDate = formatDate(targetDate.toISOString());
 			// console.log(today)
-			// console.log(targetDate)
-			// console.log(fullDate)
+			//console.log(targetDate)
+			//console.log(fullDate)
 
 			days.push({
 				day: day,
@@ -394,7 +400,7 @@ const selectDate = (date: CalendarDay) => {
 		...date,
 		events: eventsForSelectedDate,
 	};
-	console.log("Selected Date Events:", selectedDate.value.events);
+	//console.log("Selected Date Events:", selectedDate.value.events);
 };
 
 onMounted(() => {
@@ -457,6 +463,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
 .center {
     font-family: Arial;
     display: flex;
@@ -594,7 +607,7 @@ button:hover {
     bottom: 5px;
 }
 
-.event-line.planned {
+.event-line.task {
     bottom: 1px;
 }
 
@@ -607,7 +620,7 @@ button:hover {
   	background-color: green;
 }
 
-.planned {
+.task {
   	background-color: blue;
 }
 
