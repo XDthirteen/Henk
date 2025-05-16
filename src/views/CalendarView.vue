@@ -14,41 +14,42 @@
 /      Changelog:
 /      ----------
 /      06/12/2024 - Jorn Vierbergen
-/          - Toegevoegd: Dagen van vorige en volgende maand.
+/          - Added: Days from previous and next month.
 /      06/01/2025 - Jorn Vierbergen
-/          - Toegevoegd: Selecteerbare datum.
+/          - Added: Selectable datum.
 /      08/01/2025 - Jorn Vierbergen
-/          - Toegevoegd: Visuele event markers per datum.
+/          - Added: Visual event markers per date.
 /      20/01/2025 - Jorn Vierbergen
-/          - Toegevoegd: Expandable/collapsable div met event data.
+/          - Added: Expandable/collapsable div with event data.
 /      27/01/2025 - Jorn Vierbergen
-/          - Toegevoegd: Events over meerdere dagen. Event lijn + datums in expandable div bij event time gezet.
+/          - Added: Events over multiple days. Event line + dates in expandable div at event time.
 /      08/02/2025 - Jorn Vierbergen
 /          - Fixed: Merge deletion CalendarDay in /components/models.ts
 /          - Fixed: Merge deletion prettier config in .prettierrc.json
 /          - Fixed: Expandable div height
 /          - Fixed: No-scrolling on page
 /      10/02/2025 - Jorn Vierbergen
-/          - Toegevoegd: Event items klikbaar
+/          - Added: Event items clickable
 /      13/02/2025 - Jorn Vierbergen
-/          - Toegevoegd: scrollable event items in case of unable to display all.
-/          - Aangepast: expandable div verplaatst naar component ExpandableDiv.vue
+/          - Added: scrollable event items in case of unable to display all.
+/          - Edited: expandable div moved to component ExpandableDiv.vue
 /      24/02/2025 - Jorn Vierbergen
-/          - Toegevoegd: API integratie event.service.ts
-/          - Aangepast: Optimalizeren calender functie gebruik.
-/          - Aangepast: API data cachen
+/          - Added: API integrated event.service.ts
+/          - Edited: Optimalize calender function usage.
+/          - Edited: API data cachen
 /      28/02/2025 - Jorn Vierbergen
-/          - Toegevoegd: Datum en tijd in ISO + omvormen naar visueel tijdstip
+/          - Added: Date and time in ISO + convert to visual date and time
 /          - Fixed: Event lines enkel eenmaal toevoegen in HTML element
 /      13/03/2025 - Jorn Vierbergen
 /          - Fixed: expandableDiv mobile browser adress makes screen smaller
 /      15/03/2025 - Jorn Vierbergen
-/          - Toegevoegd: SwipeDirection service
+/          - Added: SwipeDirection service
 /          - Fixed: TimeZones correct convertion from UTC/ISO time from api
 /      17/03/2025 - Jorn Vierbergen
 /          - BUG: TimeZones do not work correct, asked for help, did not get.
-/      20/04/2025 - Jorn Vierbergen
-/          - Toegevoegd: UTC time api, to check if the local UTC time is correct.
+/      16/05/2025 - Jorn Vierbergen
+/          - Fixed: Timezones, UTC time.
+/          - Added: Tasks display on calendar
 /
 /
 /      To do:
@@ -57,9 +58,6 @@
 /      - Remove test data
 /      - Use date instead of lists for months and weekdays. 
 /		 This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
-/
-/      - BUG: Timezones do not work correct.
-/       - api to get utc independent from system time, compare api and system time
 /
 /      - Optimalization calendar:
 /      	- Update only calendar days that have events instead of all days on api loaded
@@ -88,6 +86,7 @@ import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
+// <!-- Wat is dit? - Jorn  -->
 import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 
 const { onTouchStart, onTouchEnd } = swipe();
@@ -100,7 +99,6 @@ if (route.query.group_id){
 	groupAgenda = route.query.group_id
 	console.log('Group selected:', groupAgenda)
 };
-groupAgenda = 'personal'
 
 // TIME SETTINGS FROM USER SETTINGS 
 const dateTimeSettings = {
@@ -211,7 +209,7 @@ const fetchEventsForMonth = async () => {
 		//console.log('from', fromDate, 'to', toDate);
 
 		try {
-			const allEvents = [];
+			const allEvents: any[] = [];
 			const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
 			console.log("Personal events:", personalEvents)
 			personalEvents.forEach((item: any) => {
@@ -235,7 +233,7 @@ const fetchEventsForMonth = async () => {
 				allEvents.push({ ...item, eventType: 'task' });
 			});
             
-			const convertedEvents = [];
+			const convertedEvents: any[] = [];
 			
 			allEvents.forEach(event => {
 				const { date: startDate, time: startTime } = formatDateTime(event.start);
@@ -317,9 +315,6 @@ const generateCalendarDays = (): CalendarDay[] => {
 			// fcking bull sh*t this is
 			// Format all dates to selected date notation
 			const fullDate = formatDate(targetDate.toISOString());
-			// console.log(today)
-			//console.log(targetDate)
-			//console.log(fullDate)
 
 			days.push({
 				day: day,
@@ -385,7 +380,7 @@ const goToNextMonth = () => {
 const selectDate = (date: CalendarDay) => {
 	console.log(`Clicked on: ${date.date}`);
 
-	const eventsForSelectedDate = [];
+	const eventsForSelectedDate: any[] = [];
 
 	events.value.forEach(event => {
 		// Check if event in selected date range
@@ -463,13 +458,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
 .center {
     font-family: Arial;
     display: flex;
