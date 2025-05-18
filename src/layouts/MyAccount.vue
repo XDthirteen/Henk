@@ -53,7 +53,7 @@ const router = useRouter();
 <style scoped>
 .view-title {
   display: flex;
-  color: var(--purple-text);
+  color: var(--main-text);
   border: 2px solid var(--title-border);
   border-radius: 10px;
   background-color: var(--title-background);

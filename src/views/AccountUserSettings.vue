@@ -229,6 +229,7 @@ function saveUserChanges(): void {
 
 .row {
   color: var(--purple-text);
+  font-size: large;
   display: flex;
 }
 
@@ -267,7 +268,6 @@ function saveUserChanges(): void {
   color: var(--purple-text);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 3rem;
 }
 
@@ -281,6 +281,7 @@ function saveUserChanges(): void {
 }
 
 .text-field {
+  font-size: large;
   display: flex;
   width: 80%;
   align-items: center;

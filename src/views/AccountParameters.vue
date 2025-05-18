@@ -203,6 +203,7 @@ const setTheme = (theme: string) => {
 }
 
 .text-field {
+  font-size: large;
   display: flex;
   width: 80%;
   align-items: center;
@@ -226,7 +227,7 @@ const setTheme = (theme: string) => {
 }
 
 .theme-selector button.active {
-  background: var(--primary-button);
+  background: var(--active-button);
   color: var(--main-text);
   font-weight: bold;
 }

@@ -461,7 +461,9 @@ onMounted(() => {
 
 .calendar {
   margin: 2%;
-  border: 1px solid black;
+  border: 1px solid var(--black-text);
+  box-shadow: 2px 2px 20px var(--title-border);
+
   border-radius: 10px;
   overflow: hidden;
   display: flex;
@@ -479,6 +481,7 @@ onMounted(() => {
 }
 
 #month-year {
+  color: var(--main-text);
   justify-content: center;
   align-items: center;
 }
@@ -498,6 +501,7 @@ button:hover {
 }
 
 .nav-button {
+  color: var(--main-text);
   padding: 5px 10px;
 }
 
@@ -551,8 +555,13 @@ button:hover {
 .today {
   background: var(--title-background);
   border-radius: 4px;
-  color: var(--main-text);
+  color: var(--black-text);
   font-weight: bold;
+}
+
+.today span {
+  color: var(--main-text);
+
 }
 
 .faded {

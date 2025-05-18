@@ -34,10 +34,30 @@ navigate('todo_tasks')
 
 <script setup lang="ts">
 import Hamburgermenu from '@/components/HamburgerMenu.vue';
+/*TIJDELIJK*/
+import { ref, onMounted } from 'vue';
+
+const isDark = ref(false); // start met light theme
+
+const applyTheme = () => {
+  document.body.classList.remove('light-theme', 'dark-theme');
+  document.body.classList.add(isDark.value ? 'dark-theme' : 'light-theme');
+};
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  applyTheme();
+};
+
+onMounted(() => {
+  applyTheme(); // init theme bij laden van pagina
+});
+/*TIJDELIJK*/
 </script>
 
 <template>
   <div class="body">
+    <button @click="toggleTheme">theme</button>
     <Hamburgermenu />
     <RouterView />
   </div>

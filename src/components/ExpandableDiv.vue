@@ -157,6 +157,7 @@ button {
 }
 
 .expand-button {
+  color: var(--main-text);
   position: absolute;
   top: -10px;
   padding: 5px 10px;
@@ -164,6 +165,7 @@ button {
 }
 
 .event-selected-date {
+  color: var(--black-text);
   position: absolute;
   top: 20px;
   left: 20px;
@@ -171,6 +173,7 @@ button {
 }
 
 .event-container {
+  color: var(--black-text);
   padding-bottom: 50px;
   max-height: 90%;
   overflow-y: auto;
