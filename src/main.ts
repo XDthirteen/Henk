@@ -1,4 +1,5 @@
 import './assets/main.css'
+import './assets/house-style.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
@@ -21,7 +22,8 @@ import {
   faCircleNotch,
   faPlus,
   faXmark,
-  faBars
+  faBars,
+  faUserGroup
 } from '@fortawesome/free-solid-svg-icons'
 
 // Search icons on https://fontawesome.com/icons
@@ -46,7 +48,8 @@ library.add(
   faCircleNotch,
   faPlus,
   faXmark,
-  faBars
+  faBars,
+  faUserGroup
 );
 
 const app = createApp(App)
@@ -54,6 +57,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-app.component('font-awesome-icon', FontAwesomeIcon);
+// Registreer de FontAwesome component globaal
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')

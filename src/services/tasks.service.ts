@@ -7,6 +7,7 @@ import { onMounted, ref } from "vue";
 const useTasks = () => {
   const userToken = `Bearer ${localStorage.getItem("token")}`;
   const tasks = ref<Task[]>([]);
+  const uncompletedTaskCount = ref(0);
 
   const fetchTasks = async () => {
     try {
@@ -17,6 +18,7 @@ const useTasks = () => {
       });
 
       tasks.value = response.data;
+      uncompletedTaskCount.value = tasks.value.filter(task => !task.completed).length;
       console.log(response.data)
     } catch (error) {
       console.error("Error fetching tasks: ", error);
@@ -68,7 +70,7 @@ const useTasks = () => {
         }
       });
       console.log("Task deleted successfully: ", response.data);
-      // await fetchTasks();
+      await fetchTasks();
       return response.data;
     } catch (error) {
       console.error('Could not delete task: ', error);
@@ -105,7 +107,8 @@ const useTasks = () => {
     postNewTask,
     updateTask,
     deleteTask,
-    completeTask
+    completeTask,
+    uncompletedTaskCount
   };
 };
 

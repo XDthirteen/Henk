@@ -25,10 +25,12 @@
 / 14/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
 / 14/04/2025---Arno Defillet----Aanpassing: Opkuis van code + Huisstijl toepassen + animatie voorzien voor task
 completed
+/ 30/04/2025---Arno Defillet----Toevoeging: Nieuwe taak maakt event aan indien dueDate is ingevuld
+/ 30/04/2025---Arno Defillet----Aanpassing: Velden terug leegmaken nadat taak wordt aangemaakt
 /
 / To do:
-/ - taak kunnen inplannen in de agenda
-/ -
+/ - Er bestaat nog geen functie om event te updaten
+/ - Event nog kunnen tonen in agenda
 /
 / Opmerkingen:
 / ------------
@@ -45,15 +47,15 @@ import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 import PopUpComponent from '@/components/PopUpComponent.vue';
 
-const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
+const { tasks, postNewTask, updateTask, deleteTask, completeTask, uncompletedTaskCount } = useTasks();
 
 const justCompleted = ref<number[]>([]);
 
-const visibleTasks = computed(() => {
-  return [...tasks.value]
-    .filter(task => !task.completed || justCompleted.value.includes(task.id!))
-    .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
-});
+const visibleTasks = computed(() => tasks.value
+  .filter(task => !task.completed || justCompleted.value.includes(task.id!))
+  .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
+);
+
 
 const newTask: Reactive<Task> = {
   completed: false,
@@ -81,6 +83,13 @@ const editedTask = ref<Task>({
   dueDate: '',
   userId: undefined,
 });
+
+const resetNewTask = () => {
+  newTask.completed = false;
+  newTask.title = '';
+  newTask.description = '';
+  newTask.dueDate = '';
+};
 
 function formatDueDate(date: string): string {
   return new Date(date).toISOString().slice(0, 16);
@@ -126,8 +135,9 @@ function closeEditTask() {
 const PostTaskToBackend = async (): Promise<void> => {
   try {
     await postNewTask(newTask);
-    isCreatingNewTask.value = false;
     console.log("Task successfully created!");
+    resetNewTask()
+    isCreatingNewTask.value = false;
   } catch (error) {
     console.error("Error during task creation:", error);
   }
@@ -162,30 +172,25 @@ const DeleteTaskToBackend = async (): Promise<void> => {
 };
 
 const CompleteToggler = async (task: Task): Promise<void> => {
-  if (!task.id) {
-    console.error("No task ID found for completion toggle.");
-    return;
-  }
+  if (!task.id) return;
 
   task.completed = !task.completed;
 
-  try {
-    await completeTask(task);
-    console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
+  if (task.completed) justCompleted.value.push(task.id);
 
-    if (task.completed) {
-      justCompleted.value.push(task.id);
-      justCompleted.value = justCompleted.value.filter(id => id !== task.id);
-    }
-  } catch (error) {
-    console.error("Error toggling task completion:", error);
-  }
+  await completeTask(task);
+
+  // Laat item nog even zichtbaar voor animatie
+  setTimeout(() => {
+    justCompleted.value = justCompleted.value.filter(id => id !== task.id);
+  }, 500);
 };
 </script>
 
 
 <template>
   <div class="body">
+    <div class="task-count">Uncompleted tasks: {{ uncompletedTaskCount }}</div>
     <transition-group name="fade-slide" tag="div">
       <div class="todo-item" v-for="task in visibleTasks" :key="task.id"
         :class="{ completed: task.completed && justCompleted.includes(task.id!) }">
@@ -246,6 +251,18 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   margin: 1rem 2rem;
   display: flex;
   flex-direction: column;
+}
+
+.task-count {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--secundary-white);
+  border-radius: 0.5rem;
+  font-size: large;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
 .todo-item {
