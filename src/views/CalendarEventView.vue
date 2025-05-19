@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createEvent } from '@/services/eventService'
+import { fetchGroups } from '@/services/groupservices'
 
 const router = useRouter()
 
@@ -27,20 +28,15 @@ const event = ref<EventFormData>({
   allDay: false,
 })
 
-const groups = ref([
-  {
-    id: 'alaa',
-    name: 'alaa',
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-02',
-  },
-  {
-    id: 'gert-jan',
-    name: 'gert-jan',
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-02',
-  },
-])
+const groups = ref([])
+
+onMounted(async () => {
+  try {
+    groups.value = await fetchGroups()
+  } catch (error) {
+    alert('Failed to load groups:', error)
+  }
+})
 
 const returnToCalendar = () => {
   router.push({ name: 'calendar' })

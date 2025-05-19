@@ -28,4 +28,17 @@ export const useGroupStore = defineStore('groupStore', {
 })
 
 
-// export const GroupService = ()
+export const fetchGroups = async () => {
+  try {
+    const response = await fetch('/api/groups');
+    if (!response.ok) {
+      throw new Error('Failed to fetch groups');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching groups:', error);
+    throw error;
+  }
+};
+
