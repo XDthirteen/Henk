@@ -37,15 +37,18 @@ import Hamburgermenu from '@/components/HamburgerMenu.vue';
 /*TIJDELIJK*/
 import { ref, onMounted } from 'vue';
 
-const isDark = ref(false); // start met light theme
+const themes = ['light', 'dark', 'deeppink'];
+const currentTheme = ref('light');
 
 const applyTheme = () => {
-  document.body.classList.remove('light-theme', 'dark-theme');
-  document.body.classList.add(isDark.value ? 'dark-theme' : 'light-theme');
+  document.body.classList.remove('light-theme', 'dark-theme', 'deeppink-theme');
+  document.body.classList.add(`${currentTheme.value}-theme`);
 };
 
 const toggleTheme = () => {
-  isDark.value = !isDark.value;
+  const currentIndex = themes.indexOf(currentTheme.value);
+  const nextIndex = (currentIndex + 1) % themes.length;
+  currentTheme.value = themes[nextIndex];
   applyTheme();
 };
 

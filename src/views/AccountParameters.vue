@@ -158,6 +158,9 @@ const setTheme = (theme: string) => {
           <button :class="{ active: paramTempValues.theme === 'Dark' }" @click="setTheme('Dark')">
             Dark
           </button>
+          <button :class="{ active: paramTempValues.theme === 'Deeppink' }" @click="setTheme('Deeppink')">
+            Deeppink
+          </button>
         </div>
         <!-- <EditIcon :iconTogglerParam="iconTogglerParam.theme" @toggle-edit="toggleEdit('theme')" /> -->
         <FontAwesomeIconToggler :iconToggler="iconTogglerParam.theme" icon1="floppy-disk" icon2="pen-to-square"

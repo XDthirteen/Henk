@@ -6,11 +6,24 @@ const applyTheme = (theme: string) => {
   const normalizedTheme = theme.toLowerCase();
   console.log("applyTheme aangeroepen met:", normalizedTheme);
 
-  if (normalizedTheme === 'dark') {
-    document.body.classList.add('dark-theme');
-  } else {
-    document.body.classList.remove('dark-theme');
+  const validThemes = ['dark', 'light', 'deeppink'];
+
+  const themeClassMap: Record<string, string> = {
+    dark: 'dark-theme',
+    light: 'light-theme',
+    deeppink: 'deeppink-theme',
+  };
+
+  const chosenTheme = validThemes.includes(normalizedTheme)
+    ? normalizedTheme
+    : 'light';
+
+  for (const themeClass of Object.values(themeClassMap)) {
+    document.body.classList.remove(themeClass);
   }
+
+  const newClass = themeClassMap[chosenTheme];
+  document.body.classList.add(newClass);
 };
 
 const userSettings = () => {
