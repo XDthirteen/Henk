@@ -53,7 +53,7 @@ const toggleTheme = () => {
 };
 
 onMounted(() => {
-  applyTheme(); // init theme bij laden van pagina
+  applyTheme();
 });
 /*TIJDELIJK*/
 </script>
