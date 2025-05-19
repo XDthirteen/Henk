@@ -1,79 +1,81 @@
 /*#####################################
 /
-/ # CalendarView.vue
-/ # ==================
-/ # Beschrijving:
-/ # ------------
-/ # Het kunnen zien van datums en geplande events.
+/      #  CalendarView.vue
+/      #  ==================
+/      #  Beschrijving:
+/      #  ------------
+/      #  Het kunnen zien van datums en geplande events.
 /
-/ # Auteur: Jorn Vierbergen
-/ # Datum aangemaakt: 16/11/2024
+/      #  Auteur: Jorn Vierbergen
+/      #  Datum aangemaakt: 16/11/2024
 /
 #################
 /
-/ Changelog:
-/ ----------
-/ 06/12/2024 - Jorn Vierbergen
-/ - Toegevoegd: Dagen van vorige en volgende maand.
-/ 06/01/2025 - Jorn Vierbergen
-/ - Toegevoegd: Selecteerbare datum.
-/ 08/01/2025 - Jorn Vierbergen
-/ - Toegevoegd: Visuele event markers per datum.
-/ 20/01/2025 - Jorn Vierbergen
-/ - Toegevoegd: Expandable/collapsable div met event data.
-/ 27/01/2025 - Jorn Vierbergen
-/ - Toegevoegd: Events over meerdere dagen. Event lijn + datums in expandable div bij event time gezet.
-/ 08/02/2025 - Jorn Vierbergen
-/ - Fixed: Merge deletion CalendarDay in /components/models.ts
-/ - Fixed: Merge deletion prettier config in .prettierrc.json
-/ - Fixed: Expandable div height
-/ - Fixed: No-scrolling on page
-/ 10/02/2025 - Jorn Vierbergen
-/ - Toegevoegd: Event items klikbaar
-/ 13/02/2025 - Jorn Vierbergen
-/ - Toegevoegd: scrollable event items in case of unable to display all.
-/ - Aangepast: expandable div verplaatst naar component ExpandableDiv.vue
-/ 24/02/2025 - Jorn Vierbergen
-/ - Toegevoegd: API integratie event.service.ts
-/ - Aangepast: Optimalizeren calender functie gebruik.
-/ - Aangepast: API data cachen
-/ 28/02/2025 - Jorn Vierbergen
-/ - Toegevoegd: Datum en tijd in ISO + omvormen naar visueel tijdstip
-/ - Fixed: Event lines enkel eenmaal toevoegen in HTML element
-/ 13/03/2025 - Jorn Vierbergen
-/ - Fixed: expandableDiv mobile browser adress makes screen smaller
-/ 15/03/2025 - Jorn Vierbergen
-/ - Toegevoegd: SwipeDirection service
-/ - Fixed: TimeZones correct convertion from UTC/ISO time from api
-/ 17/03/2025 - Jorn Vierbergen
-/ - BUG: TimeZones do not work correct, asked for help, did not get.
-/ 20/04/2025 - Jorn Vierbergen
-/ - Toegevoegd: UTC time api, to check if the local UTC time is correct.
-/ 07/05/2025 - Arno Defillet
-/ - Toegevoegd: GroupNavigation Component om te kunnen navigeren naar de groepen
+/      Changelog:
+/      ----------
+/      06/12/2024 - Jorn Vierbergen
+/          - Added: Days from previous and next month.
+/      06/01/2025 - Jorn Vierbergen
+/          - Added: Selectable datum.
+/      08/01/2025 - Jorn Vierbergen
+/          - Added: Visual event markers per date.
+/      20/01/2025 - Jorn Vierbergen
+/          - Added: Expandable/collapsable div with event data.
+/      27/01/2025 - Jorn Vierbergen
+/          - Added: Events over multiple days. Event line + dates in expandable div at event time.
+/      08/02/2025 - Jorn Vierbergen
+/          - Fixed: Merge deletion CalendarDay in /components/models.ts
+/          - Fixed: Merge deletion prettier config in .prettierrc.json
+/          - Fixed: Expandable div height
+/          - Fixed: No-scrolling on page
+/      10/02/2025 - Jorn Vierbergen
+/          - Added: Event items clickable
+/      13/02/2025 - Jorn Vierbergen
+/          - Added: scrollable event items in case of unable to display all.
+/          - Edited: expandable div moved to component ExpandableDiv.vue
+/      24/02/2025 - Jorn Vierbergen
+/          - Added: API integrated event.service.ts
+/          - Edited: Optimalize calender function usage.
+/          - Edited: API data cachen
+/      28/02/2025 - Jorn Vierbergen
+/          - Added: Date and time in ISO + convert to visual date and time
+/          - Fixed: Event lines enkel eenmaal toevoegen in HTML element
+/      13/03/2025 - Jorn Vierbergen
+/          - Fixed: expandableDiv mobile browser adress makes screen smaller
+/      15/03/2025 - Jorn Vierbergen
+/          - Added: SwipeDirection service
+/          - Fixed: TimeZones correct convertion from UTC/ISO time from api
+/      17/03/2025 - Jorn Vierbergen
+/          - BUG: TimeZones do not work correct, asked for help, did not get.
+/      16/05/2025 - Jorn Vierbergen
+/          - Fixed: Timezones, UTC time.
+/          - Added: Tasks display on calendar
 /
 /
-/ To do:
-/ - Selecting event in expandable div opens event description.
-/ - Add events functionality to event button.
-/ - Remove test data
-/ - Use house style css as var(--primary-blue) (in assets folder)
+/      To do:
+/      - Selecting event in expandable div opens event description.
+/      - Add events functionality to event button.
+/      - Remove test data
+/      - Use date instead of lists for months and weekdays. 
+/		 This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 /
-/ - BUG: Timezones do not work correct.
-/ - api to get utc independent from system time, compare api and system time
+/      - Optimalization calendar:
+/      	- Update only calendar days that have events instead of all days on api loaded
+/      	- API get only the events for the dates needed, now we get the events for 3 months
+/      	- Use filter() instead of forEach and push for arrays
 /
-/ - Optimalization:
-/ - Update only calendar days that have events instead of all days on api loaded
-/ - API get only the events for the dates needed, now we get the events for 3 months
-/ - Use filter() instead of forEach and push for arrays
+/      - NTH Change month to specified month. Click on month, drop down menu
+/      - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
-/ - NTH Change month to specified month. Click on month, drop down menu
-/ - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew
-Calendar) or sunday (United States)
+/      - Optimalization and NTH HENK: Helpful Event Note Keeper:
+/      	- Create 1 general service file for api calls for the same backend
+/      	- Create 1 general service file for error handeling
+/      	- Refactor every await and loop as in file optimal.js
+/      	- Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
 /
-/ Opmerkingen:
-/ ------------
-/ Enige opmerkingen?
+/      Opmerkingen:
+/      ------------
+/      Enige opmerkingen?
 /
 #####################################*/
 
@@ -84,39 +86,41 @@ import { eventService } from "@/services/event.service.ts";
 import type { CalendarDay } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
-import GroupNavigation from "@/components/GroupNavigation.vue";
+// <!-- Wat is dit? - Jorn  -->
+import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
 
-// TEST DATA
-// let groupAgenda = 13 //group id, changes when changing groups
-
+// Set calendar for groups, personal as default
 const route = useRoute()
-let groupAgenda = route.query.group_id
+let groupAgenda = 'personal' //group id, changes when changing groups
+if (route.query.group_id){
+	groupAgenda = route.query.group_id
+	console.log('Group selected:', groupAgenda)
+};
 
-// TIME SETTINGS FROM USER SETTINGS
+// TIME SETTINGS FROM USER SETTINGS 
 const dateTimeSettings = {
-    //timeZone: 'America/New_York', //'Europe/Brussels', 'America/New_York', ...
-    timeZone: 'Europe/Brussels',
-    // date/time displayed per locale format
-    dateTimeNotation: 'en-GB', // 'en-GB' D M Y, 'be-NL' M D Y, 'en-US', ...
-    // console.log(navigator.language);
+	//timeZone: 'America/New_York', //'Europe/Brussels', 'America/New_York', ...
+	timeZone: 'Europe/Brussels',
+	// date/time displayed per locale format
+	dateTimeNotation: 'en-GB', // 'en-GB' D M Y, 'be-NL' M D Y, 'en-US', ...
+	// console.log(navigator.language);
 
-    hour12Notation: false,
-    hourNotation: '2-digit' as NumberNotation,
+	hour12Notation: false,
+	hourNotation: '2-digit' as NumberNotation,
     minuteNotation: '2-digit' as NumberNotation,
-    secondNotation: '2-digit' as NumberNotation,
+	secondNotation: '2-digit' as NumberNotation,
 
-    dayNotation: '2-digit' as NumberNotation,
-    monthNotation: 'long' as MonthNotation,
-    yearNotation: 'numeric' as NumberNotation,
+	dayNotation: '2-digit' as NumberNotation,
+	monthNotation: 'long' as MonthNotation,
+	yearNotation: 'numeric' as NumberNotation,
 }
 
-const { timeZone, dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
+const { timeZone,  dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
 type NumberNotation = 'numeric' | '2-digit';
 type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
-// -------
 
 const events = ref([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
@@ -130,240 +134,228 @@ const currentDay = ref(currentDate.getUTCDate());
 const eventCache = ref<{ [key: string]: any[] }>({});
 
 const weekdays = [
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun"
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
+	"Sun"
 ];
 
 const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
 ];
 
 // If no isoDateTime string is given, use current date
 const formatDate = (isoDateTime?: string) => {
-    const date = new Date(isoDateTime ?? new Date().toISOString());
-    return date.toLocaleDateString(dateTimeNotation, {
-        timeZone,
-        year: yearNotation,
-        month: monthNotation,
-        day: dayNotation,
-    });
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleDateString(dateTimeNotation, {
+		timeZone,
+		year: yearNotation,
+		month: monthNotation,
+		day: dayNotation,
+	});
 };
 
 const formatTime = (isoDateTime?: string) => {
-    const date = new Date(isoDateTime ?? new Date().toISOString());
-    return date.toLocaleTimeString(dateTimeNotation, {
-        timeZone,
-        hour: hourNotation,
-        minute: minuteNotation,
-        hour12: hour12Notation,
-    });
+	const date = new Date(isoDateTime ?? new Date().toISOString());
+	return date.toLocaleTimeString(dateTimeNotation, {
+		timeZone,
+		hour: hourNotation,
+		minute: minuteNotation,
+		hour12: hour12Notation,
+	});
 };
 
 const formatDateTime = (isoDateTime?: string) => {
-    const dateTime = isoDateTime ?? new Date().toISOString();
-    const formattedDate = formatDate(dateTime)
-    const formattedTime = formatTime(dateTime)
-    return { date: formattedDate, time: formattedTime };
+	const dateTime = isoDateTime ?? new Date().toISOString();
+	const formattedDate = formatDate(dateTime)
+	const formattedTime = formatTime(dateTime)
+	return { date: formattedDate, time: formattedTime };
 };
 
-const getApiUTC = async () => {
-    const response = await fetch("http://worldtimeapi.org/api/timezone/Etc/UTC");
+const getApiUTC = async () =>{
+	const response = await fetch("http://worldtimeapi.org/api/timezone/Etc/UTC");
     const data = await response.json();
     return new Date(data.utc_datetime);
 };
 
-
-const dateTimeToISO = () =>{
-	const now = new Date();
-	console.log(now.toISOString());
-const dateTimeToISO = () => {
-    const now = new Date();
-    console.log(now.toISOString());
-};
-
-const dateTimeToUTC = (isoDateTime?: string) => {
-    const dateTime = isoDateTime ?? new Date();
-    const utcFormatted = dateTime.toLocaleString("en-GB", { timeZone: "UTC" });
-}
-
 // Fetch events selected month
 const fetchEventsForMonth = async () => {
-    const year = currentYear.value;
-    const month = currentMonth.value;
-    const cacheKey = `${year}-${month}`;
+	const year = currentYear.value;
+	const month = currentMonth.value;
+	const cacheKey = `${year}-${month}`;
 
-    if (eventCache.value[cacheKey]) {
-        events.value = eventCache.value[cacheKey];
-    }
-    else {
-        // QUICK FIX, gets data from 3 months!, FIX LATER for less data each api call.
-        // Duplicate data also in caching...
-        const fromDate = new Date(Date.UTC(year, month - 1, 1)).toISOString().split("T")[0];
-        const toDate = new Date(Date.UTC(year, month + 2, 0)).toISOString().split("T")[0];
-        console.log('from', fromDate, 'to', toDate);
+	if (eventCache.value[cacheKey]) {
+		events.value = eventCache.value[cacheKey];
+	}
+	else {
+		// QUICK FIX, gets data from 3 months!, FIX LATER for less data each api call.
+		// Duplicate data also in caching...
+		const fromDate = new Date(Date.UTC(year, month-1, 1)).toISOString().split("T")[0];
+		const toDate = new Date(Date.UTC(year, month+2, 0)).toISOString().split("T")[0];
+		//console.log('from', fromDate, 'to', toDate);
 
-        try {
-            const allEvents = [];
-            const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
-            personalEvents.forEach((item: any) => {
-                allEvents.push({ ...item, eventType: 'personal' });
-            });
+		try {
+			const allEvents: any[] = [];
+			const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+			console.log("Personal events:", personalEvents)
+			personalEvents.forEach((item: any) => {
+      			allEvents.push({ ...item, eventType: 'personal' });
+    		});
 
-            // get all group events when checking personal agenda
-            const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
-            const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
-            groupEvents.forEach((item: any) => {
-                allEvents.push({ ...item, eventType: 'group' });
-            });
-
-			const convertedEvents = [];
-
+			// get all group events when checking personal agenda
+			const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
+			const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
+            console.log("Group events:", groupEvents)
+    		groupEvents.forEach((item: any) => {
+				allEvents.push({ ...item, eventType: 'group' });
+			});
+            
+			const tasks = await getData(`tasks?completed=false`);
+            console.log("Tasks:", tasks)
+    		tasks.forEach((item: any) => {
+                // change dueDate to start and end, re-use event functions
+                item.start = item.dueDate;
+                item.end = item.dueDate;
+				allEvents.push({ ...item, eventType: 'task' });
+			});
+            
+			const convertedEvents: any[] = [];
+			
 			allEvents.forEach(event => {
 				const { date: startDate, time: startTime } = formatDateTime(event.start);
 				const { date: endDate, time: endTime } = formatDateTime(event.end);
-            const convertedEvents = [];
 
-            allEvents.forEach(event => {
-                const { date: startDate, time: startTime } = formatDateTime(event.start);
-                const { date: endDate, time: endTime } = formatDateTime(event.end);
+				convertedEvents.push({
+					...event,
+					startDate,
+					startTime,
+					endDate,
+					endTime,
+				});
+			});
 
-                convertedEvents.push({
-                    ...event,
-                    startDate,
-                    startTime,
-                    endDate,
-                    endTime,
-                });
-            });
+			// Update events
+			events.value = [...convertedEvents];
+			eventCache.value[cacheKey] = events.value;
+			// sorting only, UTC is not important here
+			events.value.sort((a, b) => new Date(a.start) > new Date(b.start) ? 1 : -1);
 
-            // Update events
-            events.value = [...convertedEvents];
-            eventCache.value[cacheKey] = events.value;
-            // sorting only, UTC is not important here
-            events.value.sort((a, b) => new Date(a.start) > new Date(b.start) ? 1 : -1);
-
-		}
+		} 
 		catch (error) {
 			console.error("Error fetching and processing events:", error);
 		}
 	}
 	// Reload calendarDays
+    console.log(events.value)
 	calendarDays.value = generateCalendarDays();
 	selectToday();
-        }
-        catch (error) {
-            console.error("Error fetching and processing events:", error);
-        }
-    }
-    // Reload calendarDays
-    calendarDays.value = generateCalendarDays();
-    selectToday();
+	calculateExpandableDiv();
 };
 
 // Get event types for each day
 const getEventLinesForDay = (date: string) => {
-    let eventLines: string[] = [];
+	let eventLines: string[] = [];
 
-    events.value.forEach(event => {
-        if (date >= event.startDate && date <= event.endDate) {
-            const type = event.eventType;
-            if (!eventLines.includes(type)) {
-                eventLines.push(type);
-            };
-        };
-    });
-    return eventLines;
+	events.value.forEach(event => {
+        const dateDate = new Date(date)
+        const startDate = new Date(event.startDate)
+        const endDate = new Date(event.endDate)
+		if (dateDate >= startDate && dateDate <= endDate) {
+      		const type = event.eventType;
+			if (!eventLines.includes(type)) {
+				eventLines.push(type);
+			};
+		};
+	});
+	return eventLines;
 };
 
 // Days for calendar
 // No need for time, except for finding today.
 const generateCalendarDays = (): CalendarDay[] => {
-    const year = currentYear.value;
-    const month = currentMonth.value;
-    const today = formatDate()
+  	const year = currentYear.value;
+  	const month = currentMonth.value;
+	const today = formatDate()
 
-    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getDate();
-    const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getDate();
+  	const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getDate();
+	const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getDate();
 
-    const firstDayOfWeek = new Date(Date.UTC(year, month, 1)).getDay();
-    const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+  	const firstDayOfWeek = new Date(Date.UTC(year, month, 1)).getDay();
+  	const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-    const lastDayOfWeek = new Date(Date.UTC(year, month + 1, 0)).getDay();
-    const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
+  	const lastDayOfWeek = new Date(Date.UTC(year, month + 1, 0)).getDay();
+  	const endOffset = lastDayOfWeek === 0 ? 0 : 7 - lastDayOfWeek;
 
-    const days: CalendarDay[] = [];
+  	const days: CalendarDay[] = [];
 
-    const addDays = (
-        count: number,
-        startDay: number,
-        faded: boolean,
-        offsetMonth: number
-    ) => {
-        for (let i = 0; i < count; i++) {
-            const day = startDay + i;
-            // Create Date in UTC so it does not fuck up the god damned timezone things
-            const targetDate = new Date(Date.UTC(year, month + offsetMonth, day));
-            // fcking bull sh*t this is
-            // Format all dates to selected date notation
-            const fullDate = formatDate(targetDate.toISOString());
-            console.log(today)
-            console.log(targetDate)
-            console.log(fullDate)
+  	const addDays = (
+    	count: number,
+    	startDay: number,
+    	faded: boolean,
+    	offsetMonth: number
+  	) => {
+		for (let i = 0; i < count; i++) {
+			const day = startDay + i;
+			// Create Date in UTC so it does not fuck up the god damned timezone things
+			const targetDate = new Date(Date.UTC(year, month + offsetMonth, day));
+			// fcking bull sh*t this is
+			// Format all dates to selected date notation
+			const fullDate = formatDate(targetDate.toISOString());
 
-            days.push({
-                day: day,
-                date: fullDate,
-                faded,
-                isToday:
-                    !faded && fullDate === today,
-                eventLines: getEventLinesForDay(fullDate),
-            });
-        };
-    };
+			days.push({
+				day: day,
+				date: fullDate,
+				faded,
+				isToday:
+					!faded && fullDate === today,
+				eventLines: getEventLinesForDay(fullDate),
+			});
+		};
+  	};
 
-    addDays(startOffset, daysInPrevMonth - startOffset + 1, true, -1);
-    addDays(daysInMonth, 1, false, 0);
-    addDays(endOffset, 1, true, 1);
+	addDays(startOffset, daysInPrevMonth - startOffset + 1, true, -1);
+	addDays(daysInMonth, 1, false, 0);
+	addDays(endOffset, 1, true, 1);
 
-    return days;
+	return days;
 };
 
 const calendarDays = ref<CalendarDay[]>(generateCalendarDays());
 
 // Expandable div calculation
 const calculateExpandableDiv = () => {
-    // ensure measurement happen on the next frame, after layout and styles are applied.
-    requestAnimationFrame(() => {
-        const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
-        if (calendarElement) {
-            const calendarPosition = calendarElement.getBoundingClientRect();
-            document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
-            document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
-        };
-    });
+		// ensure measurement happen on the next frame, after layout and styles are applied.
+		requestAnimationFrame(() => {
+			const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
+			if (calendarElement) {
+				const calendarPosition = calendarElement.getBoundingClientRect();
+				document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
+				document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
+			};
+		});
 };
 
 // Select today on startup
 const selectToday = () => {
-    const today = calendarDays.value.find(day => day.isToday);
-    if (today) selectDate(today);
+	const today = calendarDays.value.find(day => day.isToday);
+	if (today) selectDate(today);
 };
+
+// <!-- Wat is dit? - Jorn  -->
 
 // Event button
 // const openEventDialogue = () => {       // Modal visibility
@@ -373,92 +365,95 @@ const selectToday = () => {
 
 // Go to previous and next month
 const goToPrevMonth = () => {
-    currentMonth.value = (currentMonth.value - 1 + 12) % 12;
-    if (currentMonth.value === 11) currentYear.value--;
-    calculateExpandableDiv();
-    fetchEventsForMonth();
+  	currentMonth.value = (currentMonth.value - 1 + 12) % 12;
+  	if (currentMonth.value === 11) currentYear.value--;
+	fetchEventsForMonth();
 };
 
 const goToNextMonth = () => {
-    currentMonth.value = (currentMonth.value + 1) % 12;
-    if (currentMonth.value === 0) currentYear.value++;
-    calculateExpandableDiv();
-    fetchEventsForMonth();
+  	currentMonth.value = (currentMonth.value + 1) % 12;
+  	if (currentMonth.value === 0) currentYear.value++;
+	fetchEventsForMonth();
 };
 
 // Select date
 const selectDate = (date: CalendarDay) => {
-    console.log(`Clicked on: ${date.date}`);
+	console.log(`Clicked on: ${date.date}`);
 
-    const eventsForSelectedDate = [];
+	const eventsForSelectedDate: any[] = [];
 
-    events.value.forEach(event => {
-        // Check if event in selected date range
-        const eventStartDate = event.startDate;
-        const eventEndDate = event.endDate;
+	events.value.forEach(event => {
+		// Check if event in selected date range
+		const eventStartDate = event.startDate;
+		const eventEndDate = event.endDate;
 
-        if (date.date >= eventStartDate && date.date <= eventEndDate) {
-            eventsForSelectedDate.push(event);
-        };
-    });
-    selectedDate.value = {
-        ...date,
-        events: eventsForSelectedDate,
-    };
-    console.log("Selected Date Events:", selectedDate.value.events);
+		if (date.date >= eventStartDate && date.date <= eventEndDate) {
+			eventsForSelectedDate.push(event);
+		};
+	});
+	selectedDate.value = {
+		...date,
+		events: eventsForSelectedDate,
+	};
+	//console.log("Selected Date Events:", selectedDate.value.events);
 };
 
 onMounted(() => {
-    fetchEventsForMonth();
-    calculateExpandableDiv();
+	fetchEventsForMonth();
 });
 
 </script>
 
 <template>
-    <GroupNavigation></GroupNavigation>
-    <div class="center">
-        <div class="calendar-wrapper">
-            <div class="calendar" @touchstart="onTouchStart" @touchend="(event) => {
-                const direction = onTouchEnd(event);
-                if (direction === 'right') goToNextMonth();
-                if (direction === 'left') goToPrevMonth();
-            }">
-                <!-- Header -->
-                <div class="calendar-header">
-                    <button @click="goToPrevMonth" class="nav-button">◀</button>
-                    <span id="month-year">{{ months[currentMonth] }} {{ currentYear }}</span>
-                    <button @click="goToNextMonth" class="nav-button">▶</button>
-                </div>
+<div class="center">
+	<div class="calendar-wrapper">
+		<div class="calendar"
+		@touchstart="onTouchStart"
+		@touchend="(event) => {
+			const direction = onTouchEnd(event);
+			if (direction === 'right') goToNextMonth();
+			if (direction === 'left') goToPrevMonth();
+		}"
+		>
+      		<!-- Header -->
+      		<div class="calendar-header">
+        		<button @click="goToPrevMonth" class="nav-button">◀</button>
+        		<span id="month-year">{{ months[currentMonth] }} {{ currentYear }}</span>
+        		<button @click="goToNextMonth" class="nav-button">▶</button>
+      		</div>
 
-                <!-- Weekdays -->
-                <div class="calendar-grid">
-                    <div v-for="weekday in weekdays" :key="weekday" class="day">
-                        {{ weekday }}
-                    </div>
+			<!-- Weekdays -->
+			<div class="calendar-grid">
+				<div v-for="weekday in weekdays" :key="weekday" class="day">
+				{{ weekday }}
+				</div>
 
-                    <!-- Calendar Days -->
-                    <div v-for="date in calendarDays" :key="date.date" :id="date.date"
-                        :class="['date', { faded: date.faded, today: date.isToday }, { 'selected-day': selectedDate?.date === date.date }]"
-                        @click="selectDate(date)">
-                        <span>{{ date.day }}</span>
-                        <div class="event-lines">
-                            <div v-for="eventType in date.eventLines" :key="eventType"
-                                :class="['event-line', eventType]"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+				<!-- Calendar Days -->
+				<div
+					v-for="date in calendarDays"
+					:key="date.date"
+					:id="date.date"
+					:class="['date', {faded: date.faded, today: date.isToday}, {'selected-day': selectedDate?.date === date.date}]"
+					@click="selectDate(date)"
+				>
+					<span>{{ date.day }}</span>
+					<div class="event-lines">
+						<div v-for="eventType in date.eventLines" :key="eventType" :class="['event-line', eventType]"></div>
+					</div>
+				</div>
+      		</div>
+    	</div>
 
-            <!-- Expandable Div -->
-            <expandableDiv :events="events" :selectedDate="selectedDate" />
+    	<!-- Expandable Div -->
+		<expandableDiv :events="events" :selectedDate="selectedDate" />
 
-            <button class="add-event-button" @click="addEvent">
-                Event Button
-            </button>
-        </div>
-    </div>
-    <!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
+		<button class="add-event-button" @click="addEvent">
+			Event Button
+		</button>
+  </div>
+</div>
+<!-- Wat is dit? - Jorn  -->
+<!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
 
 </template>
 
@@ -472,12 +467,11 @@ onMounted(() => {
 
 .calendar-wrapper {
     width: 400px;
-    padding-top: 4px;
-    /* Offset for expandable div */
+    padding-top: 4px; /* Offset for expandable div */
 }
 
 .calendar {
-    margin: 2%;
+	margin: 2%;
     border: 1px solid black;
     border-radius: 10px;
     overflow: hidden;
@@ -495,13 +489,13 @@ onMounted(() => {
     color: var(--primary-white);
 }
 
-#month-year {
+#month-year{
     justify-content: center;
     align-items: center;
 }
 
 /* change button, also duplicate in ExpandableDiv.vue component */
-button {
+button{
     background: var(--primary-purple);
     color: var(--primary-white);
     border: none;
@@ -522,8 +516,7 @@ button:hover {
     position: fixed;
     bottom: 20px;
     left: 50%;
-    transform: translateX(-50%);
-    /* Center adjust for element length*/
+    transform: translateX(-50%); /* Center adjust for element length*/
     padding: 10px 20px;
     z-index: 4;
 }
@@ -550,11 +543,11 @@ button:hover {
     border: 2px solid transparent;
 }
 
-.date {
-    cursor: pointer;
+.date{
+	cursor: pointer;
 }
 
-.date span {
+.date span{
     position: relative;
     z-index: 2;
     top: -8px;
@@ -602,20 +595,21 @@ button:hover {
     bottom: 5px;
 }
 
-.event-line.planned {
+.event-line.task {
     bottom: 1px;
 }
 
 /* Colors based on event type */
 .personal {
-    background-color: red;
+  	background-color: red;
 }
 
 .group {
-    background-color: green;
+  	background-color: green;
 }
 
-.planned {
-    background-color: blue;
+.task {
+  	background-color: blue;
 }
+
 </style>
