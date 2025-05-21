@@ -34,13 +34,14 @@ type="primary"
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import StyledButton from '@/components/StyledButton.vue';
+import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
 
 const router = useRouter();
 
 </script>
 
 <template>
-  <h1 class="view-title">My account</h1>
+  <ModuleTitleContainer>My account</ModuleTitleContainer>
   <div class="button-container">
     <StyledButton type="primary" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
     <StyledButton type="primary" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
@@ -51,21 +52,6 @@ const router = useRouter();
 </template>
 
 <style scoped>
-.view-title {
-  display: flex;
-  color: var(--main-text);
-  border: 2px solid var(--title-border);
-  border-radius: 10px;
-  background-color: var(--title-background);
-  margin: 1rem 2rem 1rem 2rem;
-  padding: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  font-weight: bolder;
-  font-size: xx-large;
-  height: 5rem;
-}
-
 .button-container {
   margin: 0 2rem 0 2rem;
   display: flex;
