@@ -39,45 +39,48 @@
       </div>
     </div>
 
-    <div v-if="showInvitePopup" class="popup">
-      <h3>Invite to: {{ selectedGroup?.name }}</h3>
-      <input type="text" v-model="inviteInput" placeholder="Enter User ID or Email" class="input-field" />
-      <button class="send-btn" @click="sendInvite">Send Invite</button>
-      <button class="cancel-btn" @click="cancelInvite">Cancel</button>
+    <PopUpComponent v-if="showInvitePopup" @close="cancelInvite">
+      <template #default>
+        <h3>Invite to: {{ selectedGroup?.name }}</h3>
+        <input type="text" v-model="inviteInput" placeholder="Enter User ID or Email" class="input-field" />
+        <button class="send-btn" @click="sendInvite">Send Invite</button>
+        <button class="cancel-btn" @click="cancelInvite">Cancel</button>
+        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      </template>
+    </PopUpComponent>
 
-      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    </div>
+    <PopUpComponent v-if="showLeavePopup" @close="cancelLeave">
+      <template #default>
+        <h3>Wil je {{ selectedGroup?.name }} verlaten?</h3>
+        <button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
+        <button class="cancel-btn" @click="cancelLeave">Annuleer</button>
+        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      </template>
+    </PopUpComponent>
 
-    <div v-if="showLeavePopup" class="popup">
-      <h3>Wil je {{ selectedGroup?.name }} verlaten?</h3>
-      <button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
-      <button class="cancel-btn" @click="cancelLeave">Annuleer</button>
+    <PopUpComponent v-if="showAddGroupPopup" @close="closeAddGroupPopup">
+      <template #default>
+        <h3>Nieuwe Groep Aanmaken</h3>
+        <input v-model="newGroupName" placeholder="Groepsnaam" class="input-field" />
 
-      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    </div>
-
-    <div v-if="showAddGroupPopup" class="popup">
-      <h3>Nieuwe Groep Aanmaken</h3>
-      <input v-model="newGroupName" placeholder="Groepsnaam" class="input-field" />
-
-      <!-- Aangepaste dropdown -->
-      <div class="custom-dropdown">
-        <div class="selected-icon" @click="toggleIconDropdown">
-          <font-awesome-icon v-if="selectedGroupIcon" :icon="['fas', selectedGroupIcon]" />
-          <span v-else>Selecteer een icoon</span>
+        <div class="custom-dropdown">
+          <div class="selected-icon" @click="toggleIconDropdown">
+            <font-awesome-icon v-if="selectedGroupIcon" :icon="['fas', selectedGroupIcon]" />
+            <span v-else>Selecteer een icoon</span>
+          </div>
+          <ul v-if="iconDropdownOpen" class="icon-list">
+            <li v-for="icon in availableIcons" :key="icon" @click="selectIcon(icon)" class="icon-item">
+              <font-awesome-icon :icon="['fas', icon]" /> {{ icon }}
+            </li>
+          </ul>
         </div>
-        <ul v-if="iconDropdownOpen" class="icon-list">
-          <li v-for="icon in availableIcons" :key="icon" @click="selectIcon(icon)" class="icon-item">
-            <font-awesome-icon :icon="['fas', icon]" /> {{ icon }}
-          </li>
-        </ul>
-      </div>
 
-      <button class="send-btn" @click="addGroup">Groep Toevoegen</button>
-      <button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
+        <button class="send-btn" @click="addGroup">Groep Toevoegen</button>
+        <button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
 
-      <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    </div>
+        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+      </template>
+    </PopUpComponent>
   </div>
 </template>
 
@@ -88,8 +91,8 @@ import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
 import { useGroupStore } from '@/services/groupservices'
 import type { Group } from '@/components/models.ts'
+import PopUpComponent from '@/components/PopUpComponent.vue'
 
-// FontAwesome imports
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUser,
@@ -174,17 +177,16 @@ const fetchGroups = async () => {
 
     console.log('Opgehaalde groepen:', response.data)
 
-    groups.value = response.data.map((group: Group) => {  // Gebruik de Group interface
-      const image = (group.image || '').toString()  // 'image' is optioneel
+    groups.value = response.data.map((group: Group) => {
+      const image = (group.image || '').toString()
       const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
 
-      // Converteer image naar icon (en behoud andere properties)
       const iconGroup: Group = {
         id: group.id,
         name: group.name,
         icon: isValidIcon ? image : 'user',
         tasks: group.tasks ?? [],
-        image: group.image,  // Voeg image toe als je die wilt bewaren
+        image: group.image,
       }
 
       return iconGroup
@@ -308,7 +310,7 @@ const addGroup = async () => {
   try {
     const newGroup = {
       name: newGroupName.value,
-      image: selectedGroupIcon.value, // API expects 'image'
+      image: selectedGroupIcon.value,
     }
 
     console.log('Nieuwe groep:', newGroup)
