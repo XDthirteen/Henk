@@ -26,11 +26,11 @@ import axios from 'axios'
 
 const apiBasePath = '/api'
 
-//let apiToken = localStorage.getItem('token')
-let apiToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0MjEyMjEwOSwiZXhwIjoxNzQyMTI1NzA5fQ.P8ayjFGLXy4pE1OwuWHGRvNRbE5R6qCuaZBazn5Ql50'
+let apiToken = localStorage.getItem('token')
+console.log(apiToken)
+//let apiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTc0MjEyMjEwOSwiZXhwIjoxNzQyMTI1NzA5fQ.P8ayjFGLXy4pE1OwuWHGRvNRbE5R6qCuaZBazn5Ql50'
 
-const testing = true
+const testing = false
 
 let testData = [
 	{

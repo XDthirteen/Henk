@@ -59,8 +59,9 @@ const getEventsForSelectedDate = computed(() => {
 });
 
 const eventClick = (eventData) => {
-  console.log("Clicked event:", eventData);
-  console.log("x", props.selectedDate)
+  return
+  //console.log("Clicked event:", eventData);
+  //console.log("x",props.selectedDate)
 };
 
 </script>
@@ -71,7 +72,7 @@ const eventClick = (eventData) => {
       const direction = onTouchEnd(event);
       if (direction === 'up') isExpanded = true;
       else if (direction === 'down') isExpanded = false;
-      console.log('Swiped:', direction, 'isExpanded:', isExpanded);
+      //console.log('Swiped:', direction, 'isExpanded:', isExpanded);
     }">
 
     <div class="line">
@@ -205,7 +206,7 @@ button {
   background-color: green;
 }
 
-.planned {
+.task {
   background-color: blue;
 }
 

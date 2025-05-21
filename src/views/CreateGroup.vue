@@ -42,8 +42,7 @@
 								: navigateToAgenda(String(group.id))
 					"
 				>
-					<font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" />
-					<img v-else :src="defaultIcon" alt="Default Group Icon" />
+					<img :src="group.icon || defaultIcon" :alt="group.name" />
 					<span>{{ group.name }}</span>
 				</div>
 			</div>
@@ -74,28 +73,10 @@
 		<div v-if="showAddGroupPopup" class="popup">
 			<h3>Nieuwe Groep Aanmaken</h3>
 			<input v-model="newGroupName" placeholder="Groepsnaam" class="input-field" />
-
-			<!-- Aangepaste dropdown -->
-			<div class="custom-dropdown">
-				<div class="selected-icon" @click="toggleIconDropdown">
-					<font-awesome-icon
-						v-if="selectedGroupIcon"
-						:icon="['fas', selectedGroupIcon]"
-					/>
-					<span v-else>Selecteer een icoon</span>
-				</div>
-				<ul v-if="iconDropdownOpen" class="icon-list">
-					<li
-						v-for="icon in availableIcons"
-						:key="icon"
-						@click="selectIcon(icon)"
-						class="icon-item"
-					>
-						<font-awesome-icon :icon="['fas', icon]" /> {{ icon }}
-					</li>
-				</ul>
-			</div>
-
+			<select v-model="selectedGroupIcon" class="input-field">
+				<option disabled value="">Selecteer een icoon</option>
+				<option v-for="icon in availableIcons" :key="icon" :value="icon">{{ icon }}</option>
+			</select>
 			<button class="send-btn" @click="addGroup">Groep Toevoegen</button>
 			<button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
 
@@ -106,51 +87,16 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useAuth } from '@/services/auth.service'
 import { useGroupStore } from '@/services/groupservices'
 import type { Group } from '@/components/models.ts'
 
-// FontAwesome imports
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-	faUser,
-	faCoffee,
-	faCar,
-	faDog,
-	faBicycle,
-	faHome,
-	faTree,
-	faSun,
-	faMoon,
-	faRocket,
-} from '@fortawesome/free-solid-svg-icons'
-
-library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
-
-const iconList = [
-	faUser,
-	faCoffee,
-	faCar,
-	faDog,
-	faBicycle,
-	faHome,
-	faTree,
-	faSun,
-	faMoon,
-	faRocket,
-]
-
-
 const API_URL = '/api/groups'
 const defaultIcon = '/images/default.png'
 
 const router = useRouter()
-const route = useRoute()
-const groupId = route.query.group_id
-console.log('Group ID:', groupId)
-
 const { getAuthToken, isAuthenticated } = useAuth()
 const groupStore = useGroupStore()
 
@@ -163,69 +109,36 @@ const showInvitePopup = ref(false)
 const showLeavePopup = ref(false)
 const showAddGroupPopup = ref(false)
 const newGroupName = ref('')
-const selectedGroupIcon = ref<string | null>(null)
-const availableIcons = ref<string[]>([])
-const iconDropdownOpen = ref(false)
+const selectedGroupIcon = ref('')
+const availableIcons = ref([
+	'../assets/man-woman-boy.png',
+	'../assets/joy.png',
+	'../assets/bear.png',
+])
 const successMessage = ref('')
 
-const generateRandomIcons = () => {
-	const shuffled = [...iconList].sort(() => 0.5 - Math.random())
-	availableIcons.value = shuffled.slice(0, 10).map((icon) => icon.iconName)
-}
-
-const toggleIconDropdown = () => {
-	iconDropdownOpen.value = !iconDropdownOpen.value
-}
-
-const selectIcon = (icon: string) => {
-	console.log('Geselecteerde icoon:', icon)
-	selectedGroupIcon.value = icon
-	iconDropdownOpen.value = false
-}
-
 onMounted(async () => {
-	generateRandomIcons()
 	await fetchGroups()
 })
 
 const fetchGroups = async () => {
-  try {
-    const token = getAuthToken()
-    const response = await axios.get(API_URL, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    console.log('Opgehaalde groepen:', response.data)
-
-    groups.value = response.data.map((group: Group) => {  // Gebruik de Group interface
-      const image = (group.image || '').toString()  // 'image' is optioneel
-      const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
-
-      // Converteer image naar icon (en behoud andere properties)
-      const iconGroup: Group = {
-        id: group.id,
-        name: group.name,
-        icon: isValidIcon ? image : 'user',
-        tasks: group.tasks ?? [],
-        image: group.image,  // Voeg image toe als je die wilt bewaren
-      }
-
-      return iconGroup
-    })
-  } catch (error) {
-    console.error('Error fetching groups:', error)
-    alert('Failed to fetch groups.')
-  }
+	try {
+		const token = getAuthToken()
+		const response = await axios.get<Group[]>(API_URL, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
+		groups.value = response.data
+	} catch (error) {
+		console.error('Error fetching groups:', error)
+	}
 }
-
-
 
 const navigateToInvites = () => {
 	router.push({ name: 'invites' })
 }
 
 const navigateToAgenda = (groupId: string) => {
-	router.push({ name: 'calendar', query: { group_id: groupId } })
+	router.push({ name: 'agenda', params: { id: groupId } })
 }
 
 const toggleInviteMode = () => {
@@ -317,7 +230,7 @@ const openAddGroupPopup = () => {
 const closeAddGroupPopup = () => {
 	showAddGroupPopup.value = false
 	newGroupName.value = ''
-	selectedGroupIcon.value = null
+	selectedGroupIcon.value = ''
 }
 
 const addGroup = async () => {
@@ -329,17 +242,11 @@ const addGroup = async () => {
 	const token = getAuthToken()
 
 	try {
-		const newGroup = {
-			name: newGroupName.value,
-			image: selectedGroupIcon.value, // API expects 'image'
-		}
-
-		console.log('Nieuwe groep:', newGroup)
-
-		await axios.post(API_URL, newGroup, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-
+		await axios.post(
+			API_URL,
+			{ name: newGroupName.value, icon: selectedGroupIcon.value },
+			{ headers: { Authorization: `Bearer ${token}` } },
+		)
 		successMessage.value = 'Groep succesvol toegevoegd!'
 
 		setTimeout(() => {
@@ -648,51 +555,5 @@ header {
 
 .add-group-form button:last-child:hover {
 	background-color: #d32f2f;
-}
-
-.custom-dropdown {
-	position: relative;
-	display: inline-block;
-	width: 100%;
-	margin-top: 10px;
-}
-
-.selected-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 10px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	cursor: pointer;
-	background: white;
-}
-
-.icon-list {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	width: 100%;
-	max-height: 200px;
-	overflow-y: auto;
-	background: white;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	z-index: 10;
-	list-style: none;
-	padding: 0;
-	margin: 5px 0 0;
-}
-
-.icon-item {
-	display: flex;
-	align-items: center;
-	padding: 10px;
-	cursor: pointer;
-	transition: background 0.2s ease;
-}
-
-.icon-item:hover {
-	background: #f0f0f0;
 }
 </style>
