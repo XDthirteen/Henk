@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-// import axios from "axios";
+import { useAuth } from './auth.service';
+const { getAuthToken } = useAuth()
 
 
 export const useGroupStore = defineStore('groupStore', {
@@ -29,8 +30,11 @@ export const useGroupStore = defineStore('groupStore', {
 
 
 export const fetchGroups = async () => {
+  const token = getAuthToken()
   try {
-    const response = await fetch('/api/groups');
+    const response = await fetch('/api/groups', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch groups');
     }
