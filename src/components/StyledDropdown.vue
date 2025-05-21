@@ -54,11 +54,11 @@ const handleChange = (event: Event) => {
 .dropdown {
   width: 13rem;
   padding: 0.5rem;
-  border: 2px solid var(--primary-blue);
+  border: 2px solid var(--input-border);
   border-radius: 0.5rem;
 }
 
 .dropdown:focus {
-  background-color: var(--tertiary-purple);
+  background-color: var(--input-focus);
 }
 </style>

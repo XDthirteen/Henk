@@ -35,7 +35,7 @@ import StyledDropdown from '@/components/StyledDropdown.vue';
 import StyledButton from '@/components/StyledButton.vue';
 import type { ParamSavedValues, ParamEditingState } from '@/components/models';
 import FontAwesomeIconToggler from '@/components/FontAwasomeIconToggler.vue';
-import { userSettings } from '@/services/userSettings.service';
+import { userSettings, applyTheme } from '@/services/userSettings.service';
 
 const { getUserParam, userParam, updateUserParam } = userSettings();
 
@@ -86,9 +86,6 @@ function isSaveDisabled(): boolean {
   return !hasChanges || iconTogglerParamActive;
 }
 
-const setTheme = (theme: string) => {
-  paramTempValues.value.theme = theme;
-};
 
 function toggleEdit(field: keyof typeof iconTogglerParam.value) {
   if (!iconTogglerParam.value[field]) {
@@ -108,6 +105,11 @@ function saveParamChanges(): void {
   paramSavedValues.value = { ...paramTempValues.value };
   saveParamChangesToBackend();
 }
+
+const setTheme = (theme: string) => {
+  paramTempValues.value.theme = theme;
+  applyTheme(theme);
+};
 </script>
 
 <template>
@@ -156,6 +158,9 @@ function saveParamChanges(): void {
           <button :class="{ active: paramTempValues.theme === 'Dark' }" @click="setTheme('Dark')">
             Dark
           </button>
+          <button :class="{ active: paramTempValues.theme === 'Deeppink' }" @click="setTheme('Deeppink')">
+            Deeppink
+          </button>
         </div>
         <!-- <EditIcon :iconTogglerParam="iconTogglerParam.theme" @toggle-edit="toggleEdit('theme')" /> -->
         <FontAwesomeIconToggler :iconToggler="iconTogglerParam.theme" icon1="floppy-disk" icon2="pen-to-square"
@@ -177,6 +182,7 @@ function saveParamChanges(): void {
 }
 
 .field-container-wrapper {
+  color: var(--purple-text);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -196,10 +202,11 @@ function saveParamChanges(): void {
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem;
-  border-bottom: 2px solid var(--primary-purple);
+  border-bottom: 2px solid var(--title-border);
 }
 
 .text-field {
+  font-size: large;
   display: flex;
   width: 80%;
   align-items: center;
@@ -209,7 +216,7 @@ function saveParamChanges(): void {
 .theme-selector {
   width: 13rem;
   display: flex;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -218,17 +225,17 @@ function saveParamChanges(): void {
   flex: 1;
   padding: 10px;
   border: none;
-  background: var(--primary-white);
+  background: var(--item-background);
   transition: background 0.3s;
 }
 
 .theme-selector button.active {
-  background: var(--secundary-purple);
-  color: white;
+  background: var(--active-button);
+  color: var(--main-text);
   font-weight: bold;
 }
 
 .theme-selector button:not(.active):hover {
-  background: var(--primary-white);
+  background: var(--main-text);
 }
 </style>

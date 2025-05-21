@@ -33,11 +33,34 @@ navigate('todo_tasks')
 #####################################*/
 
 <script setup lang="ts">
-import Hamburgermenu from '@/components/Hamburgermenu.vue';
+import Hamburgermenu from '@/components/HamburgerMenu.vue';
+/*TIJDELIJK*/
+// import { ref, onMounted } from 'vue';
+
+// const themes = ['light', 'dark', 'deeppink'];
+// const currentTheme = ref('light');
+
+// const applyTheme = () => {
+//   document.body.classList.remove('light-theme', 'dark-theme', 'deeppink-theme');
+//   document.body.classList.add(`${currentTheme.value}-theme`);
+// };
+
+// const toggleTheme = () => {
+//   const currentIndex = themes.indexOf(currentTheme.value);
+//   const nextIndex = (currentIndex + 1) % themes.length;
+//   currentTheme.value = themes[nextIndex];
+//   applyTheme();
+// };
+
+// onMounted(() => {
+//   applyTheme();
+// });
+/*TIJDELIJK*/
 </script>
 
 <template>
   <div class="body">
+    <!-- <button @click="toggleTheme">theme</button> -->
     <Hamburgermenu />
     <RouterView />
   </div>
@@ -46,7 +69,7 @@ import Hamburgermenu from '@/components/Hamburgermenu.vue';
 
 <style scoped>
 .body {
-  margin: 8px;
-  margin-top: 3rem;
+  /* margin: 8px; */
+  padding-top: 3rem;
 }
 </style>

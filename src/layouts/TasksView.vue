@@ -27,7 +27,7 @@ h1 {
   font-weight: bolder;
   font-size: xx-large;
   margin-bottom: 10px;
-  color: var(--primary-purple);
+  color: var(--main-text);
 }
 
 .button-container {

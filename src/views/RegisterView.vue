@@ -34,7 +34,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, ref, type Ref } from 'vue';
 import axios, { AxiosError } from 'axios';
-import type { Language, UserData } from '@/components/models';
+import type { UserData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 
@@ -42,20 +42,20 @@ const router = useRouter();
 
 const buttonType = "primary";
 
-const languages: Language[] = [
-  { code: 'en', label: 'English' },
-  { code: 'nl', label: 'Nederlands' }
-];
+// const languages: Language[] = [
+//   { code: 'en', label: 'English' },
+//   { code: 'nl', label: 'Nederlands' }
+// ];
 
 const selectedLanguage = ref<{ default: string }>({
   default: 'en'
 });
 
-const toggleLanguage = () => {
-  selectedLanguage.value.default = selectedLanguage.value.default === 'en' ? 'nl' : 'en';
-  userData.defaultLanguage = selectedLanguage.value.default;
-  console.log('Selected language:', selectedLanguage.value.default);
-};
+// const toggleLanguage = () => {
+//   selectedLanguage.value.default = selectedLanguage.value.default === 'en' ? 'nl' : 'en';
+//   userData.defaultLanguage = selectedLanguage.value.default;
+//   console.log('Selected language:', selectedLanguage.value.default);
+// };
 
 const userData = reactive<UserData>({
   username: '',
@@ -106,6 +106,12 @@ const createUser = async () => {
   }
 }
 
+const setLanguage = (lang: string) => {
+  selectedLanguage.value.default = lang;
+  userData.defaultLanguage = lang;
+  console.log('Selected language:', lang);
+};
+
 </script>
 
 <template>
@@ -127,12 +133,12 @@ const createUser = async () => {
     </StyledInputByType>
 
     <div class="container">
-      <div class="language-toggle" @click="toggleLanguage">
-        <div class="language-option" :class="{ active: selectedLanguage.default === languages[0].code }">
-          {{ languages[0].label }}
+      <div class="language-toggle">
+        <div class="language-option" :class="{ active: selectedLanguage.default === 'en' }" @click="setLanguage('en')">
+          English
         </div>
-        <div class="language-option" :class="{ active: selectedLanguage.default === languages[1].code }">
-          {{ languages[1].label }}
+        <div class="language-option" :class="{ active: selectedLanguage.default === 'nl' }" @click="setLanguage('nl')">
+          Nederlands
         </div>
       </div>
     </div>
@@ -143,20 +149,8 @@ const createUser = async () => {
 </template>
 
 <style scoped>
-.signup-header {
-  color: blue;
-  font-weight: bold;
-  font-size: 23px;
-}
-
-label {
-  color: blue;
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-input {
-  border: 2px solid grey;
+h2 {
+  color: var(--black-text);
 }
 
 .container {
@@ -169,7 +163,7 @@ input {
 .language-toggle {
   display: flex;
   width: 100%;
-  border: 2px solid var(--primary-purple);
+  border: 2px solid var(--input-border);
   border-radius: 5px;
   cursor: pointer;
   overflow: hidden;
@@ -183,7 +177,8 @@ input {
 }
 
 .language-option.active {
-  background-color: var(--secundary-purple);
-  color: white;
+  background-color: var(--primary-button);
+  color: var(--main-text);
+  font-weight: bold;
 }
 </style>

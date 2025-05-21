@@ -1,5 +1,5 @@
 :root {
-  --primary-purple: #453d83;
+  /* --primary-purple: #453d83;
   --primary-blue: #76b6fa;
   --primary-white: #e9f3fe;
   --primary-orange: #ffcdbe;
@@ -15,15 +15,87 @@
   --tertiary-orange: #faa68e;
   --tertiary-purple: #afa8df;
 
-  --test-color: deeppink;
+  --test-color: deeppink; */
+
+  --main-background: #efe1fa;
+  --second-background: #afa8df;
+  --item-background: #f4d8fc;
+  --title-background: #8055bc;
+  --title-border: #2c265b;
+  --taskdone-background: #ffbeaa;
+  --tasktodo-background: #beaef6;
+  --info-background: #ffeee5;
+
+  --main-text: #e9f3fe;
+  --black-text: #151417;
+  --purple-text: #36306a;
+  --lightpurple-text: #7c76a7;
+
+  --primary-button: #453d83;
+  --active-button: #c1abe3;
+  --hover-button: #c1aae7;
+  --green-button: #8beb8b;
+
+  --input-border: #9776fa;
+  --input-focus: #dfddf0;
+
+  --main-red: #f7997c;
 }
 
 #app{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    
-  }
-  } */
+
+body.dark-theme {
+  --main-background: #3b2b42;
+  --second-background: #836ab1;
+  --item-background: #d5b9dd;
+  --title-background: #bca4e3;
+  --taskdone-background: #ffbeaa;
+  --tasktodo-background: #beaef6;
+  --info-background: #ffeee5;
   
+  --title-border: #ccc0e0;
+
+  --main-text: #22063e;
+  --black-text: #ffffff;
+  --purple-text: #d0cef4;
+  --lightpurple-text: #5e4798;
+
+  --primary-button: #d6c0f6;
+  --active-button: #8962c3;
+  --hover-button: #aa89df;
+  --green-button: #53aa53;
+
+  --input-border: #8669dd;
+  --input-focus: #e3e1f3;
+
+  --main-red: #f7997c;
+}
+
+body.deeppink-theme {
+  --main-background: deeppink;
+  --second-background: #f295bf;
+  --item-background: #f1b9db;
+  --title-background: #f3a3d2;
+  --taskdone-background: #9e0e5a;
+  --tasktodo-background: #ec66b9;
+  --info-background: #aa1d61;
+  
+  --title-border: black;
+
+  --main-text: #ffffff;
+  --black-text: #673457;
+  --purple-text: #ffffff;
+  --lightpurple-text: #997d8b;
+
+  --primary-button: #ce8bb0;
+  --active-button: #89266b;
+  --hover-button: #7d114d;
+  --green-button: #dd00ff;
+
+  --input-border: #ff00b7;
+  --input-focus: #f596d2;
+
+  --main-red: #f2816d;
+}

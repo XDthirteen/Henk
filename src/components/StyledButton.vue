@@ -66,34 +66,34 @@ button:hover {
 
 
 .primary {
-  background-color: var(--primary-purple);
-  color: var(--primary-white);
-  border: 2px solid var(--primary-purple);
+  background-color: var(--primary-button);
+  color: var(--main-text);
+  border: 2px solid var(--primary-button);
 }
 
 .primary:hover {
-  background-color: var(--primary-white);
-  color: var(--primary-purple);
-  border: 2px solid var(--primary-purple)
+  background-color: var(--hover-button);
+  color: var(--main-text);
+  border: 2px solid var(--primary-button)
 }
 
 .negative {
   background-color: #c10015;
-  color: #fff;
+  color: var(--main-text);
 }
 
 .negative:hover {
   background-color: #9b0012;
-  color: #fff;
+  color: var(--main-text);
 }
 
 .save {
-  background-color: var(--primary-green);
-  color: #000000;
+  background-color: var(--green-button);
+  color: var(--black-text);
 }
 
 .save:hover {
   background-color: var(--secundary-green);
-  color: #000000;
+  color: var(--black-text);
 }
 </style>

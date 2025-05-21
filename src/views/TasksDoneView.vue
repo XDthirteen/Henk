@@ -83,13 +83,16 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   justify-content: flex-start;
   align-items: center;
   padding: 10px;
-  background-color: var(--primary-orange);
+  background-color: var(--taskdone-background);
   border-radius: 8px;
   margin-bottom: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .task-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 1.2rem;
   font-weight: bold;
   width: 100%;

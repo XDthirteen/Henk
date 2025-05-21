@@ -40,7 +40,7 @@ const router = useRouter();
 </script>
 
 <template>
-  <div class="view-title">My account</div>
+  <h1 class="view-title">My account</h1>
   <div class="button-container">
     <StyledButton type="primary" @click="router.push({ name: 'settings' })">User Settings</StyledButton>
     <StyledButton type="primary" @click="router.push({ name: 'parameters' })">Parameters</StyledButton>
@@ -53,15 +53,16 @@ const router = useRouter();
 <style scoped>
 .view-title {
   display: flex;
-  border: 2px solid var(--primary-purple);
+  color: var(--main-text);
+  border: 2px solid var(--title-border);
   border-radius: 10px;
-  background-color: var(--secundary-purple);
+  background-color: var(--title-background);
   margin: 1rem 2rem 1rem 2rem;
   padding: 0.5rem;
   justify-content: center;
   align-items: center;
-  font-size: x-large;
-  font-weight: 500;
+  font-weight: bolder;
+  font-size: xx-large;
   height: 5rem;
 }
 

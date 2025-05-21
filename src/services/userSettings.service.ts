@@ -2,6 +2,30 @@ import type { UserData, UserParamData } from "@/components/models";
 import axios from "axios";
 import { ref } from "vue";
 
+const applyTheme = (theme: string) => {
+  const normalizedTheme = theme.toLowerCase();
+  console.log("applyTheme aangeroepen met:", normalizedTheme);
+
+  const validThemes = ['dark', 'light', 'deeppink'];
+
+  const themeClassMap: Record<string, string> = {
+    dark: 'dark-theme',
+    light: 'light-theme',
+    deeppink: 'deeppink-theme',
+  };
+
+  const chosenTheme = validThemes.includes(normalizedTheme)
+    ? normalizedTheme
+    : 'light';
+
+  for (const themeClass of Object.values(themeClassMap)) {
+    document.body.classList.remove(themeClass);
+  }
+
+  const newClass = themeClassMap[chosenTheme];
+  document.body.classList.add(newClass);
+};
+
 const userSettings = () => {
   const userToken = `Bearer ${localStorage.getItem("token")}`;
   const userInfo = ref<UserData | null>(null);
@@ -61,27 +85,31 @@ const userSettings = () => {
   const userParam = ref<UserParamData | null>(null);
 
   const getUserParam = async () => {
-    try {
-      const response = await axios.get<UserParamData>("/api/users/preferences", {
-        headers: {
-          Authorization: userToken
-        }
-      });
+  try {
+    const response = await axios.get<UserParamData>("/api/users/preferences", {
+      headers: {
+        Authorization: userToken
+      }
+    });
 
-      const backendUserInfo = response.data;
+    const backendUserInfo = response.data;
 
-      userParam.value = {
-        city: backendUserInfo.city,
-        app: backendUserInfo.app,
-        theme: backendUserInfo.theme
-      };
+    userParam.value = {
+      city: backendUserInfo.city,
+      app: backendUserInfo.app,
+      theme: backendUserInfo.theme
+    };
 
-      return userParam.value;
-    } catch (error) {
-      console.error('Error fetching user parameters: ', error);
-      return null;
+    if (userParam.value.theme) {
+      applyTheme(userParam.value.theme);
     }
+
+    return userParam.value;
+  } catch (error) {
+    console.error('Error fetching user parameters: ', error);
+    return null;
   }
+};
 
   const updateUserParam = async (tempValues: {
     city: string;
@@ -117,4 +145,4 @@ const userSettings = () => {
   }
 };
 
-export { userSettings }
+export { userSettings, applyTheme }

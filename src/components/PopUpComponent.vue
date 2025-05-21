@@ -59,7 +59,7 @@ function emitClose() {
 }
 
 .popup-content {
-  background-color: var(--primary-white);
+  background-color: var(--second-background);
   padding: 20px;
   border-radius: 20px;
   box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.7);
@@ -87,7 +87,7 @@ function emitClose() {
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--primary-purple);
+  color: var(--purple-text);
   cursor: pointer;
 }
 </style>

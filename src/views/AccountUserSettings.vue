@@ -213,10 +213,10 @@ function saveUserChanges(): void {
 .user-overview {
   display: flex;
   border: none;
-  box-shadow: 5px 5px 30px var(--primary-purple);
+  box-shadow: 5px 5px 20px var(--title-border);
   ;
   border-radius: 10px;
-  background-color: var(--tertiary-purple);
+  background-color: var(--second-background);
   padding: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -228,6 +228,8 @@ function saveUserChanges(): void {
 }
 
 .row {
+  color: var(--purple-text);
+  font-size: large;
   display: flex;
 }
 
@@ -250,6 +252,7 @@ function saveUserChanges(): void {
 }
 
 .user-fullname {
+  color: var(--purple-text);
   text-decoration: underline;
   font-weight: 700;
 }
@@ -262,9 +265,9 @@ function saveUserChanges(): void {
 }
 
 .field-container-wrapper {
+  color: var(--purple-text);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   margin-bottom: 3rem;
 }
 
@@ -274,10 +277,11 @@ function saveUserChanges(): void {
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem;
-  border-bottom: 2px solid var(--primary-purple);
+  border-bottom: 2px solid var(--title-border);
 }
 
 .text-field {
+  font-size: large;
   display: flex;
   width: 80%;
   align-items: center;
@@ -292,7 +296,7 @@ function saveUserChanges(): void {
 .language-selector {
   width: 13rem;
   display: flex;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -301,17 +305,17 @@ function saveUserChanges(): void {
   flex: 1;
   padding: 10px;
   border: none;
-  background: var(--primary-white);
+  background: var(--second-background);
   transition: background 0.3s;
 }
 
 .language-selector button.active {
-  background: var(--secundary-purple);
-  color: white;
+  background: var(--primary-button);
+  color: var(--main-text);
   font-weight: bold;
 }
 
 .language-selector button:not(.active):hover {
-  background: var(--primary-white);
+  background: var(--main-text);
 }
 </style>
