@@ -14,12 +14,14 @@
 / Changelog:
 / ----------
 / 13/02/2025 - Jorn Vierbergen
-/ - Aangepast: expandable div verplaatst naar component ExpandableDiv.vue
+/ - Edited: expandable div moved to component ExpandableDiv.vue
 / 28/02/2025 - Jorn Vierbergen
-/ - Aangepast: selected date met props doorgeven
+/ - Edited: selected date with props data exchange 
+/ 23/05/2025 - Jorn Vierbergen
+/ - Edited: Display name of group instead of ID
 /
 / To do:
-/ - See CalendarView.vue
+/
 /
 / Opmerkingen:
 / ------------
@@ -72,7 +74,6 @@ const eventClick = (eventData) => {
       const direction = onTouchEnd(event);
       if (direction === 'up') isExpanded = true;
       else if (direction === 'down') isExpanded = false;
-      //console.log('Swiped:', direction, 'isExpanded:', isExpanded);
     }">
 
     <div class="line">
@@ -94,12 +95,12 @@ const eventClick = (eventData) => {
           <!-- Event circle and time -->
           <div class="event-details">
             <div class="event-circle" :class="event.eventType"></div>
-            <span>{{ event.startTime }} - {{ event.endTime }} {{ event.groupId }} {{ event.title }}</span>
+            <span>{{ event.startTime }} - {{ event.endTime }} {{ event.displayName }} {{ event.title }}</span>
           </div>
         </li>
       </ul>
 
-      <p v-else>No events for this date... yet :P</p>
+      <p v-else>Nothing planned on this day.</p>
     </div>
   </div>
 </template>
