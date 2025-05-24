@@ -65,6 +65,8 @@
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
+/ - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize the div while navigating
+/ - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
 /
 / - NTH Change month to specified month. Click on month, drop down menu
 / - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew
@@ -101,7 +103,7 @@ const route = useRoute()
 let groupAgenda = 'personal' //group id, changes when changing groups
 if (route.query.group_id) {
   groupAgenda = route.query.group_id
-  console.log('Group selected:', groupAgenda)
+  if(groupAgenda == 'me'){groupAgenda = 'personal'} // delete when link changed to 'personal'
 };
 
 // TIME SETTINGS FROM USER SETTINGS
@@ -214,27 +216,29 @@ const fetchEventsForMonth = async () => {
 
     try {
       const allEvents: any[] = [];
-      const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
-      console.log("Personal events:", personalEvents)
-      personalEvents.forEach((item: any) => {
-        allEvents.push({ ...item, eventType: 'personal' });
-      });
+      if(groupAgenda == 'personal'){
+        const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+        console.log("Personal events:", personalEvents)
+        personalEvents.forEach((item: any) => {
+          allEvents.push({ ...item, eventType: 'personal', displayName: '//' });
+        });
+
+        const tasks = await getData(`tasks?completed=false`);
+        console.log("Tasks:", tasks)
+        tasks.forEach((item: any) => {
+          // change dueDate to start and end, re-use event functions
+          item.start = item.dueDate;
+          item.end = item.dueDate;
+          allEvents.push({ ...item, eventType: 'task', displayName: '// Task //' });
+        });
+      };
 
       // get all group events when checking personal agenda
-      const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}` : ``;
+      const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}&` : ``;
       const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
       console.log("Group events:", groupEvents)
       groupEvents.forEach((item: any) => {
-        allEvents.push({ ...item, eventType: 'group' });
-      });
-
-      const tasks = await getData(`tasks?completed=false`);
-      console.log("Tasks:", tasks)
-      tasks.forEach((item: any) => {
-        // change dueDate to start and end, re-use event functions
-        item.start = item.dueDate;
-        item.end = item.dueDate;
-        allEvents.push({ ...item, eventType: 'task' });
+        allEvents.push({ ...item, eventType: 'group', displayName: `// ${item.Group.name} //` });
       });
 
       const convertedEvents: any[] = [];
