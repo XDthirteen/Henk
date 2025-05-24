@@ -52,12 +52,17 @@
 / 16/05/2025 - Jorn Vierbergen
 / - Fixed: Timezones, UTC time.
 / - Added: Tasks display on calendar
+/ 23/05/2025 - Jorn Vierbergen
+/ - Changed: Prefference of what is visible on personal and group calendar.
+/ - Added: Display name of group
+/ 24/05/2025 - Jorn Vierbergen
+/ - Added: EventPopup.vue component
+/ - Changed: Return to last open group calendar after creating event
+/ - Added: Pass selected day data to CalendarEventView.vue for creating event
 /
 /
 / To do:
 / - Selecting event in expandable div opens event description.
-/ - Add events functionality to event button.
-/ - Remove test data
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 /
@@ -69,8 +74,7 @@
 / - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
 /
 / - NTH Change month to specified month. Click on month, drop down menu
-/ - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew
-Calendar) or sunday (United States)
+/ - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
 / - Optimalization and NTH HENK: Helpful Event Note Keeper:
 / - Create 1 general service file for api calls for the same backend
@@ -86,9 +90,9 @@ Calendar) or sunday (United States)
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { eventService } from "@/services/event.service.ts";
-import type { CalendarDay } from "@/components/models";
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
 // <!-- Wat is dit? - Jorn  -->
@@ -98,13 +102,25 @@ import GroupNavigation from "@/components/GroupNavigation.vue";
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
 
-// Set calendar for groups, personal as default
 const route = useRoute()
+const router = useRouter()
+
+// Set calendar for groups, personal as default
 let groupAgenda = 'personal' //group id, changes when changing groups
-if (route.query.group_id) {
-  groupAgenda = route.query.group_id
-  if(groupAgenda == 'me'){groupAgenda = 'personal'} // delete when link changed to 'personal'
+
+const groupId = route.query.group_id;
+if (typeof groupId === 'string') {
+  groupAgenda = groupId
+}
+else if (Array.isArray(groupId)) {
+  groupAgenda = groupId[0] ?? 'personal'
 };
+
+// delete when link changed to 'personal'
+if(groupAgenda == 'me'){
+  groupAgenda = 'personal'
+};
+console.log("group: ",groupAgenda)
 
 // TIME SETTINGS FROM USER SETTINGS
 const dateTimeSettings = {
@@ -128,7 +144,7 @@ const { timeZone, dateTimeNotation, hour12Notation, hourNotation, minuteNotation
 type NumberNotation = 'numeric' | '2-digit';
 type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
 
-const events = ref([]);
+const events = ref<CalendarEvent[]>([]);
 const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
 
 // System time
@@ -220,7 +236,7 @@ const fetchEventsForMonth = async () => {
         const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
         console.log("Personal events:", personalEvents)
         personalEvents.forEach((item: any) => {
-          allEvents.push({ ...item, eventType: 'personal', displayName: '//' });
+          allEvents.push({ ...item, eventType: 'personal'});
         });
 
         const tasks = await getData(`tasks?completed=false`);
@@ -229,7 +245,7 @@ const fetchEventsForMonth = async () => {
           // change dueDate to start and end, re-use event functions
           item.start = item.dueDate;
           item.end = item.dueDate;
-          allEvents.push({ ...item, eventType: 'task', displayName: '// Task //' });
+          allEvents.push({ ...item, eventType: 'task', displayName: 'Task' });
         });
       };
 
@@ -238,7 +254,7 @@ const fetchEventsForMonth = async () => {
       const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
       console.log("Group events:", groupEvents)
       groupEvents.forEach((item: any) => {
-        allEvents.push({ ...item, eventType: 'group', displayName: `// ${item.Group.name} //` });
+        allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
       });
 
       const convertedEvents: any[] = [];
@@ -388,14 +404,15 @@ const goToNextMonth = () => {
 const selectDate = (date: CalendarDay) => {
   console.log(`Clicked on: ${date.date}`);
 
-  const eventsForSelectedDate: any[] = [];
+  const eventsForSelectedDate: CalendarEvent[] = [];
 
   events.value.forEach(event => {
     // Check if event in selected date range
-    const eventStartDate = event.startDate;
-    const eventEndDate = event.endDate;
+    const eventStartDate = new Date(event.startDate);
+    const eventEndDate = new Date(event.endDate);
+    const eventDate = new Date(date.date)
 
-    if (date.date >= eventStartDate && date.date <= eventEndDate) {
+    if (eventDate >= eventStartDate && eventDate <= eventEndDate) {
       eventsForSelectedDate.push(event);
     };
   });
@@ -404,6 +421,24 @@ const selectDate = (date: CalendarDay) => {
     events: eventsForSelectedDate,
   };
   //console.log("Selected Date Events:", selectedDate.value.events);
+};
+
+const addEvent = () => {
+  console.log(typeof selectedDate)
+  console.log(typeof selectedDate)
+  // TS string because we stringify the object
+  const query: { selectedDate?: string; groupAgenda?: string } = {}
+  if (selectedDate.value) {
+    query.selectedDate = JSON.stringify(selectedDate.value)
+  };
+  if (groupAgenda) {
+    query.groupAgenda = groupAgenda;
+  };
+
+  router.push({
+    name: 'calenderEvents',
+    query: query,
+  })
 };
 
 onMounted(() => {
@@ -447,7 +482,7 @@ onMounted(() => {
       </div>
 
       <!-- Expandable Div -->
-      <expandableDiv :events="events" :selectedDate="selectedDate" />
+      <expandableDiv :events="events" :selectedDate="selectedDate || {}" />
 
       <button class="add-event-button" @click="addEvent">
         Event Button

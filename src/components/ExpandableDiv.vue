@@ -1,6 +1,6 @@
 /*#####################################
 /
-/ # CalendarView.vue
+/ # ExpandableDiv.vue
 / # ==================
 / # Beschrijving:
 / # ------------
@@ -30,10 +30,16 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, defineProps } from "vue";
 import { swipe } from '@/utils/swipeDetection';
+import EventPopup from '@/components/EventPopup.vue';
+import PopUpComponent from '@/components/PopUpComponent.vue'
 
 const { onTouchStart, onTouchEnd } = swipe();
+
+// Popup
+const selectedEvent = ref(null);
+const showPopup = ref(false);
 
 const props = defineProps({
   events: {
@@ -42,13 +48,13 @@ const props = defineProps({
   },
   selectedDate: {
     type: Object,
-    default: () => null,
+    default: () => {},
   },
 });
 
 // Expandable div toggle
 const isExpanded = ref(false);
-const toggleExpand = () => {
+const toggleExpand = (): void => {
   isExpanded.value = !isExpanded.value;
 };
 
@@ -60,13 +66,19 @@ const getEventsForSelectedDate = computed(() => {
   return [];
 });
 
-const eventClick = (eventData) => {
-  return
-  //console.log("Clicked event:", eventData);
-  //console.log("x",props.selectedDate)
+const eventClick = (eventData: any): void => {
+  console.log("Clicked event:", eventData);
+  console.log("x",props.selectedDate)
+  selectedEvent.value = eventData;
+  showPopup.value = true;
+};
+
+const closePopup = (): void => {
+  showPopup.value = false;
 };
 
 </script>
+
 <template>
   <!-- Expandable Div -->
   <div :class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']" @click="toggleExpand" @touch="toggleExpand"
@@ -103,6 +115,10 @@ const eventClick = (eventData) => {
       <p v-else>Nothing planned on this day.</p>
     </div>
   </div>
+
+  <PopUpComponent v-if="showPopup" @close="closePopup">
+    <EventPopup :event="selectedEvent" />
+  </PopUpComponent>
 </template>
 
 <style scoped>
