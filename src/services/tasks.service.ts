@@ -68,7 +68,7 @@ const useTasks = () => {
         }
       });
       console.log("Task deleted successfully: ", response.data);
-      // await fetchTasks();
+      await fetchTasks();
       return response.data;
     } catch (error) {
       console.error('Could not delete task: ', error);
