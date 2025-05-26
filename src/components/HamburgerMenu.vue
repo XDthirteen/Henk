@@ -87,9 +87,9 @@ const logoutAndCloseMenu = () => {
           <font-awesome-icon class="icons" :icon="['fas', 'list-check']" />
           <div class="item-text">My Tasks</div>
         </div>
-        <div class="menu-item" @click="navigate('translator')">
+        <div class="menu-item" @click="navigate('jokes')">
           <font-awesome-icon class="icons" :icon="['fas', 'language']" />
-          <div class="item-text">Translator</div>
+          <div class="item-text">Jokes</div>
         </div>
       </div>
 

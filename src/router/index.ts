@@ -53,6 +53,12 @@ const router = createRouter({
           component: () => import('@/views/WeatherView.vue'),
         },
         {
+          path: '/jokes',
+          name: 'jokes',
+          beforeEnter: [authenticationGuard],
+          component: () => import('@/views/WeatherView.vue'), //to be changed to ('@/Layouts/JokesLayout.vue')
+        },
+        {
           path: '/myAccount',
           name: 'myAccount',
           beforeEnter: [authenticationGuard],
