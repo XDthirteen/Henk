@@ -24,6 +24,8 @@ const applyTheme = (theme: string) => {
 
   const newClass = themeClassMap[chosenTheme];
   document.body.classList.add(newClass);
+
+  localStorage.setItem('selectedTheme', chosenTheme);
 };
 
 const userSettings = () => {

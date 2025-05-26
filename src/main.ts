@@ -4,6 +4,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './assets/house-style.css'
+import { applyTheme } from './services/userSettings.service'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
@@ -50,6 +51,9 @@ library.add(
   faBars,
   faUserGroup
 );
+
+const savedTheme = localStorage.getItem('selectedTheme') || 'light';
+applyTheme(savedTheme);
 
 const app = createApp(App)
 
