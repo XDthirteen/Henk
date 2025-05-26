@@ -449,14 +449,11 @@ onMounted(() => {
       <!-- Expandable Div -->
       <expandableDiv :events="events" :selectedDate="selectedDate" />
 
-      <button class="add-event-button" @click="addEvent">
-        Event Button
-      </button>
+      <router-link to="/calendar/events">
+        <button class="add-event-button">Event Button</button>
+      </router-link>
     </div>
   </div>
-  <!-- Wat is dit? - Jorn  -->
-  <!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
-
 </template>
 
 <style scoped>
