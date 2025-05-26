@@ -16,8 +16,8 @@
 		</nav>
 
 		<div class="group-container">
-			<div class="main-group" @click="navigateToAgenda('me')">
-				<img :src="groupStore.meGroup?.icon || defaultIcon" alt="Me" />
+			<div class="main-group" @click="navigateToAgenda('personal')">
+				<img :src="groupStore.meGroup?.icon || defaultIcon" alt="Personal" />
 				<span>{{ groupStore.meGroup?.name || 'My Agenda' }}</span>
 			</div>
 
