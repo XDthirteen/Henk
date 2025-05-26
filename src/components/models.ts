@@ -126,5 +126,6 @@ export interface Task {
   title: string,
   description: string,
   dueDate?: string,
+  updatedAt?: string,
   userId?: number
 }

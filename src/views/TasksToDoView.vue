@@ -25,6 +25,9 @@
 / 14/04/2025---Arno Defillet----Aanpassing: Getoonde taken zijn enkel 'uncompletedTasks'
 / 14/04/2025---Arno Defillet----Aanpassing: Opkuis van code + Huisstijl toepassen + animatie voorzien voor task
 completed
+/ 21/05/2025---Arno Defillet----Aanpassing: Sortering aangepast naar updatedAt i.p.v. id
+/ 21/05/2025---Arno Defillet----Toevoeging: Nieuwe errormessage component gemaakt en toegepast op lege title zowel bij
+nieuwe task, als update task
 /
 / To do:
 / - taak kunnen inplannen in de agenda
@@ -44,23 +47,37 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
 import { useTasks } from "@/services/tasks.service";
 import type { Task } from '@/components/models';
 import PopUpComponent from '@/components/PopUpComponent.vue';
+import ErrorMessage from '@/components/ErrorMessage.vue';
 
 const { tasks, postNewTask, updateTask, deleteTask, completeTask } = useTasks();
 
 const justCompleted = ref<number[]>([]);
 
-const visibleTasks = computed(() => {
-  return [...tasks.value]
-    .filter(task => !task.completed || justCompleted.value.includes(task.id!))
-    .sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
-});
+const visibleTasks = computed(() => tasks.value
+  .filter(task => !task.completed || justCompleted.value.includes(task.id!))
+  .sort((a, b) => {
+    const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+    const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+    return bTime - aTime;
+  })
+);
 
+
+const formError = ref('');
 const newTask: Reactive<Task> = {
   completed: false,
   title: '',
   description: '',
   dueDate: '',
-}
+};
+
+const resetNewTask = () => {
+  newTask.completed = false;
+  newTask.title = '';
+  newTask.description = '';
+  newTask.dueDate = '';
+  formError.value = '';
+};
 
 const isCreatingNewTask = ref<boolean>(false);
 const isEditingTask = ref<boolean>(false)
@@ -88,6 +105,7 @@ function formatDueDate(date: string): string {
 
 function toggleCreateNewTask() {
   isCreatingNewTask.value = !isCreatingNewTask.value;
+  resetNewTask();
 }
 
 function toggleEditTask(taskID: number) {
@@ -125,8 +143,13 @@ function closeEditTask() {
 
 const PostTaskToBackend = async (): Promise<void> => {
   try {
+    if (!newTask.title) {
+      formError.value = 'Title cannot be blank';
+      return;
+    }
     await postNewTask(newTask);
     isCreatingNewTask.value = false;
+    resetNewTask();
     console.log("Task successfully created!");
   } catch (error) {
     console.error("Error during task creation:", error);
@@ -136,8 +159,14 @@ const PostTaskToBackend = async (): Promise<void> => {
 const PutTaskToBackend = async (): Promise<void> => {
   try {
     if (editedTask.value.id) {
+      if (!editedTask.value.title) {
+        console.log('test')
+        formError.value = 'Title cannot be blank';
+        return;
+      }
       await updateTask(editedTask.value);
       isEditingTask.value = false;
+      formError.value = '';
       console.log("Task successfully updated!");
     } else {
       console.error("No task ID found for update.");
@@ -162,24 +191,18 @@ const DeleteTaskToBackend = async (): Promise<void> => {
 };
 
 const CompleteToggler = async (task: Task): Promise<void> => {
-  if (!task.id) {
-    console.error("No task ID found for completion toggle.");
-    return;
-  }
+  if (!task.id) return;
 
   task.completed = !task.completed;
 
-  try {
-    await completeTask(task);
-    console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
+  if (task.completed) justCompleted.value.push(task.id);
 
-    if (task.completed) {
-      justCompleted.value.push(task.id);
-      justCompleted.value = justCompleted.value.filter(id => id !== task.id);
-    }
-  } catch (error) {
-    console.error("Error toggling task completion:", error);
-  }
+  await completeTask(task);
+
+  // Laat item nog even zichtbaar voor animatie
+  setTimeout(() => {
+    justCompleted.value = justCompleted.value.filter(id => id !== task.id);
+  }, 500);
 };
 </script>
 
@@ -209,6 +232,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
       <div class="item-in-modal">
         <StyledInputByType label="Due Date" v-model="editedTask.dueDate" inputType="datetime-local" />
       </div>
+      <ErrorMessage v-if="formError">{{ formError }}</ErrorMessage>
       <div class="btn-container">
         <StyledButton @click="PutTaskToBackend" type="save">Update</StyledButton>
         <StyledButton @click="DeleteTaskToBackend" type="negative">Delete</StyledButton>
@@ -229,6 +253,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
       <div class="item-in-modal">
         <StyledInputByType label="Due Date" v-model="newTask.dueDate" inputType="datetime-local" />
       </div>
+      <ErrorMessage v-if="formError">{{ formError }}</ErrorMessage>
       <StyledButton @click="PostTaskToBackend" type="save">Create Task</StyledButton>
     </div>
   </PopUpComponent>
