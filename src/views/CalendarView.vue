@@ -145,7 +145,7 @@ type NumberNotation = 'numeric' | '2-digit';
 type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
 
 const events = ref<CalendarEvent[]>([]);
-const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
+const selectedDate = ref<CalendarDay & { events?: CalendarEvent[] } | null>(null);
 
 // System time
 const currentDate = new Date();

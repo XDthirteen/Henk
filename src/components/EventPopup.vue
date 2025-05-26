@@ -7,7 +7,7 @@
 / # Popup for showing event details in calendarView.vue when clicked on a event.
 /
 / # Auteur: Jorn Vierbergen
-/ # Datum aangemaakt: 13/02/2025
+/ # Datum aangemaakt: 23/05/2025
 /
 #################
 /
@@ -26,16 +26,28 @@
 #####################################*/
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import { eventService } from "@/services/event.service.ts";
-
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 import StyledButton from "@/components/StyledButton.vue";
 
 const { deleteData } = eventService();
+const router = useRouter();
 
-const props = defineProps<{ event: any }>();
+const props = defineProps<{ event: CalendarEvent }>();
 
 const editEvent = () => {
-  console.log('EDIT')
+  console.log("eeee", props.event)
+  if (!props.event) return;
+
+  const eventDataString = JSON.stringify(props.event);
+
+  router.push({
+    name: 'calenderEvents',
+    query: {
+      eventData: eventDataString,
+    },
+  });
 };
 
 const deleteEvent = async (eventId: number) => {
