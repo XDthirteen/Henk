@@ -70,7 +70,9 @@ body.dark-theme {
   --input-border: #8669dd;
   --input-focus: #e3e1f3;
 
-  --main-red: #f7997c;
+  --main-red: #ff5324;
+  --hover-red: #f7997c; 
+  --hover-green: #34b934;
 }
 
 body.deeppink-theme {
@@ -92,10 +94,12 @@ body.deeppink-theme {
   --primary-button: #ce8bb0;
   --active-button: #89266b;
   --hover-button: #7d114d;
-  --green-button: #dd00ff;
+  --green-button: #d74595;
 
   --input-border: #ff00b7;
   --input-focus: #f596d2;
 
   --main-red: #f2816d;
+  --hover-red: #e838eb; 
+  --hover-green: #dd00ff;
 }
