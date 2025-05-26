@@ -34,17 +34,10 @@ const router = createRouter({
 				},
 
         {
-          path: '/groups',
-          name: 'groups',
+          path: '/Groups',
+          name: 'Groups',
           beforeEnter: [authenticationGuard],
-          component: () => import('@/components/GroupList.vue'),
-        },
-
-        {
-          path: '/createGroup',
-          name: 'createGroup',
-          beforeEnter: [authenticationGuard],
-          component: () => import('@/views/CreateGroup.vue'),
+          component: () => import('@/views/Groups.vue'),
         },
 
         {

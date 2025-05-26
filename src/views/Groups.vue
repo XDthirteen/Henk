@@ -104,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'GroupsView' })
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
