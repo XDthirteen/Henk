@@ -14,6 +14,7 @@
 / Changelog:
 / ----------
 / 17/04/2025---Arno Defillet----Start van de component, volledige menu + icoon uitgewerkt
+/ 26/05/2025---Arno Defillet----Aanpassing: Translator aangepast naar Jokes
 /
 / To do:
 / -
