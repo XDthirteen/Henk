@@ -14,6 +14,7 @@
 / Changelog:
 / ----------
 / 17/04/2025---Arno Defillet----Start van de component, volledige menu + icoon uitgewerkt
+/ 26/05/2025---Arno Defillet----Aanpassing: Translator aangepast naar Jokes
 /
 / To do:
 / -
@@ -87,9 +88,9 @@ const logoutAndCloseMenu = () => {
           <font-awesome-icon class="icons" :icon="['fas', 'list-check']" />
           <div class="item-text">My Tasks</div>
         </div>
-        <div class="menu-item" @click="navigate('translator')">
+        <div class="menu-item" @click="navigate('jokes')">
           <font-awesome-icon class="icons" :icon="['fas', 'language']" />
-          <div class="item-text">Translator</div>
+          <div class="item-text">Jokes</div>
         </div>
       </div>
 

@@ -22,7 +22,8 @@ import {
   faPlus,
   faXmark,
   faBars,
-  faUserGroup
+  faUserGroup,
+  faFaceGrinTongueWink
 } from '@fortawesome/free-solid-svg-icons'
 
 // Search icons on https://fontawesome.com/icons
@@ -48,7 +49,8 @@ library.add(
   faPlus,
   faXmark,
   faBars,
-  faUserGroup
+  faUserGroup,
+  faFaceGrinTongueWink
 );
 
 const app = createApp(App)
