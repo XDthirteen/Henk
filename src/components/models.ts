@@ -113,7 +113,8 @@ export interface Group {
     dueDate?: string
     userId?: number
   }[]
-  image?: string  // Voeg 'image' als optioneel toe
+  image?: string
+  defaultGroup?: boolean
 }
 
 ///////////

@@ -16,8 +16,8 @@
 		</nav>
 
 		<div class="group-container">
-			<div class="main-group" @click="navigateToAgenda('me')">
-				<img :src="groupStore.meGroup?.icon || defaultIcon" alt="Me" />
+			<div class="main-group" @click="navigateToAgenda('personal')">
+				<img :src="groupStore.meGroup?.icon || defaultIcon" alt="Personal" />
 				<span>{{ groupStore.meGroup?.name || 'My Agenda' }}</span>
 			</div>
 
@@ -203,32 +203,34 @@ onMounted(async () => {
 })
 
 const fetchGroups = async () => {
-	try {
-		const token = getAuthToken()
-		const response = await axios.get(API_URL, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
+    try {
+        const token = getAuthToken()
+        const response = await axios.get(API_URL, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
 
-		console.log('Opgehaalde groepen:', response.data)
+        console.log('Opgehaalde groepen:', response.data)
 
-		groups.value = response.data.map((group: Group) => {
-			const image = (group.image || '').toString()
-			const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
+        groups.value = response.data
+			.filter((group: Group) => !group.defaultGroup)
+            .map((group: Group) => {
+                const image = (group.image || '').toString()
+                const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
 
-			const iconGroup: Group = {
-				id: group.id,
-				name: group.name,
-				icon: isValidIcon ? image : 'user',
-				tasks: group.tasks ?? [],
-				image: group.image,
-			}
+                const iconGroup: Group = {
+                    id: group.id,
+                    name: group.name,
+                    icon: isValidIcon ? image : 'user',
+                    tasks: group.tasks ?? [],
+                    image: group.image,
+                }
 
-			return iconGroup
-		})
-	} catch (error) {
-		console.error('Error fetching groups:', error)
-		alert('Failed to fetch groups.')
-	}
+                return iconGroup
+            })
+    } catch (error) {
+        console.error('Error fetching groups:', error)
+        alert('Failed to fetch groups.')
+    }
 }
 
 const fetchInvites = async () => {
