@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createEvent } from '@/services/eventService'
 import { fetchGroups } from '@/services/groupservices'
+import StyledButton from '@/components/StyledButton.vue';
+
 
 const router = useRouter()
 
@@ -120,8 +122,8 @@ const submitEvent = async () => {
   </div>
 
   <div class="event-buttons">
-    <button type="submit">Save</button>
-    <button type="button" @click="returnToCalendar">Go Back to Calendar</button>
+    <StyledButton type="save">Save</StyledButton>
+    <StyledButton type="negative" @click="returnToCalendar">Go Back to Calendar</StyledButton>
   </div>
   </form>
 </div>
@@ -148,27 +150,6 @@ const submitEvent = async () => {
 
 .event-buttons {
   margin-top: 10px;
-}
-
-button {
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-}
-
-button[type='submit'] {
-  background-color: #453d83;
-  color: white;
-  width: 160px;
-}
-
-button[type='button'] {
-  background-color: #f44336;
-  color: white;
-  display: flex;
-  width: 160px;
 }
 
 label {

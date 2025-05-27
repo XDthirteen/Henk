@@ -95,6 +95,8 @@ import { swipe } from '@/utils/swipeDetection';
 // <!-- Wat is dit? - Jorn  -->
 import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 import GroupNavigation from "@/components/GroupNavigation.vue";
+import StyledButton from '@/components/StyledButton.vue';
+
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = eventService();
@@ -451,7 +453,7 @@ onMounted(() => {
       <expandableDiv :events="events" :selectedDate="selectedDate" />
 
       <router-link to="/calendar/events">
-        <button class="add-event-button">Event Button</button>
+        <StyledButton type="default" class="add-event-button">Event Button</StyledButton>
       </router-link>
     </div>
   </div>
