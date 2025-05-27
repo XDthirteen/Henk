@@ -65,7 +65,8 @@
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
-/ - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize the div while navigating
+/ - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize
+the div while navigating
 / - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
 /
 / - NTH Change month to specified month. Click on month, drop down menu
@@ -103,7 +104,7 @@ const route = useRoute()
 let groupAgenda = 'personal' //group id, changes when changing groups
 if (route.query.group_id) {
   groupAgenda = route.query.group_id
-  if(groupAgenda == 'me'){groupAgenda = 'personal'} // delete when link changed to 'personal'
+  if (groupAgenda == 'me') { groupAgenda = 'personal' } // delete when link changed to 'personal'
 };
 
 // TIME SETTINGS FROM USER SETTINGS
@@ -216,7 +217,7 @@ const fetchEventsForMonth = async () => {
 
     try {
       const allEvents: any[] = [];
-      if(groupAgenda == 'personal'){
+      if (groupAgenda == 'personal') {
         const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
         console.log("Personal events:", personalEvents)
         personalEvents.forEach((item: any) => {
@@ -473,7 +474,7 @@ onMounted(() => {
 .calendar {
   margin: 2%;
   border: 1px solid var(--black-text);
-  box-shadow: 2px 2px 20px var(--title-border);
+  box-shadow: 2px 2px 8px var(--title-border);
 
   border-radius: 10px;
   overflow: hidden;
