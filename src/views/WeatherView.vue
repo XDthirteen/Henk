@@ -4,50 +4,50 @@ import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from "@/components/StyledInputByType.vue";
+import ModuleTitleContainer from "@/components/ModuleTitleContainer.vue"
+import ErrorMessage from "@/components/Errormessage.vue"
 
 
-    const city = ref<string>('');
-    const weather = ref<WeatherData | null>(null);
-    const forecast = ref<ForecastData[]>([]);
-    const error = ref<string | null>(null);
+const city = ref<string>('');
+const weather = ref<WeatherData | null>(null);
+const forecast = ref<ForecastData[]>([]);
+const errorMessage = ref<string | null>(null);
 
-    const fetchWeatherData = async () => {
-      if (!city.value) {
-        error.value = 'Please enter a city name.';
-        weather.value = null;
-        forecast.value = [];
-        return;
-      }
+const fetchWeatherData = async () => {
+  if (!city.value) {
+    errorMessage.value = 'Please enter a city name.';
+    weather.value = null;
+    forecast.value = [];
+    return;
+  }
 
-      error.value = null;
-      try{
-      weather.value = await getWeather(city.value);
+  errorMessage.value = null;
+  try {
+    weather.value = await getWeather(city.value);
 
-      const forecastData = await getForecast(city.value);
-      forecast.value = Array.isArray(forecastData) ? forecastData : [];
-      } catch (error) {
-        error.value = 'Fail';
-        weather.value = null;
-        forecast.value = [];
-      }
-    };
-
-    function getDayFromDate(aDateString) {
-      const aDate = new Date(aDateString)
-      return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
+    const forecastData = await getForecast(city.value);
+    forecast.value = Array.isArray(forecastData) ? forecastData : [];
+  } catch (error) {
+    const msg: string = error.response.data.message;
+    if (msg === 'city not found') {
+      errorMessage.value = 'City was not found';
     }
+    weather.value = null;
+    forecast.value = [];
+  }
+};
+
+function getDayFromDate(aDateString) {
+  const aDate = new Date(aDateString)
+  return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
+}
 </script>
 
 <template>
+  <ModuleTitleContainer>Weatherman Henk</ModuleTitleContainer>
   <div id="app">
-    <h1>Weatherman Henk</h1>
     <div class="search">
-      <StyledInputByType
-        v-model="city"
-        type="text"
-        placeholder="Enter city name"
-        @keyup.enter="fetchWeatherData"
-      />
+      <StyledInputByType v-model="city" type="text" placeholder="Enter city name" @keyup.enter="fetchWeatherData" />
       <StyledButton type="primary" @click="fetchWeatherData">Search</StyledButton>
     </div>
 
@@ -69,15 +69,15 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
         <p>Wind Speed: {{ item.wind.speed }}m/s</p>
       </div>
     </div>
-    <div v-if="error" class="error">
-      <p>{{ error }}</p>
+    <div v-if="errorMessage">
+      <ErrorMessage>{{ errorMessage }}</ErrorMessage>
     </div>
   </div>
 </template>
 
 <style scoped>
 #app {
-  font-family: Arial, sans-serif;
+  /* font-family: Arial, sans-serif; */
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
@@ -91,25 +91,19 @@ import StyledInputByType from "@/components/StyledInputByType.vue";
   margin-bottom: 20px;
 }
 
-h1{
-    font-weight: bolder;
-    font-size: xx-large;
-    margin-bottom: 10px;
-    color: #453d83;
-  }
-h2{
-    font-weight: bold;
-    color: #453d83;
-  }
+h2 {
+  font-weight: bold;
+  color: #453d83;
+}
 
-h3{
-    font-weight: bold;
-    font-size: large;
-    color: #453d83;
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
+h3 {
+  font-weight: bold;
+  font-size: large;
+  color: #453d83;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
 
 .weather {
   margin-top: 20px;
@@ -125,18 +119,11 @@ h3{
   text-align: center;
 }
 
-.error {
-  margin-top: 20px;
-  color: red;
-  font-weight: bolder;
-  font-size: x-large;
-}
-
-.description{
+.description {
   font-style: italic;
 }
 
-.forecast{
+.forecast {
   display: flex;
   justify-content: space-around;
   flex-direction: row;
@@ -147,7 +134,7 @@ h3{
   border-radius: 2%;
 }
 
-.forecast-item{
+.forecast-item {
   flex: 1 1 calc(25% - 20px);
   max-width: 200px;
   text-align: center;
@@ -157,8 +144,7 @@ h3{
   padding: 10px;
 }
 
-strong{
+strong {
   font-weight: bold;
 }
-
 </style>
