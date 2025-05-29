@@ -90,7 +90,6 @@ const deleteEvent = async (eventId: number) => {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-
   gap: 10px;
   box-sizing: border-box;
   overflow: hidden;
@@ -100,12 +99,10 @@ const deleteEvent = async (eventId: number) => {
 .event-title {
   font-size: 1.5rem;
   font-weight: 600;
-  word-break: break-word;
 }
 
 .event-group {
   font-weight: 600;
-  word-break: break-word;
 }
 
 .event-date {

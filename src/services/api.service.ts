@@ -154,7 +154,6 @@ export const apiService = () => {
 		console.log('API CALL GET')
 		try {
 			const response = await axios.get(apiPath, setConfig(apiPath, config))
-      console.log("JOKE:", response)
 			return response.data
 		} catch (error) {
 			return apiHandleError(error)

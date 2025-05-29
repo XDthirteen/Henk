@@ -39,7 +39,7 @@ const preFillDoc = () => {
   };
 };
 
-  interface Group {
+interface Group {
   id: number;
   name: string;
   image?: string;
