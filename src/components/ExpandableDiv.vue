@@ -30,10 +30,11 @@
 #####################################*/
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
+import { ref, computed } from "vue";
 import { swipe } from '@/utils/swipeDetection';
 import EventPopup from '@/components/EventPopup.vue';
 import PopUpComponent from '@/components/PopUpComponent.vue'
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 
 const { onTouchStart, onTouchEnd } = swipe();
 
@@ -41,16 +42,10 @@ const { onTouchStart, onTouchEnd } = swipe();
 const selectedEvent = ref(null);
 const showPopup = ref(false);
 
-const props = defineProps({
-  events: {
-    type: Array,
-    default: () => [],
-  },
-  selectedDate: {
-    type: Object,
-    default: () => {},
-  },
-});
+const props = defineProps<{
+  events: CalendarEvent[];
+  selectedDate: CalendarDay | null;
+}>();
 
 // Expandable div toggle
 const isExpanded = ref(false);
@@ -117,7 +112,7 @@ const closePopup = (): void => {
   </div>
 
   <PopUpComponent v-if="showPopup" @close="closePopup">
-    <EventPopup :event="selectedEvent" />
+    <EventPopup v-if="selectedEvent" :event="selectedEvent" />
   </PopUpComponent>
 </template>
 

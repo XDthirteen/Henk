@@ -91,16 +91,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { eventService } from "@/services/event.service.ts";
-import type { CalendarDay, CalendarEvent } from "@/components/models";
+import { apiService, isApiError } from "@/services/api.service";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
 // <!-- Wat is dit? - Jorn  -->
 import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 import GroupNavigation from "@/components/GroupNavigation.vue";
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 
 const { onTouchStart, onTouchEnd } = swipe();
-const { getData } = eventService();
+const { getData } = apiService();
 
 const route = useRoute()
 const router = useRouter()
@@ -233,13 +233,25 @@ const fetchEventsForMonth = async () => {
     try {
       const allEvents: any[] = [];
       if(groupAgenda == 'personal'){
-        const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+        const personalEvents = await getData(`/api/events/personal?from=${fromDate}&to=${toDate}`);
+        if (isApiError(personalEvents)) {
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${personalEvents.status} ${personalEvents.message}`);
+          return;
+	      };
         console.log("Personal events:", personalEvents)
         personalEvents.forEach((item: any) => {
           allEvents.push({ ...item, eventType: 'personal'});
         });
 
-        const tasks = await getData(`tasks?completed=false`);
+        const tasks = await getData(`/api/tasks?completed=false`);
+        if (isApiError(tasks)) {
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${tasks.status} ${tasks.message}`);
+          return;
+        }
         console.log("Tasks:", tasks)
         tasks.forEach((item: any) => {
           // change dueDate to start and end, re-use event functions
@@ -251,7 +263,13 @@ const fetchEventsForMonth = async () => {
 
       // get all group events when checking personal agenda
       const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}&` : ``;
-      const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
+      const groupEvents = await getData(`/api/events?${group}from=${fromDate}&to=${toDate}`);
+      if (isApiError(groupEvents)) {
+        // if an error occures you can set a specific error message/popup per error.status for the user here
+        // use error popup component when merged with main
+        console.error(`${groupEvents.status} ${groupEvents.message}`);
+        return;
+      }
       console.log("Group events:", groupEvents)
       groupEvents.forEach((item: any) => {
         allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
@@ -424,8 +442,6 @@ const selectDate = (date: CalendarDay) => {
 };
 
 const addEvent = () => {
-  console.log(typeof selectedDate)
-  console.log(typeof selectedDate)
   // TS string because we stringify the object
   const query: { selectedDate?: string; groupAgenda?: string } = {}
   if (selectedDate.value) {
@@ -482,7 +498,7 @@ onMounted(() => {
       </div>
 
       <!-- Expandable Div -->
-      <expandableDiv :events="events" :selectedDate="selectedDate || {}" />
+      <expandableDiv :events="events" :selectedDate="selectedDate" />
 
       <button class="add-event-button" @click="addEvent">
         Event Button
@@ -610,7 +626,6 @@ button:hover {
 
 .today span {
   color: var(--main-text);
-
 }
 
 .faded {
