@@ -2,6 +2,9 @@
 import { ref } from 'vue';
 import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
+import StyledButton from '@/components/StyledButton.vue';
+import StyledInputByType from "@/components/StyledInputByType.vue";
+
 
     const city = ref<string>('');
     const weather = ref<WeatherData | null>(null);
@@ -39,13 +42,13 @@ import type { WeatherData, ForecastData } from '@/components/models';
   <div id="app">
     <h1>Weatherman Henk</h1>
     <div class="search">
-      <input
+      <StyledInputByType
         v-model="city"
         type="text"
         placeholder="Enter city name"
         @keyup.enter="fetchWeatherData"
       />
-      <button @click="fetchWeatherData">Search</button>
+      <StyledButton type="primary" @click="fetchWeatherData">Search</StyledButton>
     </div>
 
     <div v-if="weather" class="weather">
@@ -66,7 +69,6 @@ import type { WeatherData, ForecastData } from '@/components/models';
         <p>Wind Speed: {{ item.wind.speed }}m/s</p>
       </div>
     </div>
-
     <div v-if="error" class="error">
       <p>{{ error }}</p>
     </div>
@@ -87,32 +89,6 @@ import type { WeatherData, ForecastData } from '@/components/models';
 
 .search {
   margin-bottom: 20px;
-}
-
-.search input {
-  padding: 10px;
-  font-size: 16px;
-  width: 200px;
-  border: 2px solid #453d83;
-  border-radius: 2%;
-}
-
-.search button {
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  background-color: #453d83;
-  border-radius: 2%;
-  margin-left: 5px;
-  border: 2px solid #453d83;
-  color: white;
-  transition-duration: 0.4s;
-}
-
-.search button:hover {
-  background-color: white;
-  border: 2px solid #453d83;
-  color: #453d83;
 }
 
 h1{

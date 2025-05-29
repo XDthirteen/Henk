@@ -70,7 +70,8 @@
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
-/ - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize the div while navigating
+/ - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize
+the div while navigating
 / - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
 /
 / - NTH Change month to specified month. Click on month, drop down menu
@@ -98,6 +99,8 @@ import { swipe } from '@/utils/swipeDetection';
 import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 import GroupNavigation from "@/components/GroupNavigation.vue";
 import type { CalendarDay, CalendarEvent } from "@/components/models";
+import StyledButton from '@/components/StyledButton.vue';
+
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = apiService();
@@ -500,14 +503,11 @@ onMounted(() => {
       <!-- Expandable Div -->
       <expandableDiv :events="events" :selectedDate="selectedDate" />
 
-      <button class="add-event-button" @click="addEvent">
-        Event Button
-      </button>
+      <router-link to="/calendar/events">
+        <StyledButton type="default" class="add-event-button">Event Button</StyledButton>
+      </router-link>
     </div>
   </div>
-  <!-- Wat is dit? - Jorn  -->
-  <!-- <CalenderEventView :is-visible=isVisible default-location="genk" @close="isVisible=false"></CalenderEventView> -->
-
 </template>
 
 <style scoped>
@@ -527,7 +527,7 @@ onMounted(() => {
 .calendar {
   margin: 2%;
   border: 1px solid var(--black-text);
-  box-shadow: 2px 2px 20px var(--title-border);
+  box-shadow: 2px 2px 8px var(--title-border);
 
   border-radius: 10px;
   overflow: hidden;

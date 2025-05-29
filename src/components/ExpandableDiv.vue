@@ -16,7 +16,7 @@
 / 13/02/2025 - Jorn Vierbergen
 / - Edited: expandable div moved to component ExpandableDiv.vue
 / 28/02/2025 - Jorn Vierbergen
-/ - Edited: selected date with props data exchange 
+/ - Edited: selected date with props data exchange
 / 23/05/2025 - Jorn Vierbergen
 / - Edited: Display name of group instead of ID
 /
@@ -198,7 +198,8 @@ button {
   margin-bottom: 2px;
   border: 1px solid black;
   border-radius: 10px;
-  background: var(--item-background);
+  background: var(--event-background);
+  color: var(--main-text);
   cursor: pointer;
 }
 

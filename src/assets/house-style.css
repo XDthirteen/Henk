@@ -20,6 +20,7 @@
   --main-background: #efe1fa;
   --second-background: #afa8df;
   --item-background: #f4d8fc;
+  --event-background: #8f5fb3;
   --title-background: #8055bc;
   --title-border: #2c265b;
   --taskdone-background: #ffbeaa;
@@ -50,6 +51,7 @@ body.dark-theme {
   --main-background: #3b2b42;
   --second-background: #836ab1;
   --item-background: #d5b9dd;
+  --event-background: #e0bafe;
   --title-background: #bca4e3;
   --taskdone-background: #ffbeaa;
   --tasktodo-background: #beaef6;
@@ -70,13 +72,16 @@ body.dark-theme {
   --input-border: #8669dd;
   --input-focus: #e3e1f3;
 
-  --main-red: #f7997c;
+  --main-red: #ff5324;
+  --hover-red: #f7997c; 
+  --hover-green: #34b934;
 }
 
 body.deeppink-theme {
   --main-background: deeppink;
   --second-background: #f295bf;
   --item-background: #f1b9db;
+  --event-background: #9c2162;
   --title-background: #f3a3d2;
   --taskdone-background: #9e0e5a;
   --tasktodo-background: #ec66b9;
@@ -92,10 +97,12 @@ body.deeppink-theme {
   --primary-button: #ce8bb0;
   --active-button: #89266b;
   --hover-button: #7d114d;
-  --green-button: #dd00ff;
+  --green-button: #d74595;
 
   --input-border: #ff00b7;
   --input-focus: #f596d2;
 
   --main-red: #f2816d;
+  --hover-red: #e838eb; 
+  --hover-green: #dd00ff;
 }

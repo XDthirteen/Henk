@@ -33,7 +33,7 @@ const router = useRouter()
 // END
 
 const toggleGroups = () => {
-  router.push({ name: 'createGroup' })
+  router.push({ name: 'myGroups' })
 };
 </script>
 

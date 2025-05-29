@@ -142,7 +142,8 @@ export interface Group {
     dueDate?: string
     userId?: number
   }[]
-  image?: string  // Voeg 'image' als optioneel toe
+  image?: string
+  defaultGroup?: boolean
 }
 
 ///////////
@@ -155,5 +156,6 @@ export interface Task {
   title: string,
   description: string,
   dueDate?: string,
+  updatedAt?: string,
   userId?: number
 }

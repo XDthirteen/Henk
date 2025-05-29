@@ -78,12 +78,12 @@ button:hover {
 }
 
 .negative {
-  background-color: #c10015;
+  background-color: var(--main-red);
   color: var(--main-text);
 }
 
 .negative:hover {
-  background-color: #9b0012;
+  background-color: var(--hover-red);
   color: var(--main-text);
 }
 
@@ -93,7 +93,7 @@ button:hover {
 }
 
 .save:hover {
-  background-color: var(--secundary-green);
+  background-color: var(--hover-green);
   color: var(--black-text);
 }
 </style>

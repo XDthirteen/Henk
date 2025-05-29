@@ -4,6 +4,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import './assets/house-style.css'
+import { applyTheme } from './services/userSettings.service'
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
@@ -22,7 +23,8 @@ import {
   faPlus,
   faXmark,
   faBars,
-  faUserGroup
+  faUserGroup,
+  faFaceGrinTongueWink
 } from '@fortawesome/free-solid-svg-icons'
 
 // Search icons on https://fontawesome.com/icons
@@ -48,8 +50,12 @@ library.add(
   faPlus,
   faXmark,
   faBars,
-  faUserGroup
+  faUserGroup,
+  faFaceGrinTongueWink
 );
+
+const savedTheme = localStorage.getItem('selectedTheme') || 'light';
+applyTheme(savedTheme);
 
 const app = createApp(App)
 
