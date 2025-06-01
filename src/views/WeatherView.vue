@@ -5,7 +5,7 @@ import type { WeatherData, ForecastData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from "@/components/StyledInputByType.vue";
 import ModuleTitleContainer from "@/components/ModuleTitleContainer.vue"
-import ErrorMessage from "@/components/Errormessage.vue"
+import ErrorMessage from "@/components/ErrorMessage.vue"
 
 
 const city = ref<string>('');
@@ -27,17 +27,20 @@ const fetchWeatherData = async () => {
 
     const forecastData = await getForecast(city.value);
     forecast.value = Array.isArray(forecastData) ? forecastData : [];
-  } catch (error) {
-    const msg: string = error.response.data.message;
-    if (msg === 'city not found') {
+  } catch (error: unknown) {
+    const err = error as { response: { data: { message: string } } };
+
+    if (err.response?.data?.message === 'city not found') {
       errorMessage.value = 'City was not found';
+    } else {
+      errorMessage.value = 'An unexpected error occurred';
     }
     weather.value = null;
     forecast.value = [];
   }
 };
 
-function getDayFromDate(aDateString) {
+function getDayFromDate(aDateString: string): string {
   const aDate = new Date(aDateString)
   return `${aDate.toLocaleDateString('en-Latn-US', { weekday: 'short' })} ${aDate.getDate()}/${(aDate.getMonth() + 1) % 12}`
 }
@@ -59,6 +62,7 @@ function getDayFromDate(aDateString) {
       <p>Wind Speed: {{ weather.wind.speed }}m/s</p>
     </div>
 
+    <div v-if="forecast.length > 0" class="forecast-border"></div>
     <div v-if="forecast.length > 0" class="forecast">
       <h3>Future 4 days</h3>
       <div class="forecast-item" v-for="(item, index) in forecast" :key="index">
@@ -77,10 +81,8 @@ function getDayFromDate(aDateString) {
 
 <style scoped>
 #app {
-  /* font-family: Arial, sans-serif; */
   text-align: center;
   margin-top: 20px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -88,33 +90,36 @@ function getDayFromDate(aDateString) {
 }
 
 .search {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 h2 {
   font-weight: bold;
-  color: #453d83;
+  color: var(--purple-text);
 }
 
 h3 {
   font-weight: bold;
   font-size: large;
-  color: #453d83;
+  color: var(--purple-text);
   display: flex;
   width: 100%;
   justify-content: center;
 }
 
+p {
+  color: var(--black-text);
+}
+
 .weather {
-  margin-top: 20px;
-  padding: 25px;
+  padding: 15px;
   width: 30%;
   max-width: 300px;
   min-width: 250px;
   height: auto;
   max-height: 250px;
   font-size: 18px;
-  background-color: #e9f3fe;
+  background-color: var(--second-background);
   border-radius: 2%;
   text-align: center;
 }
@@ -123,15 +128,19 @@ h3 {
   font-style: italic;
 }
 
+.forecast-border {
+  width: 80%;
+  height: 5px;
+  background-color: var(--title-border);
+  margin-top: 10px;
+}
+
 .forecast {
   display: flex;
   justify-content: space-around;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-top: 10px;
   padding: 10px;
-  background-color: #e9f3fe;
-  border-radius: 2%;
 }
 
 .forecast-item {
@@ -139,7 +148,7 @@ h3 {
   max-width: 200px;
   text-align: center;
   margin: 10px;
-  background-color: white;
+  background-color: var(--second-background);
   border-radius: 2%;
   padding: 10px;
 }
