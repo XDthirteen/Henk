@@ -37,7 +37,7 @@ onMounted(fetchJoke)
 <template>
   <div>
     <div class="text-color">
-      <h1>😂 Dad Joke Generator</h1>
+      <h1>Dad Joke Generator</h1>
       <p v-if="loading">Loading...</p>
       <p v-else-if="error">Failed to fetch a joke.</p>
       <p v-else>{{ joke }}</p>
