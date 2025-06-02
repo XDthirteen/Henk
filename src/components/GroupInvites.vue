@@ -1,64 +1,37 @@
 <template>
-	<div class="container">
-		<header>
-			<h1>Group invites</h1>
-			<button @click="navigateBack" class="close-button">✖</button>
-		</header>
+    <div class="container">
+        <header>
+            <h1>Group invites</h1>
+            <button @click="navigateBack" class="close-button">✖</button>
+        </header>
 
-		<div v-if="invites.length === 0">
-			<p>No invites available.</p>
-		</div>
+        <div v-if="invites.length === 0">
+            <p>No invites available.</p>
+        </div>
 
-		<div v-else class="group-items-container">
-			<div
-				v-for="group in invites"
-				:key="group.id"
-				class="group-item"
-				@click="openPopup(group)"
-			>
-				<font-awesome-icon
-					v-if="group.icon"
-					:icon="['fas', group.icon]"
-					class="group-fa-icon"
-				/>
-				<img
-					v-else-if="group.image"
-					:src="group.image"
-					alt="Group Icon"
-					class="group-img-icon"
-				/>
-				<img
-					v-else
-					:src="defaultIcon"
-					alt="Default Group Icon"
-					class="group-img-icon"
-				/>
-				<span>{{ group.name }}</span>
-			</div>
-		</div>
+        <div v-else class="group-items-container">
+            <div v-for="group in invites" :key="group.id" class="group-item" @click="openPopup(group)">
+                <font-awesome-icon v-if="group.icon" :icon="['fas', group.icon]" class="group-fa-icon" />
+                <img v-else-if="group.image" :src="group.image" alt="Group Icon" class="group-img-icon" />
+                <img v-else :src="defaultIcon" alt="Default Group Icon" class="group-img-icon" />
+                <span>{{ group.name }}</span>
+            </div>
+        </div>
 
-		<div v-if="selectedGroup" class="popup-overlay">
-			<div class="popup">
-				<h2>Group Invitation</h2>
-				<font-awesome-icon
-					v-if="isValidIcon(selectedGroup.icon)"
-					:icon="['fas', selectedGroup.icon]"
-					class="popup-icon"
-				/>
-				<img
-					v-else
-					:src="defaultIcon"
-					alt="Default Group Icon"
-					class="popup-icon"
-				/>
-				<p>{{ selectedGroup.name }}</p>
-				<div class="popup-buttons">
-					<button class="accept-btn" @click="acceptInvite">Accept</button>
-					<button class="decline-btn" @click="declineInvite">Decline</button>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div v-if="selectedGroup" class="popup-overlay">
+            <div class="popup">
+                <h2>Group Invitation</h2>
+                <font-awesome-icon v-if="isValidIcon(selectedGroup.icon)" :icon="['fas', selectedGroup.icon]"
+                    class="popup-icon" />
+                <img v-else :src="defaultIcon" alt="Default Group Icon" class="popup-icon" />
+                <p>{{ selectedGroup.name }}</p>
+                <div class="popup-buttons">
+                    <button class="accept-btn" @click="acceptInvite">Accept</button>
+                    <button class="decline-btn" @click="declineInvite">Decline</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -118,69 +91,69 @@ const router = useRouter()
 const isValidIcon = (icon: string) => iconList.includes(icon)
 
 const navigateBack = () => {
-	router.go(-1)
+    router.go(-1)
 }
 
 const openPopup = (group: Group) => {
-	selectedGroup.value = group
+    selectedGroup.value = group
 }
 
 const acceptInvite = async () => {
-	if (selectedGroup.value) {
-		try {
-			const { getAuthToken } = useAuth()
-			const token = getAuthToken()
+    if (selectedGroup.value) {
+        try {
+            const { getAuthToken } = useAuth()
+            const token = getAuthToken()
 
-			if (!token) {
-				throw new Error('No authentication token found.')
-			}
+            if (!token) {
+                throw new Error('No authentication token found.')
+            }
 
-			await axios.post(
-				`/api/invitations/${selectedGroup.value.id}/accept`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				},
-			)
+            await axios.post(
+                `/api/invitations/${selectedGroup.value.id}/accept`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
 
-			invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
-			selectedGroup.value = null
-		} catch (error) {
-			console.error('Error accepting invite:', error)
-			alert('Failed to accept invite.')
-		}
-	}
+            invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
+            selectedGroup.value = null
+        } catch (error) {
+            console.error('Error accepting invite:', error)
+            alert('Failed to accept invite.')
+        }
+    }
 }
 
 const declineInvite = async () => {
-	if (selectedGroup.value) {
-		try {
-			const { getAuthToken } = useAuth()
-			const token = getAuthToken()
+    if (selectedGroup.value) {
+        try {
+            const { getAuthToken } = useAuth()
+            const token = getAuthToken()
 
-			if (!token) {
-				throw new Error('No authentication token found.')
-			}
+            if (!token) {
+                throw new Error('No authentication token found.')
+            }
 
-			await axios.post(
-				`/api/invitations/${selectedGroup.value.id}/reject`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				},
-			)
+            await axios.post(
+                `/api/invitations/${selectedGroup.value.id}/reject`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            )
 
-			invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
-			selectedGroup.value = null
-		} catch (error) {
-			console.error('Error declining invite:', error)
-			alert('Failed to decline invite.')
-		}
-	}
+            invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
+            selectedGroup.value = null
+        } catch (error) {
+            console.error('Error declining invite:', error)
+            alert('Failed to decline invite.')
+        }
+    }
 }
 
 const fetchInvites = async () => {
@@ -228,15 +201,16 @@ const fetchInvites = async () => {
 }
 
 onMounted(() => {
-	fetchInvites()
+    fetchInvites()
 })
 </script>
 
 <style scoped>
 .container {
-	text-align: center;
-	padding: 20px;
-	position: relative;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    color: var(--purple-text);
 }
 
 header {
@@ -245,7 +219,7 @@ header {
     align-items: center;
     position: relative;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--input-border);
 }
 
 .close-button {
