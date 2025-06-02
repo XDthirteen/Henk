@@ -1,16 +1,16 @@
 /*#####################################
-/
+/ 
 / # CalendarView.vue
 / # ==================
-/ # Beschrijving:
+/ # Description:
 / # ------------
-/ # Het kunnen zien van datums en geplande events.
-/
-/ # Auteur: Jorn Vierbergen
-/ # Datum aangemaakt: 16/11/2024
-/
+/ # Able to see dates and planned events.
+/ 
+/ # Author: Jorn Vierbergen
+/ # Creation date: 16/11/2024
+/ 
 #################
-/
+/ 
 / Changelog:
 / ----------
 / 06/12/2024 - Jorn Vierbergen
@@ -39,7 +39,7 @@
 / - Edited: API data cachen
 / 28/02/2025 - Jorn Vierbergen
 / - Added: Date and time in ISO + convert to visual date and time
-/ - Fixed: Event lines enkel eenmaal toevoegen in HTML element
+/ - Fixed: Event lines only one time added to HTML element
 / 13/03/2025 - Jorn Vierbergen
 / - Fixed: expandableDiv mobile browser adress makes screen smaller
 / 15/03/2025 - Jorn Vierbergen
@@ -52,15 +52,21 @@
 / 16/05/2025 - Jorn Vierbergen
 / - Fixed: Timezones, UTC time.
 / - Added: Tasks display on calendar
-/
-/
+/ 23/05/2025 - Jorn Vierbergen
+/ - Changed: Prefference of what is visible on personal and group calendar.
+/ - Added: Display name of group
+/ 24/05/2025 - Jorn Vierbergen
+/ - Added: EventPopup.vue component
+/ - Changed: Return to last open group calendar after creating event
+/ - Added: Pass selected day data to CalendarEventView.vue for creating event
+/ 02/06/2025 - Jorn Vierbergen
+/ - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
+/ 
 / To do:
 / - Selecting event in expandable div opens event description.
-/ - Add events functionality to event button.
-/ - Remove test data
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
-/
+/ 
 / - Optimalization calendar:
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
@@ -70,43 +76,48 @@ the div while navigating
 / - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
 /
 / - NTH Change month to specified month. Click on month, drop down menu
-/ - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew
-Calendar) or sunday (United States)
+/ - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
 / - Optimalization and NTH HENK: Helpful Event Note Keeper:
 / - Create 1 general service file for api calls for the same backend
 / - Create 1 general service file for error handeling
 / - Refactor every await and loop as in file optimal.js
 / - Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
-/
-/ Opmerkingen:
+/ 
+/ Comments:
 / ------------
-/ Enige opmerkingen?
-/
+/ None, I won't stand for them!
+/ 
 #####################################*/
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { eventService } from "@/services/event.service.ts";
-import type { CalendarDay } from "@/components/models";
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { apiService, isApiError } from "@/services/api.service";
 import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
 // <!-- Wat is dit? - Jorn  -->
 import { faColonSign } from "@fortawesome/free-solid-svg-icons";
 import GroupNavigation from "@/components/GroupNavigation.vue";
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 import StyledButton from '@/components/StyledButton.vue';
 
 
 const { onTouchStart, onTouchEnd } = swipe();
-const { getData } = eventService();
+const { getData } = apiService();
+
+const route = useRoute()
+const router = useRouter()
 
 // Set calendar for groups, personal as default
-const route = useRoute()
 let groupAgenda = 'personal' //group id, changes when changing groups
-if (route.query.group_id) {
-  groupAgenda = route.query.group_id
-  if (groupAgenda == 'me') { groupAgenda = 'personal' } // delete when link changed to 'personal'
+
+const groupId = route.query.group_id;
+if (typeof groupId === 'string') {
+  groupAgenda = groupId
+}
+else if (Array.isArray(groupId)) {
+  groupAgenda = groupId[0] ?? 'personal'
 };
 
 // TIME SETTINGS FROM USER SETTINGS
@@ -131,8 +142,8 @@ const { timeZone, dateTimeNotation, hour12Notation, hourNotation, minuteNotation
 type NumberNotation = 'numeric' | '2-digit';
 type MonthNotation = 'numeric' | '2-digit' | 'short' | 'long';
 
-const events = ref([]);
-const selectedDate = ref<CalendarDay & { events?: any[] } | null>(null);
+const events = ref<CalendarEvent[]>([]);
+const selectedDate = ref<CalendarDay & { events?: CalendarEvent[] } | null>(null);
 
 // System time
 const currentDate = new Date();
@@ -219,29 +230,47 @@ const fetchEventsForMonth = async () => {
 
     try {
       const allEvents: any[] = [];
-      if (groupAgenda == 'personal') {
-        const personalEvents = await getData(`events/personal?from=${fromDate}&to=${toDate}`);
+      if(groupAgenda == 'personal'){
+        const personalEvents = await getData(`/api/events/personal?from=${fromDate}&to=${toDate}`);
+        if (isApiError(personalEvents)) {
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${personalEvents.status} ${personalEvents.message}`);
+          return;
+	      };
         console.log("Personal events:", personalEvents)
         personalEvents.forEach((item: any) => {
-          allEvents.push({ ...item, eventType: 'personal', displayName: '//' });
+          allEvents.push({ ...item, eventType: 'personal'});
         });
 
-        const tasks = await getData(`tasks?completed=false`);
+        const tasks = await getData(`/api/tasks?completed=false`);
+        if (isApiError(tasks)) {
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${tasks.status} ${tasks.message}`);
+          return;
+        }
         console.log("Tasks:", tasks)
         tasks.forEach((item: any) => {
           // change dueDate to start and end, re-use event functions
           item.start = item.dueDate;
           item.end = item.dueDate;
-          allEvents.push({ ...item, eventType: 'task', displayName: '// Task //' });
+          allEvents.push({ ...item, eventType: 'task', displayName: 'Task' });
         });
       };
 
       // get all group events when checking personal agenda
       const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}&` : ``;
-      const groupEvents = await getData(`events?${group}from=${fromDate}&to=${toDate}`);
+      const groupEvents = await getData(`/api/events?${group}from=${fromDate}&to=${toDate}`);
+      if (isApiError(groupEvents)) {
+        // if an error occures you can set a specific error message/popup per error.status for the user here
+        // use error popup component when merged with main
+        console.error(`${groupEvents.status} ${groupEvents.message}`);
+        return;
+      }
       console.log("Group events:", groupEvents)
       groupEvents.forEach((item: any) => {
-        allEvents.push({ ...item, eventType: 'group', displayName: `// ${item.Group.name} //` });
+        allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
       });
 
       const convertedEvents: any[] = [];
@@ -391,14 +420,15 @@ const goToNextMonth = () => {
 const selectDate = (date: CalendarDay) => {
   console.log(`Clicked on: ${date.date}`);
 
-  const eventsForSelectedDate: any[] = [];
+  const eventsForSelectedDate: CalendarEvent[] = [];
 
   events.value.forEach(event => {
     // Check if event in selected date range
-    const eventStartDate = event.startDate;
-    const eventEndDate = event.endDate;
+    const eventStartDate = new Date(event.startDate);
+    const eventEndDate = new Date(event.endDate);
+    const eventDate = new Date(date.date)
 
-    if (date.date >= eventStartDate && date.date <= eventEndDate) {
+    if (eventDate >= eventStartDate && eventDate <= eventEndDate) {
       eventsForSelectedDate.push(event);
     };
   });
@@ -408,6 +438,28 @@ const selectDate = (date: CalendarDay) => {
   };
   //console.log("Selected Date Events:", selectedDate.value.events);
 };
+
+const addEvent = () => {
+  // TS string because we stringify the object
+  const query: { selectedDate?: string; groupAgenda?: string } = {}
+  if (selectedDate.value) {
+    query.selectedDate = JSON.stringify(selectedDate.value)
+  };
+  if (groupAgenda) {
+    query.groupAgenda = groupAgenda;
+  };
+
+  router.push({
+    name: 'calenderEvents',
+    query: query,
+  })
+};
+
+// reload after deleting a event
+watch(() => route.query.reload, () => {
+  eventCache.value = {};
+  fetchEventsForMonth();
+});
 
 onMounted(() => {
   fetchEventsForMonth();
@@ -453,7 +505,7 @@ onMounted(() => {
       <expandableDiv :events="events" :selectedDate="selectedDate" />
 
       <router-link to="/calendar/events">
-        <StyledButton type="default" class="add-event-button">Event Button</StyledButton>
+        <StyledButton type="primary" class="add-event-button">Event Button</StyledButton>
       </router-link>
     </div>
   </div>
@@ -575,7 +627,6 @@ button:hover {
 
 .today span {
   color: var(--main-text);
-
 }
 
 .faded {

@@ -1,10 +1,53 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { createEvent } from '@/services/eventService'
 import { fetchGroups } from '@/services/groupservices'
 import StyledButton from '@/components/StyledButton.vue';
 
+
+// ADDED by Jorn
+import type { CalendarDay } from "@/components/models";
+
+const route = useRoute();
+const selectedDate = ref<CalendarDay | null>(null);
+
+
+const preFillDoc = () => {
+  // default data for adding events faster on the selected day
+  if (route.query.groupAgenda && typeof route.query.groupAgenda === 'string') {
+    // Pre-fill groupId with data from selected date
+    // Needs work on 'personal' group
+    event.value.groupId = route.query.groupAgenda;
+  };
+
+  if (route.query.selectedDate) {
+    selectedDate.value = JSON.parse(route.query.selectedDate as string) as CalendarDay;
+    console.log('SelectedDay data:', selectedDate.value);
+
+    if (selectedDate.value.date) {
+      const setDate = new Date(selectedDate.value.date);
+      const yyyy = setDate.getFullYear();
+      const mm = String(setDate.getMonth() + 1).padStart(2, '0');
+      const dd = String(setDate.getDate()).padStart(2, '0');
+      const formattedDate = `${yyyy}-${mm}-${dd}`;
+
+      // Pre-fill start and end date with data from selected date
+      event.value.start = formattedDate;
+      event.value.end = formattedDate;
+    };
+  };
+};
+
+interface Group {
+  id: number;
+  name: string;
+  image?: string;
+  defaultGroup: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+// END
 
 const router = useRouter()
 
@@ -30,18 +73,37 @@ const event = ref<EventFormData>({
   allDay: false,
 })
 
-const groups = ref([])
+// EDITED by Jorn
+//const groups = ref([])
+const groups = ref<Group[]>([]);
 
 onMounted(async () => {
   try {
     groups.value = await fetchGroups()
   } catch (error) {
-    alert('Failed to load groups:', error)
+    alert('Failed to load groups: ' + error)
   }
+  // ADDED by Jorn
+  preFillDoc()
+  // END
 })
 
 const returnToCalendar = () => {
-  router.push({ name: 'calendar' })
+  // EDITED by Jorn
+  //router.push({ name: 'calendar' })
+  // ADDED by Jorn
+  const query: { group_id?: string } = {};
+
+  // Use selected group
+  if (event.value.groupId) {
+    query.group_id = event.value.groupId;
+  };
+
+  router.push({
+    name: 'calendar',
+    query,
+  });
+  // END
 }
 
 const submitEvent = async () => {
@@ -83,7 +145,9 @@ const submitEvent = async () => {
 
   <div>
     <label for="eventGroupId">Group</label>
-    <select v-model="event.groupId" id="eventGroupId" type="" required>
+      <!-- EDITED by Jorn -->
+      <!--<select v-model="event.groupId" id="eventGroupId" type="" required>-->
+      <select v-model="event.groupId" id="eventGroupId" required>
       <option disabled value="">Please select one</option>
       <option v-for="group in groups" :value="group.id" :key="group.id">
         {{ group.name }}

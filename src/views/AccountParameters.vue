@@ -142,7 +142,7 @@ const setTheme = (theme: string) => {
           { value: 'home', text: 'Home' },
           { value: 'weather', text: 'Weather' },
           { value: 'todo_tasks', text: 'My Tasks' },
-          { value: 'translator', text: 'Translator' },
+          { value: 'jokes', text: 'Jokes' },
           { value: 'calendar', text: 'Calendar' }
         ]" />
         <FontAwesomeIconToggler :iconToggler="iconTogglerParam.app" icon1="floppy-disk" icon2="pen-to-square"

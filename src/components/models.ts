@@ -16,6 +16,7 @@ export interface ParamEditingState {
 }
 
 export interface SavedValues {
+  id: number,
   username: string,
   firstname: string,
   lastname: string,
@@ -30,6 +31,7 @@ export interface ParamSavedValues {
 }
 
 export interface UserData {
+  id: number;
   username: string;
   email: string;
   password?: string;
@@ -47,12 +49,41 @@ export interface UserParamData {
 //////////////
 // CALENDAR //
 //////////////
+export interface CalendarEventGroup {
+	id: number
+	name: string
+	image: string
+	defaultGroup: boolean
+	createdAt: string
+	updatedAt: string
+}
+
+export interface CalendarEvent {
+	id: number
+	title: string
+	description: string
+	start: string
+	end: string
+	createdAt: string
+	updatedAt: string
+	groupId: number
+	organizer: number
+	Group: CalendarEventGroup
+	eventType: string
+	displayName?: string
+	startDate: string
+	startTime: string
+	endDate: string
+	endTime: string
+}
+
 export interface CalendarDay {
-    day: number
-    date: string
-    faded: boolean
-    isToday?: boolean
-    eventLines: string[]
+	day: number
+	date: string
+	faded: boolean
+	isToday?: boolean
+	eventLines?: string[]
+	events?: CalendarEvent[]
 }
 
 /////////////
