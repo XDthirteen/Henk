@@ -1,32 +1,34 @@
 /*#####################################
 /
-/      #  api.service.ts
-/      #  ==================
-/      #  Beschrijving:
-/      #  ------------
-/      #  Alle typescript code dat te maken heeft met "calendar events"
+/ # api.service.ts
+/ # ==================
+/ # Description:
+/ # ------------
+/ # All functions needed for a rest api
 /
-/      #  Auteur: Jorn Vierbergen
-/      #  Datum aangemaakt: 13/02/2025
+/ # Author: Jorn Vierbergen
+/ # Creation date: 13/02/2025
 /
 #################
 /
-/      Changelog:
-/      ----------
-/       13/02/2025 - Jorn Vierbergen
-/           - Added reading and posting service for "events"
-/       24/05/2025 - Jorn Vierbergen
-/           - Added deleting "events"
-/       26/05/2025 - Jorn Vierbergen
-/           - Added put "events"
-/           - Changed event.service.ts to api.service.ts
-/           - Added default config for HENK api
-/       28/05/2025 - Jorn Vierbergen
-/           - Added error handeling with messages and status
+/ Changelog:
+/ ----------
+/ 13/02/2025 - Jorn Vierbergen
+/ - Added reading and posting service for "events"
+/ 24/05/2025 - Jorn Vierbergen
+/ - Added deleting "events"
+/ 26/05/2025 - Jorn Vierbergen
+/ - Added put "events"
+/ - Changed event.service.ts to api.service.ts
+/ - Added default config for HENK api
+/ 28/05/2025 - Jorn Vierbergen
+/ - Added error handeling with messages and status
 /
-/      Opmerkingen:
-/      ------------
-/      ...
+/ To do:
+/
+/ Comments:
+/ ------------
+/ None
 /
 #####################################*/
 import axios from 'axios'
