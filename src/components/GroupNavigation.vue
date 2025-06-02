@@ -26,10 +26,14 @@
 #####################################*/
 
 <script setup lang="ts">
-import router from '@/router';
+// EDITED by Jorn
+//import router from '@/router';
+import { useRouter } from 'vue-router'
+const router = useRouter()
+// END
 
 const toggleGroups = () => {
-  router.push({ name: 'myGroups' })
+  router.push({ name: 'Groups' })
 };
 </script>
 

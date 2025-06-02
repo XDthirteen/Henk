@@ -1,6 +1,6 @@
 /*#####################################
 /
-/ # CalendarView.vue
+/ # ExpandableDiv.vue
 / # ==================
 / # Beschrijving:
 / # ------------
@@ -32,23 +32,24 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { swipe } from '@/utils/swipeDetection';
+import EventPopup from '@/components/EventPopup.vue';
+import PopUpComponent from '@/components/PopUpComponent.vue'
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 
 const { onTouchStart, onTouchEnd } = swipe();
 
-const props = defineProps({
-  events: {
-    type: Array,
-    default: () => [],
-  },
-  selectedDate: {
-    type: Object,
-    default: () => null,
-  },
-});
+// Popup
+const selectedEvent = ref(null);
+const showPopup = ref(false);
+
+const props = defineProps<{
+  events: CalendarEvent[];
+  selectedDate: CalendarDay | null;
+}>();
 
 // Expandable div toggle
 const isExpanded = ref(false);
-const toggleExpand = () => {
+const toggleExpand = (): void => {
   isExpanded.value = !isExpanded.value;
 };
 
@@ -60,13 +61,19 @@ const getEventsForSelectedDate = computed(() => {
   return [];
 });
 
-const eventClick = (eventData) => {
-  return
-  //console.log("Clicked event:", eventData);
-  //console.log("x",props.selectedDate)
+const eventClick = (eventData: any): void => {
+  console.log("Clicked event:", eventData);
+  console.log("x",props.selectedDate)
+  selectedEvent.value = eventData;
+  showPopup.value = true;
+};
+
+const closePopup = (): void => {
+  showPopup.value = false;
 };
 
 </script>
+
 <template>
   <!-- Expandable Div -->
   <div :class="['expand-wrapper', isExpanded ? 'expanded' : 'minimized']" @click="toggleExpand" @touch="toggleExpand"
@@ -103,6 +110,10 @@ const eventClick = (eventData) => {
       <p v-else>Nothing planned on this day.</p>
     </div>
   </div>
+
+  <PopUpComponent v-if="showPopup" @close="closePopup">
+    <EventPopup v-if="selectedEvent" :event="selectedEvent" />
+  </PopUpComponent>
 </template>
 
 <style scoped>
@@ -175,7 +186,6 @@ button {
 }
 
 .event-container {
-  background-color: ;
   color: var(--black-text);
   padding-bottom: 50px;
   max-height: 90%;
