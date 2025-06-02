@@ -267,26 +267,33 @@ const logoutAndCloseMenu = () => {
 }
 
 @media screen and (max-width: 360px) {
-  .menu-item{
+  .menu-item {
     height: 4.5rem;
     width: 4.5rem;
   }
-  .icons{
+
+  .icons {
     width: 25px;
     height: 25px;
   }
-  .item-text{
+
+  .item-text {
     font-size: smaller;
   }
-  .logout-button{
+
+  .logout-button {
     width: 100%;
   }
 }
 
 @media screen and (max-height: 730px) {
-  .hamburger-menu{
+  .hamburger-menu {
     height: 30rem;
     top: 18rem;
+  }
+
+  .menu-organizer {
+    height: 50%;
   }
 }
 </style>
