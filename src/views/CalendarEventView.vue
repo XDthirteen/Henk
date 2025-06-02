@@ -7,7 +7,7 @@ import StyledButton from '@/components/StyledButton.vue';
 
 
 // ADDED by Jorn
-import type { CalendarDay, CalendarEvent } from "@/components/models";
+import type { CalendarDay } from "@/components/models";
 
 const route = useRoute();
 const selectedDate = ref<CalendarDay | null>(null);

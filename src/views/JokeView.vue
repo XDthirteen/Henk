@@ -1,38 +1,37 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { apiService, isApiError } from '@/services/api.service'
 import StyledButton from '@/components/StyledButton.vue';
-import StyledInputByType from "@/components/StyledInputByType.vue";
+import { onMounted, ref } from 'vue';
 
-const joke = ref('')
+const getJoke = ref('')
 const loading = ref(false)
 const error = ref(false)
 
+const { getData } = apiService()
 
-async function fetchJoke() {
-  loading.value = true
-  error.value = false
+const fetchJoke = async () => {
+	const data = await getData('https://icanhazdadjoke.com/', {
+		headers: {
+			Accept: 'application/json',
+		},
+	});
 
-  try {
-    const response = await fetch('https://icanhazdadjoke.com/', {
-      headers: {
-        Accept: 'application/json',
-      },
-    })
+	if (isApiError(data)) {
+    // if an error occures, you get the error status (null if no status) (status is number eg: 400, 402, 404 etc)
+    // a generic message comes for every error (message is always string)
+    // if you want a specific message to show the user per action, per status you can overwrite the message (eg: at login status 400 means wrong username or password)
 
-    if (!response.ok) throw new Error('Network response was not ok')
+    // use error popup component when finished
+		console.error(`${data.status} ${data.message}`);
+		return;
+	};
 
-    const data = await response.json()
-    joke.value = data.joke
-  } catch (err) {
-    console.error(err)
-    error.value = true
-  } finally {
-    loading.value = false
-  }
-}
-
+	getJoke.value =  data.joke;
+};
 onMounted(fetchJoke)
+
 </script>
+
 
 <template>
   <div>
@@ -40,7 +39,7 @@ onMounted(fetchJoke)
       <h1>Dad Joke Generator</h1>
       <p v-if="loading">Loading...</p>
       <p v-else-if="error">Failed to fetch a joke.</p>
-      <p v-else>{{ joke }}</p>
+      <p v-else>{{ getJoke }}</p>
       <StyledButton @click="fetchJoke">New Joke</StyledButton>
     </div>
   </div>
