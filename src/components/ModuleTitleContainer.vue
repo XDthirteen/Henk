@@ -19,4 +19,17 @@ h1 {
   font-size: xx-large;
   height: 5rem;
 }
+
+@media screen and (max-width: 370px) {
+  h1{
+      font-size: x-large;
+  }
+}
+
+@media screen and (max-height: 730px) {
+  .hamburger-menu{
+    height: 30rem;
+    top: 18rem;
+  }
+}
 </style>
