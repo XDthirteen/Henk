@@ -2,12 +2,12 @@
 /
 / # ExpandableDiv.vue
 / # ==================
-/ # Beschrijving:
+/ # Description:
 / # ------------
-/ # Overzichtelijkere code. Component voor div's groter en kleiner te maken in calendar.
+/ # Better overview of code. Component for making div bigger an smaller in calendar.
 /
-/ # Auteur: Jorn Vierbergen
-/ # Datum aangemaakt: 13/02/2025
+/ # Author: Jorn Vierbergen
+/ # Creation date: 13/02/2025
 /
 #################
 /
@@ -22,25 +22,23 @@
 /
 / To do:
 /
-/
-/ Opmerkingen:
+/ Comments:
 / ------------
-/ Enige opmerkingen?
+/ None
 /
 #####################################*/
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { swipe } from '@/utils/swipeDetection';
-import EventPopup from '@/components/EventPopup.vue';
-import PopUpComponent from '@/components/PopUpComponent.vue'
+import EventPopup from '@/components/popups/EventPopup.vue';
 import type { CalendarDay, CalendarEvent } from "@/components/models";
 
 const { onTouchStart, onTouchEnd } = swipe();
 
 // Popup
 const selectedEvent = ref(null);
-const showPopup = ref(false);
+const showEventPopup = ref(false);
 
 const props = defineProps<{
   events: CalendarEvent[];
@@ -65,11 +63,12 @@ const eventClick = (eventData: any): void => {
   console.log("Clicked event:", eventData);
   console.log("x",props.selectedDate)
   selectedEvent.value = eventData;
-  showPopup.value = true;
+  showEventPopup.value = true;
 };
 
-const closePopup = (): void => {
-  showPopup.value = false;
+const closeEventPopup = (): void => {
+  selectedEvent.value = null;
+  showEventPopup.value = false;
 };
 
 </script>
@@ -111,9 +110,7 @@ const closePopup = (): void => {
     </div>
   </div>
 
-  <PopUpComponent v-if="showPopup" @close="closePopup">
-    <EventPopup v-if="selectedEvent" :event="selectedEvent" />
-  </PopUpComponent>
+  <EventPopup v-if="selectedEvent" :event="selectedEvent" @close="closeEventPopup"/>
 </template>
 
 <style scoped>

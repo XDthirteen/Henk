@@ -1,16 +1,16 @@
 /*#####################################
-/
+/ 
 / # CalendarView.vue
 / # ==================
-/ # Beschrijving:
+/ # Description:
 / # ------------
-/ # Het kunnen zien van datums en geplande events.
-/
-/ # Auteur: Jorn Vierbergen
-/ # Datum aangemaakt: 16/11/2024
-/
+/ # Able to see dates and planned events.
+/ 
+/ # Author: Jorn Vierbergen
+/ # Creation date: 16/11/2024
+/ 
 #################
-/
+/ 
 / Changelog:
 / ----------
 / 06/12/2024 - Jorn Vierbergen
@@ -39,7 +39,7 @@
 / - Edited: API data cachen
 / 28/02/2025 - Jorn Vierbergen
 / - Added: Date and time in ISO + convert to visual date and time
-/ - Fixed: Event lines enkel eenmaal toevoegen in HTML element
+/ - Fixed: Event lines only one time added to HTML element
 / 13/03/2025 - Jorn Vierbergen
 / - Fixed: expandableDiv mobile browser adress makes screen smaller
 / 15/03/2025 - Jorn Vierbergen
@@ -59,13 +59,14 @@
 / - Added: EventPopup.vue component
 / - Changed: Return to last open group calendar after creating event
 / - Added: Pass selected day data to CalendarEventView.vue for creating event
-/
-/
+/ 02/06/2025 - Jorn Vierbergen
+/ - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
+/ 
 / To do:
 / - Selecting event in expandable div opens event description.
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
-/
+/ 
 / - Optimalization calendar:
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
@@ -82,15 +83,15 @@ the div while navigating
 / - Create 1 general service file for error handeling
 / - Refactor every await and loop as in file optimal.js
 / - Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
-/
-/ Opmerkingen:
+/ 
+/ Comments:
 / ------------
-/ Enige opmerkingen?
-/
+/ None, I won't stand for them!
+/ 
 #####################################*/
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { apiService, isApiError } from "@/services/api.service";
 import expandableDiv from "@/components/ExpandableDiv.vue";
@@ -118,12 +119,6 @@ if (typeof groupId === 'string') {
 else if (Array.isArray(groupId)) {
   groupAgenda = groupId[0] ?? 'personal'
 };
-
-// delete when link changed to 'personal'
-if(groupAgenda == 'me'){
-  groupAgenda = 'personal'
-};
-console.log("group: ",groupAgenda)
 
 // TIME SETTINGS FROM USER SETTINGS
 const dateTimeSettings = {
@@ -460,6 +455,12 @@ const addEvent = () => {
   })
 };
 
+// reload after deleting a event
+watch(() => route.query.reload, () => {
+  eventCache.value = {};
+  fetchEventsForMonth();
+});
+
 onMounted(() => {
   fetchEventsForMonth();
 });
@@ -504,7 +505,7 @@ onMounted(() => {
       <expandableDiv :events="events" :selectedDate="selectedDate" />
 
       <router-link to="/calendar/events">
-        <StyledButton type="default" class="add-event-button">Event Button</StyledButton>
+        <StyledButton type="primary" class="add-event-button">Event Button</StyledButton>
       </router-link>
     </div>
   </div>
