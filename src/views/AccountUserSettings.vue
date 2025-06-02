@@ -61,6 +61,7 @@ const iconToggler = ref<EditingState>({
 });
 
 const savedValues = ref<SavedValues>({
+  id: 0,
   username: '',
   firstname: '',
   lastname: '',
@@ -71,6 +72,7 @@ const savedValues = ref<SavedValues>({
 const tempValues = ref<SavedValues>({ ...savedValues.value });
 
 onMounted(async () => {
+  savedValues.value.id = 0;
   savedValues.value.username = 'Loading...';
   savedValues.value.firstname = 'Loading...';
   savedValues.value.lastname = 'Loading...';
@@ -81,6 +83,7 @@ onMounted(async () => {
 
   if (userInfo.value) {
     savedValues.value = {
+      id: userInfo.value.id,
       username: userInfo.value.username,
       firstname: userInfo.value.firstName,
       lastname: userInfo.value.lastName,
@@ -145,14 +148,14 @@ function saveUserChanges(): void {
         </div>
         <div class="row">
           <div class="col">
-            <!-- <p>UserID</p> -->
+            <p>UserID</p>
             <p>Firstname</p>
             <p>Lastname</p>
             <p>Email</p>
             <p>Language</p>
           </div>
           <div class="col">
-            <!-- <p id="userId">12345</p> -->
+            <p id="userId">{{ savedValues.id }}</p>
             <p id="firstname">{{ savedValues.firstname }}</p>
             <p id="lastname">{{ savedValues.lastname }}</p>
             <p id="email">{{ savedValues.email }}</p>
