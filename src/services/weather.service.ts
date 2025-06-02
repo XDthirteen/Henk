@@ -16,7 +16,7 @@ export const getWeather = async (city:string): Promise<WeatherData|null> => {
     return response.data;
   } catch(error) {
     console.error("Error fetching weather data", error);
-    return null;
+    throw error;
   }
 };
 
