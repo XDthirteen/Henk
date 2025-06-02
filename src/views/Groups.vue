@@ -278,26 +278,26 @@ const selectGroupForLeave = (group: Group) => {
 }
 
 const sendInvite = async () => {
-	if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
+    if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
 
-	const token = getAuthToken()
+    const token = getAuthToken()
 
-	try {
-		await axios.post(
-			`${API_URL}/${selectedGroup.value.id}/invites/${inviteInput.value}`,
-			{},
-			{ headers: { Authorization: `Bearer ${token}` } },
-		)
-		successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
+    try {
+        await axios.post(
+            `${API_URL}/${selectedGroup.value.id}/invites`,
+            { email: inviteInput.value },
+            { headers: { Authorization: `Bearer ${token}` } },
+        )
+        successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
 
-		setTimeout(() => {
-			successMessage.value = ''
-			showInvitePopup.value = false
-		}, 2000)
-	} catch (error) {
-		console.error('Error sending invite:', error)
-		alert('Failed to send invite.')
-	}
+        setTimeout(() => {
+            successMessage.value = ''
+            showInvitePopup.value = false
+        }, 2000)
+    } catch (error) {
+        console.error('Error sending invite:', error)
+        alert('Failed to send invite.')
+    }
 }
 
 const cancelInvite = () => {
