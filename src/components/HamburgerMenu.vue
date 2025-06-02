@@ -265,4 +265,25 @@ const logoutAndCloseMenu = () => {
   width: 32px;
   height: 32px;
 }
+
+@media screen and (max-width: 360px) {
+  .menu-item{
+    height: 4.5rem;
+    width: 4.5rem;
+  }
+  .icons{
+    width: 25px;
+    height: 25px;
+  }
+  .item-text{
+    font-size: smaller;
+  }
+}
+
+@media screen and (max-height: 730px) {
+  .hamburger-menu{
+    height: 30rem;
+    top: 18rem;
+  }
+}
 </style>

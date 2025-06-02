@@ -2,6 +2,7 @@
 import { apiService, isApiError } from '@/services/api.service'
 import StyledButton from '@/components/StyledButton.vue';
 import { onMounted, ref } from 'vue';
+import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
 
 const getJoke = ref('')
 const loading = ref(false)
@@ -36,7 +37,7 @@ onMounted(fetchJoke)
 <template>
   <div>
     <div class="text-color">
-      <h1>Dad Joke Generator</h1>
+      <ModuleTitleContainer>Dad Joke</ModuleTitleContainer>
       <p v-if="loading">Loading...</p>
       <p v-else-if="error">Failed to fetch a joke.</p>
       <p v-else>{{ getJoke }}</p>
