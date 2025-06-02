@@ -56,7 +56,7 @@ const router = createRouter({
           path: '/jokes',
           name: 'jokes',
           beforeEnter: [authenticationGuard],
-          component: () => import('@/views/WeatherView.vue'), //to be changed to ('@/Layouts/JokesLayout.vue')
+          component: () => import('@/views/JokeView.vue'), //to be changed to ('@/Layouts/JokesLayout.vue')
         },
         {
           path: '/myAccount',

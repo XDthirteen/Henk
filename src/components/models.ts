@@ -16,6 +16,7 @@ export interface ParamEditingState {
 }
 
 export interface SavedValues {
+  id: number,
   username: string,
   firstname: string,
   lastname: string,
@@ -30,6 +31,7 @@ export interface ParamSavedValues {
 }
 
 export interface UserData {
+  id: number;
   username: string;
   email: string;
   password?: string;
