@@ -45,17 +45,20 @@
 			</div>
 		</div>
 
+		<!-- Invite Members Popup -->
 		<PopUpComponent v-if="showInvitePopup" @close="cancelInvite">
 			<template #default>
 				<h3>Invite to: {{ selectedGroup?.name }}</h3>
 				<input
 					type="text"
 					v-model="inviteInput"
-					placeholder="Enter User ID or Email"
+					placeholder="Enter User Email"
 					class="input-field"
 				/>
-				<button class="send-btn" @click="sendInvite">Send Invite</button>
-				<button class="cancel-btn" @click="cancelInvite">Cancel</button>
+				<div class="button-row">
+					<button class="send-btn" @click="sendInvite">Send Invite</button>
+					<button class="cancel-btn" @click="cancelInvite">Cancel</button>
+				</div>
 				<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 			</template>
 		</PopUpComponent>
@@ -63,8 +66,10 @@
 		<PopUpComponent v-if="showLeavePopup" @close="cancelLeave">
 			<template #default>
 				<h3>Wil je {{ selectedGroup?.name }} verlaten?</h3>
-				<button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
-				<button class="cancel-btn" @click="cancelLeave">Annuleer</button>
+				<div class="button-row">
+					<button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
+					<button class="cancel-btn" @click="cancelLeave">Annuleer</button>
+				</div>
 				<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 			</template>
 		</PopUpComponent>
@@ -94,8 +99,10 @@
 					</ul>
 				</div>
 
-				<button class="send-btn" @click="addGroup">Groep Toevoegen</button>
-				<button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
+				<div class="button-row">
+					<button class="send-btn" @click="addGroup">Groep Toevoegen</button>
+					<button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
+				</div>
 
 				<p v-if="successMessage" class="success-message">{{ successMessage }}</p>
 			</template>
@@ -140,7 +147,7 @@ library.add(
 	faMoon,
 	faRocket,
 	faBell,
-) // <-- toevoegen
+)
 
 const iconList = [
 	faUser,
@@ -203,34 +210,34 @@ onMounted(async () => {
 })
 
 const fetchGroups = async () => {
-    try {
-        const token = getAuthToken()
-        const response = await axios.get(API_URL, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
+	try {
+		const token = getAuthToken()
+		const response = await axios.get(API_URL, {
+			headers: { Authorization: `Bearer ${token}` },
+		})
 
-        console.log('Opgehaalde groepen:', response.data)
+		console.log('Opgehaalde groepen:', response.data)
 
-        groups.value = response.data
+		groups.value = response.data
 			.filter((group: Group) => !group.defaultGroup)
-            .map((group: Group) => {
-                const image = (group.image || '').toString()
-                const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
+			.map((group: Group) => {
+				const image = (group.image || '').toString()
+				const isValidIcon = iconList.some((iconDef) => iconDef.iconName === image)
 
-                const iconGroup: Group = {
-                    id: group.id,
-                    name: group.name,
-                    icon: isValidIcon ? image : 'user',
-                    tasks: group.tasks ?? [],
-                    image: group.image,
-                }
+				const iconGroup: Group = {
+					id: group.id,
+					name: group.name,
+					icon: isValidIcon ? image : 'user',
+					tasks: group.tasks ?? [],
+					image: group.image,
+				}
 
-                return iconGroup
-            })
-    } catch (error) {
-        console.error('Error fetching groups:', error)
-        alert('Failed to fetch groups.')
-    }
+				return iconGroup
+			})
+	} catch (error) {
+		console.error('Error fetching groups:', error)
+		alert('Failed to fetch groups.')
+	}
 }
 
 const fetchInvites = async () => {
@@ -278,26 +285,26 @@ const selectGroupForLeave = (group: Group) => {
 }
 
 const sendInvite = async () => {
-    if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
+	if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
 
-    const token = getAuthToken()
+	const token = getAuthToken()
 
-    try {
-        await axios.post(
-            `${API_URL}/${selectedGroup.value.id}/invites`,
-            { email: inviteInput.value },
-            { headers: { Authorization: `Bearer ${token}` } },
-        )
-        successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
+	try {
+		await axios.post(
+			`${API_URL}/${selectedGroup.value.id}/invites`,
+			{ email: inviteInput.value },
+			{ headers: { Authorization: `Bearer ${token}` } },
+		)
+		successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
 
-        setTimeout(() => {
-            successMessage.value = ''
-            showInvitePopup.value = false
-        }, 2000)
-    } catch (error) {
-        console.error('Error sending invite:', error)
-        alert('Failed to send invite.')
-    }
+		setTimeout(() => {
+			successMessage.value = ''
+			showInvitePopup.value = false
+		}, 2000)
+	} catch (error) {
+		console.error('Error sending invite:', error)
+		alert('Failed to send invite.')
+	}
 }
 
 const cancelInvite = () => {
@@ -307,26 +314,26 @@ const cancelInvite = () => {
 }
 
 const confirmLeaveGroup = async () => {
-	if (!selectedGroup.value) return
+    if (!selectedGroup.value) return
 
-	const token = getAuthToken()
+    const token = getAuthToken()
 
-	try {
-		await axios.delete(`${API_URL}/${selectedGroup.value.id}`, {
-			headers: { Authorization: `Bearer ${token}` },
-		})
-		successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
+    try {
+        await axios.post(`${API_URL}/${selectedGroup.value.id}/leave`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
 
-		setTimeout(() => {
-			successMessage.value = ''
-			showLeavePopup.value = false
-		}, 2000)
+        setTimeout(() => {
+            successMessage.value = ''
+            showLeavePopup.value = false
+        }, 2000)
 
-		await fetchGroups()
-	} catch (error) {
-		console.error('Error leaving group:', error)
-		alert('Failed to leave group.')
-	}
+        await fetchGroups()
+    } catch (error) {
+        console.error('Error leaving group:', error)
+        alert('Failed to leave group.')
+    }
 }
 
 const cancelLeave = () => {
@@ -526,7 +533,6 @@ header {
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Selecteerbare groepen */
 .selectable {
 	cursor: pointer;
 	border: 2px dashed #0078a5;
@@ -568,12 +574,41 @@ header {
 	font-weight: bold;
 }
 
+.button-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.button-row > button {
+	width: 50%;
+	margin-top: 0;
+	border: none;
+	border-radius: 5px;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 10px;
+	cursor: pointer;
+	text-align: center;
+}
+
+.send-btn {
+	background-color: #008cba;
+	color: white;
+	transition: background 0.3s ease;
+}
+.send-btn:hover {
+	background-color: #0078a5;
+}
+
 .confirm-btn {
 	background-color: #4caf50;
 	color: white;
 	transition: background 0.3s ease;
 }
-
 .confirm-btn:hover {
 	background-color: #45a049;
 }
@@ -583,33 +618,8 @@ header {
 	color: white;
 	transition: background 0.3s ease;
 }
-
 .cancel-btn:hover {
 	background-color: #d32f2f;
-}
-
-.input-field {
-	width: 100%;
-	padding: 10px;
-	margin-top: 10px;
-	border: 1px solid #ddd;
-	border-radius: 5px;
-	font-size: 14px;
-}
-
-.send-btn {
-	background-color: #008cba;
-	color: white;
-	border: none;
-	padding: 10px;
-	border-radius: 5px;
-	cursor: pointer;
-	margin-top: 10px;
-	transition: background 0.3s ease;
-}
-
-.send-btn:hover {
-	background-color: #0078a5;
 }
 
 .invite-sent-message {
@@ -639,6 +649,7 @@ header {
 	width: 100%;
 	padding: 10px;
 	margin-top: 10px;
+	margin-bottom: 10px; /* Voeg deze regel toe voor extra ruimte */
 	border: 1px solid #ddd;
 	border-radius: 5px;
 	font-size: 14px;
@@ -751,5 +762,16 @@ header {
 	justify-content: center;
 	z-index: 1;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px; /* Voeg deze regel toe voor extra ruimte */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 </style>
