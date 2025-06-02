@@ -278,6 +278,9 @@ const logoutAndCloseMenu = () => {
   .item-text{
     font-size: smaller;
   }
+  .logout-button{
+    width: 100%;
+  }
 }
 
 @media screen and (max-height: 730px) {
