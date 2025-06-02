@@ -43,6 +43,7 @@ const userSettings = () => {
       const backendUserInfo = response.data;
 
       userInfo.value = {
+        id: backendUserInfo.id,
         username: backendUserInfo.username,
         firstName: backendUserInfo.firstName,
         lastName: backendUserInfo.lastName,
