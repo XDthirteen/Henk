@@ -186,7 +186,7 @@ const submitEvent = async () => {
   </div>
 
   <div class="event-buttons">
-    <StyledButton type="save">Save</StyledButton>
+    <StyledButton buttonTypeHTML="submit" type="save">Save</StyledButton>
     <StyledButton type="negative" @click="returnToCalendar">Go Back to Calendar</StyledButton>
   </div>
   </form>

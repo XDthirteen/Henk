@@ -33,11 +33,19 @@
 
 <script lang="ts" setup>
 type ButtonType = "default" | "primary" | "negative" | "save";
-defineProps<{ type?: ButtonType }>()
+type HTMLButtonType = "button" | "submit" | "reset";
+
+const props = defineProps<{ 
+  type?: ButtonType 
+  buttonTypeHTML?: HTMLButtonType
+  }>()
+  
+const htmlType = props.buttonTypeHTML ?? 'button';
+
 </script>
 
 <template>
-  <button :class="{ 'primary': type === 'primary', 'negative': type === 'negative', 'save': type === 'save' }">
+  <button :type="htmlType" :class="{ 'primary': type === 'primary', 'negative': type === 'negative', 'save': type === 'save' }">
     <slot />
   </button>
 </template>
