@@ -300,9 +300,13 @@ const confirmLeaveGroup = async () => {
   const token = getAuthToken()
 
   try {
-    await axios.post(`${API_URL}/${selectedGroup.value.id}/leave`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    await axios.post(
+      `${API_URL}/${selectedGroup.value.id}/leave`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
     successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
 
     setTimeout(() => {
@@ -761,5 +765,32 @@ header {
   border-radius: 5px;
   font-size: 14px;
   box-sizing: border-box;
+}
+
+@media (max-width: 400px) {
+  .popup {
+    width: 95vw;
+    padding: 12px;
+  }
+
+  .button-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .button-row>button {
+    width: 100%;
+    margin: 0 0 8px 0;
+  }
+
+  .group-items-container {
+    grid-template-columns: 1fr;
+  }
+
+  .navigation-bar {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
 }
 </style>
