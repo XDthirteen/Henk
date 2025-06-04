@@ -378,7 +378,7 @@ const addGroup = async () => {
 }
 
 header {
-  display: flex;
+  /* display: flex; */
   justify-content: center;
   align-items: center;
   position: relative;
