@@ -150,7 +150,7 @@ const submitEvent = async () => {
       <select v-model="event.groupId" id="eventGroupId" required>
       <option disabled value="">Please select one</option>
       <option v-for="group in groups" :value="group.id" :key="group.id">
-        {{ group.name }}
+        {{ group.defaultGroup ? 'Persoonlijk' : group.name }} <!-- maakt persoonlijke groep-->
       </option>
     </select>
   </div>

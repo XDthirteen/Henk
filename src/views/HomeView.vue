@@ -45,8 +45,9 @@ import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
   <main>
     <ModuleTitleContainer>Wie zijn we?</ModuleTitleContainer>
     <p>Het groepsproject is begonnen in December 2024 door de groep bestaande uit <a href="https://github.com/arnodefillet">Arno</a>, <a href="https://github.com/XDthirteen">Jorn</a>, <a href="https://github.com/Daemszzz">Kevin</a> & <a href="https://github.com/Gert-JanGe">Gert-Jan</a> met een klein beetje <a href="https://github.com/anneleenscholts">Anneleen</a> voor support.</p>
-    <p>Na vershillende ideeen zijn we op Henk uitgekomen, een persoonlijke calender webapp.</p>
-    <p>We zijn hierna direct op Miro een voorbeeld gaan schetsen</p>
+    <p>Na vershillende ideeën zijn we op Henk uitgekomen, een persoonlijke calender webapp.</p>
+    <p>We hebben op Miro een voorbeeld gemaakt om dan direct in Vue aan het werk te gaan.</p>
+    <p>Dit is het resultaat hier van!</p>
   </main>
 </template>
 
