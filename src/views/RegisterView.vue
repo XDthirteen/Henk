@@ -47,9 +47,9 @@ const buttonType = "primary";
 //   { code: 'nl', label: 'Nederlands' }
 // ];
 
-const selectedLanguage = ref<{ default: string }>({
-  default: 'en'
-});
+// const selectedLanguage = ref<{ default: string }>({
+//   default: 'en'
+// });
 
 // const toggleLanguage = () => {
 //   selectedLanguage.value.default = selectedLanguage.value.default === 'en' ? 'nl' : 'en';
@@ -106,11 +106,11 @@ const createUser = async () => {
   }
 }
 
-const setLanguage = (lang: string) => {
-  selectedLanguage.value.default = lang;
-  userData.defaultLanguage = lang;
-  console.log('Selected language:', lang);
-};
+// const setLanguage = (lang: string) => {
+//   selectedLanguage.value.default = lang;
+//   userData.defaultLanguage = lang;
+//   console.log('Selected language:', lang);
+// };
 
 </script>
 
@@ -132,7 +132,7 @@ const setLanguage = (lang: string) => {
     <StyledInputByType v-model="userData.lastName" label="Last name:" placeholder="Your last name">
     </StyledInputByType>
 
-    <div class="container">
+    <!-- <div class="container">
       <div class="language-toggle">
         <div class="language-option" :class="{ active: selectedLanguage.default === 'en' }" @click="setLanguage('en')">
           English
@@ -141,7 +141,7 @@ const setLanguage = (lang: string) => {
           Nederlands
         </div>
       </div>
-    </div>
+    </div> -->
   </form>
   <StyledButton :type="buttonType" @click="createUser()">Create account</StyledButton>
   <div v-if="correctRegisterPasswords">User succesfull created</div>
