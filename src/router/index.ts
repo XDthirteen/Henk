@@ -61,6 +61,7 @@ const router = createRouter({
         {
           path: '/myAccount',
           name: 'myAccount',
+          redirect: { name: 'settings'},
           beforeEnter: [authenticationGuard],
           component: () => import('@/layouts/MyAccount.vue'),
           children: [
@@ -92,6 +93,7 @@ const router = createRouter({
         {
           path: '/tasks',
           name: 'tasks',
+          redirect: { name: 'todo_tasks'},
           beforeEnter: [authenticationGuard],
           component: () => import('@/layouts/TasksView.vue'),
           children: [
