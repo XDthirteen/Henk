@@ -314,26 +314,30 @@ const cancelInvite = () => {
 }
 
 const confirmLeaveGroup = async () => {
-    if (!selectedGroup.value) return
+	if (!selectedGroup.value) return
 
-    const token = getAuthToken()
+	const token = getAuthToken()
 
-    try {
-        await axios.post(`${API_URL}/${selectedGroup.value.id}/leave`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-        successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
+	try {
+		await axios.post(
+			`${API_URL}/${selectedGroup.value.id}/leave`,
+			{},
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			},
+		)
+		successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
 
-        setTimeout(() => {
-            successMessage.value = ''
-            showLeavePopup.value = false
-        }, 2000)
+		setTimeout(() => {
+			successMessage.value = ''
+			showLeavePopup.value = false
+		}, 2000)
 
-        await fetchGroups()
-    } catch (error) {
-        console.error('Error leaving group:', error)
-        alert('Failed to leave group.')
-    }
+		await fetchGroups()
+	} catch (error) {
+		console.error('Error leaving group:', error)
+		alert('Failed to leave group.')
+	}
 }
 
 const cancelLeave = () => {
@@ -765,13 +769,36 @@ header {
 }
 
 .input-field {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px; /* Voeg deze regel toe voor extra ruimte */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    box-sizing: border-box;
+	width: 100%;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px; /* Voeg deze regel toe voor extra ruimte */
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	font-size: 14px;
+	box-sizing: border-box;
+}
+
+@media (max-width: 400px) {
+	.popup {
+		width: 95vw;
+		padding: 12px;
+	}
+	.button-row {
+		flex-direction: column;
+		gap: 8px;
+	}
+	.button-row > button {
+		width: 100%;
+		margin: 0 0 8px 0;
+	}
+	.group-items-container {
+		grid-template-columns: 1fr;
+	}
+	.navigation-bar {
+		flex-direction: column;
+		gap: 8px;
+		width: 100%;
+	}
 }
 </style>
