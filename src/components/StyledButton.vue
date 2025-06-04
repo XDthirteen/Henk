@@ -32,12 +32,17 @@
 #####################################*/
 
 <script lang="ts" setup>
-type ButtonType = "default" | "primary" | "negative" | "save";
+type ButtonType = "default" | "primary" | 'secundary' | "negative" | "save";
 defineProps<{ type?: ButtonType }>()
 </script>
 
 <template>
-  <button :class="{ 'primary': type === 'primary', 'negative': type === 'negative', 'save': type === 'save' }">
+  <button :class="{
+    'primary': type === 'primary',
+    'secundary': type === 'secundary',
+    'negative': type === 'negative',
+    'save': type === 'save'
+  }">
     <slot />
   </button>
 </template>
@@ -74,7 +79,19 @@ button:hover {
 .primary:hover {
   background-color: var(--hover-button);
   color: var(--main-text);
-  border: 2px solid var(--primary-button)
+  border: 2px solid var(--hover-button)
+}
+
+.secundary {
+  background-color: var(--secundary-button);
+  color: var(--main-text);
+  border: 2px solid var(--secundary-button);
+}
+
+.secundary:hover {
+  background-color: var(--hover-button);
+  color: var(--main-text);
+  border: 2px solid var(--hover-button)
 }
 
 .negative {

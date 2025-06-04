@@ -33,6 +33,7 @@
   --lightpurple-text: #7c76a7;
 
   --primary-button: #453d83;
+  --secundary-button: #14ce90;
   --active-button: #c1abe3;
   --hover-button: #c1aae7;
   --green-button: #8beb8b;
@@ -65,6 +66,7 @@ body.dark-theme {
   --lightpurple-text: #5e4798;
 
   --primary-button: #d6c0f6;
+  --secundary-button: #82eac7;
   --active-button: #8962c3;
   --hover-button: #aa89df;
   --green-button: #53aa53;
@@ -95,6 +97,7 @@ body.deeppink-theme {
   --lightpurple-text: #997d8b;
 
   --primary-button: #ce8bb0;
+  --secundary-button: #cc04f0;
   --active-button: #89266b;
   --hover-button: #7d114d;
   --green-button: #d74595;

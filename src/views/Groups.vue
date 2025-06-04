@@ -5,13 +5,13 @@
     </header>
 
     <nav class="navigation-bar">
-      <button @click="openAddGroupPopup">➕ Add Group</button>
-      <button @click="toggleInviteMode">📨 Invite Members</button>
-      <button @click="toggleLeaveMode">🗑️ Leave Group</button>
-      <button @click="navigateToInvites" class="invite-bell-btn">
+      <StyledButton type="secundary" @click="openAddGroupPopup">➕ Add Group</StyledButton>
+      <StyledButton type="secundary" @click="toggleInviteMode">📨 Invite Members</StyledButton>
+      <StyledButton type="secundary" @click="toggleLeaveMode">🗑️ Leave Group</StyledButton>
+      <StyledButton type="secundary" @click="navigateToInvites" class="invite-bell-btn">
         <font-awesome-icon :icon="['fas', 'bell']" />
         <span v-if="invites.length > 0" class="invite-badge">{{ invites.length }}</span>
-      </button>
+      </StyledButton>
     </nav>
 
     <div class="group-container">
@@ -44,8 +44,8 @@
         <h3>Invite to: {{ selectedGroup?.name }}</h3>
         <input type="text" v-model="inviteInput" placeholder="Enter User Email" class="input-field" />
         <div class="button-row">
-          <button class="send-btn" @click="sendInvite">Send Invite</button>
-          <button class="cancel-btn" @click="cancelInvite">Cancel</button>
+          <StyledButton type="save" class="send-btn" @click="sendInvite">Send Invite</StyledButton>
+          <StyledButton type="negative" class="cancel-btn" @click="cancelInvite">Cancel</StyledButton>
         </div>
         <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
       </template>
@@ -55,8 +55,8 @@
       <template #default>
         <h3>Wil je {{ selectedGroup?.name }} verlaten?</h3>
         <div class="button-row">
-          <button class="confirm-btn" @click="confirmLeaveGroup">Bevestig</button>
-          <button class="cancel-btn" @click="cancelLeave">Annuleer</button>
+          <StyledButton type="save" @click="confirmLeaveGroup">Bevestig</StyledButton>
+          <StyledButton type="negative" @click="cancelLeave">Annuleer</StyledButton>
         </div>
         <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
       </template>
@@ -80,8 +80,8 @@
         </div>
 
         <div class="button-row">
-          <button class="send-btn" @click="addGroup">Groep Toevoegen</button>
-          <button class="cancel-btn" @click="closeAddGroupPopup">Annuleer</button>
+          <StyledButton type="save" @click="addGroup">Groep Toevoegen</StyledButton>
+          <StyledButton type="negative" @click="closeAddGroupPopup">Annuleer</StyledButton>
         </div>
 
         <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
@@ -115,6 +115,7 @@ import {
   faRocket,
   faBell,
 } from '@fortawesome/free-solid-svg-icons'
+import StyledButton from '@/components/StyledButton.vue'
 
 library.add(
   faUser,
@@ -434,25 +435,6 @@ header {
   width: fit-content;
 }
 
-.navigation-bar button {
-  background: #008cba;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 6px;
-  transition:
-    background 0.3s ease,
-    transform 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
-
-.navigation-bar button:hover {
-  background: #0078a5;
-  transform: scale(1.05);
-}
-
 .group-container {
   display: flex;
   flex-direction: column;
@@ -531,36 +513,6 @@ header {
   background-color: rgba(0, 120, 165, 0.1);
 }
 
-.popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 320px;
-  text-align: center;
-  z-index: 1000;
-}
-
-.popup h3 {
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.popup button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-}
-
 .button-row {
   display: flex;
   justify-content: center;
@@ -582,16 +534,6 @@ header {
   text-align: center;
 }
 
-.send-btn {
-  background-color: #008cba;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.send-btn:hover {
-  background-color: #0078a5;
-}
-
 .confirm-btn {
   background-color: #4caf50;
   color: white;
@@ -600,16 +542,6 @@ header {
 
 .confirm-btn:hover {
   background-color: #45a049;
-}
-
-.cancel-btn {
-  background-color: #f44336;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.cancel-btn:hover {
-  background-color: #d32f2f;
 }
 
 .invite-sent-message {
@@ -725,23 +657,19 @@ header {
 
 .invite-bell-btn {
   position: relative;
-  background: #008cba;
-  color: white;
   border: none;
   padding: 12px 18px;
   border-radius: 6px;
   font-size: 16px;
   cursor: pointer;
-  display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 .invite-bell-btn .invite-badge {
   position: absolute;
   top: 4px;
   right: 8px;
-  background-color: #4caf50;
+  background-color: var(--main-red);
   color: white;
   font-size: 13px;
   font-weight: bold;
@@ -752,7 +680,7 @@ header {
   align-items: center;
   justify-content: center;
   z-index: 1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
 }
 
 .input-field {
