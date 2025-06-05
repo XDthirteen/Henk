@@ -23,6 +23,9 @@
 / 13/01/2025 - Gert-Jan Germeys
 / - Toevoeging : Start CSS
 /
+/ 02/06/2025 - Gert-Jan Germeys
+/ - Change to AboutPage
+/
 / To do:
 / -
 / -
@@ -34,11 +37,17 @@
 #####################################*/
 
 <script setup lang="ts">
+import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
+
 </script>
 
 <template>
   <main>
-    <div class="home-header">This is the HomeView.vue</div>
+    <ModuleTitleContainer>Wie zijn we?</ModuleTitleContainer>
+    <p>Het groepsproject is begonnen in December 2024 door de groep bestaande uit <a href="https://github.com/arnodefillet">Arno</a>, <a href="https://github.com/XDthirteen">Jorn</a>, <a href="https://github.com/Daemszzz">Kevin</a> & <a href="https://github.com/Gert-JanGe">Gert-Jan</a> met een klein beetje <a href="https://github.com/anneleenscholts">Anneleen</a> voor support.</p>
+    <p>Na vershillende ideeën zijn we op Henk uitgekomen, een persoonlijke calender webapp.</p>
+    <p>We hebben op Miro een voorbeeld gemaakt om dan direct in Vue aan het werk te gaan.</p>
+    <p>Dit is het resultaat hier van!</p>
   </main>
 </template>
 
@@ -50,5 +59,21 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+a:link{
+  color: white;
+  text-decoration: none;
+}
+a:active{
+  color: white;
+  text-decoration: none;
+}
+a:visited{
+  color: white;
+  text-decoration: none;
+}
+a:hover{
+  color: deeppink;
 }
 </style>
