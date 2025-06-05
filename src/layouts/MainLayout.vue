@@ -60,7 +60,7 @@ import Hamburgermenu from '@/components/HamburgerMenu.vue';
 
 <template>
   <div class="body">
-    <button @click="toggleTheme">theme</button>
+    <!-- <button @click="toggleTheme">theme</button> -->
     <Hamburgermenu />
     <RouterView />
   </div>
