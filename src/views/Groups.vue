@@ -695,7 +695,7 @@ header {
   box-sizing: border-box;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 460px) {
   .popup {
     width: 95vw;
     padding: 12px;
