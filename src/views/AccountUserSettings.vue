@@ -101,9 +101,9 @@ const saveChangesToBackend = async (): Promise<void> => {
   }
 };
 
-const setLanguage = (lang: string) => {
-  tempValues.value.language = lang;
-};
+// const setLanguage = (lang: string) => {
+//   tempValues.value.language = lang;
+// };
 
 function toggleEdit(field: keyof typeof iconToggler.value) {
   if (!iconToggler.value[field]) {
@@ -152,14 +152,14 @@ function saveUserChanges(): void {
             <p>Firstname</p>
             <p>Lastname</p>
             <p>Email</p>
-            <p>Language</p>
+            <!-- <p>Language</p> -->
           </div>
           <div class="col">
             <p id="userId">{{ savedValues.id }}</p>
             <p id="firstname">{{ savedValues.firstname }}</p>
             <p id="lastname">{{ savedValues.lastname }}</p>
             <p id="email">{{ savedValues.email }}</p>
-            <p id="language">{{ savedValues.language }}</p>
+            <!-- <p id="language">{{ savedValues.language }}</p> -->
           </div>
         </div>
       </div>
@@ -190,7 +190,7 @@ function saveUserChanges(): void {
         <FontAwesomeIconToggler :iconToggler="iconToggler.email" icon1="floppy-disk" icon2="pen-to-square"
           @toggle="toggleEdit('email')" />
       </div>
-      <h2 class="input-title">Language: </h2>
+      <!-- <h2 class="input-title">Language: </h2>
       <div class="field-container">
         <div v-if="!iconToggler.language" class="text-field">{{ tempValues.language }}</div>
         <div v-else class="language-selector">
@@ -203,7 +203,7 @@ function saveUserChanges(): void {
         </div>
         <FontAwesomeIconToggler :iconToggler="iconToggler.language" icon1="floppy-disk" icon2="pen-to-square"
           @toggle="toggleEdit('language')" />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>

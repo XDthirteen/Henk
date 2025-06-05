@@ -69,7 +69,6 @@ import Hamburgermenu from '@/components/HamburgerMenu.vue';
 
 <style scoped>
 .body {
-  /* margin: 8px; */
-  padding-top: 3rem;
+  padding-top: 1rem;
 }
 </style>

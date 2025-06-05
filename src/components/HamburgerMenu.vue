@@ -86,10 +86,10 @@ const logoutAndCloseMenu = () => {
         </div>
         <div class="menu-item" @click="navigate('todo_tasks')">
           <font-awesome-icon class="icons" :icon="['fas', 'list-check']" />
-          <div class="item-text">My Tasks</div>
+          <div class="item-text">Tasks</div>
         </div>
         <div class="menu-item" @click="navigate('jokes')">
-          <font-awesome-icon class="icons" :icon="['fas', 'language']" />
+          <font-awesome-icon class="icons" :icon="['fas', 'face-grin-tongue-wink']" />
           <div class="item-text">Jokes</div>
         </div>
       </div>
@@ -191,6 +191,9 @@ const logoutAndCloseMenu = () => {
   width: 2.5rem;
   border-radius: 100%;
   background: var(--primary-button);
+  border: 3px solid var(--input-border);
+  box-shadow: 0px 0px 8px var(--active-button);
+  ;
   color: var(--main-text);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
