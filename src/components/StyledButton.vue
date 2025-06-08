@@ -32,6 +32,7 @@
 #####################################*/
 
 <script lang="ts" setup>
+<<<<<<< HEAD
 type ButtonType = "default" | "primary" | "negative" | "save";
 type HTMLButtonType = "button" | "submit" | "reset";
 
@@ -46,6 +47,19 @@ const htmlType = props.buttonTypeHTML ?? 'button';
 
 <template>
   <button :type="htmlType" :class="{ 'primary': type === 'primary', 'negative': type === 'negative', 'save': type === 'save' }">
+=======
+type ButtonType = "default" | "primary" | 'secundary' | "negative" | "save";
+defineProps<{ type?: ButtonType }>()
+</script>
+
+<template>
+  <button :class="{
+    'primary': type === 'primary',
+    'secundary': type === 'secundary',
+    'negative': type === 'negative',
+    'save': type === 'save'
+  }">
+>>>>>>> 5c0a98ea8d2f40ca2a2a9ec0bab6b16d9667bb84
     <slot />
   </button>
 </template>
@@ -82,7 +96,19 @@ button:hover {
 .primary:hover {
   background-color: var(--hover-button);
   color: var(--main-text);
-  border: 2px solid var(--primary-button)
+  border: 2px solid var(--hover-button)
+}
+
+.secundary {
+  background-color: var(--secundary-button);
+  color: var(--main-text);
+  border: 2px solid var(--secundary-button);
+}
+
+.secundary:hover {
+  background-color: var(--hover-button);
+  color: var(--main-text);
+  border: 2px solid var(--hover-button)
 }
 
 .negative {
