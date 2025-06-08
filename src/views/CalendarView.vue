@@ -114,10 +114,10 @@ let groupAgenda = 'personal' //group id, changes when changing groups
 
 const groupId = route.query.group_id;
 if (typeof groupId === 'string') {
-  groupAgenda = groupId
+  groupAgenda = groupId;
 }
 else if (Array.isArray(groupId)) {
-  groupAgenda = groupId[0] ?? 'personal'
+  groupAgenda = groupId[0] ?? 'personal';
 };
 
 // TIME SETTINGS FROM USER SETTINGS
@@ -136,7 +136,7 @@ const dateTimeSettings = {
   dayNotation: '2-digit' as NumberNotation,
   monthNotation: 'long' as MonthNotation,
   yearNotation: 'numeric' as NumberNotation,
-}
+};
 
 const { timeZone, dateTimeNotation, hour12Notation, hourNotation, minuteNotation, dayNotation, monthNotation, yearNotation } = dateTimeSettings;
 type NumberNotation = 'numeric' | '2-digit';
@@ -201,8 +201,8 @@ const formatTime = (isoDateTime?: string) => {
 
 const formatDateTime = (isoDateTime?: string) => {
   const dateTime = isoDateTime ?? new Date().toISOString();
-  const formattedDate = formatDate(dateTime)
-  const formattedTime = formatTime(dateTime)
+  const formattedDate = formatDate(dateTime);
+  const formattedTime = formatTime(dateTime);
   return { date: formattedDate, time: formattedTime };
 };
 
@@ -238,7 +238,7 @@ const fetchEventsForMonth = async () => {
           console.error(`${personalEvents.status} ${personalEvents.message}`);
           return;
 	      };
-        console.log("Personal events:", personalEvents)
+        console.log("Personal events:", personalEvents);
         personalEvents.forEach((item: any) => {
           allEvents.push({ ...item, eventType: 'personal'});
         });
@@ -249,8 +249,8 @@ const fetchEventsForMonth = async () => {
           // use error popup component when merged with main
           console.error(`${tasks.status} ${tasks.message}`);
           return;
-        }
-        console.log("Tasks:", tasks)
+        };
+        console.log("Tasks:", tasks);
         tasks.forEach((item: any) => {
           // change dueDate to start and end, re-use event functions
           item.start = item.dueDate;
@@ -267,8 +267,8 @@ const fetchEventsForMonth = async () => {
         // use error popup component when merged with main
         console.error(`${groupEvents.status} ${groupEvents.message}`);
         return;
-      }
-      console.log("Group events:", groupEvents)
+      };
+      console.log("Group events:", groupEvents);
       groupEvents.forEach((item: any) => {
         allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
       });
@@ -297,8 +297,9 @@ const fetchEventsForMonth = async () => {
     }
     catch (error) {
       console.error("Error fetching and processing events:", error);
-    }
-  }
+    };
+  };
+
   // Reload calendarDays
   console.log(events.value)
   calendarDays.value = generateCalendarDays();
@@ -311,9 +312,9 @@ const getEventLinesForDay = (date: string) => {
   let eventLines: string[] = [];
 
   events.value.forEach(event => {
-    const dateDate = new Date(date)
-    const startDate = new Date(event.startDate)
-    const endDate = new Date(event.endDate)
+    const dateDate = new Date(date);
+    const startDate = new Date(event.startDate);
+    const endDate = new Date(event.endDate);
     if (dateDate >= startDate && dateDate <= endDate) {
       const type = event.eventType;
       if (!eventLines.includes(type)) {
@@ -329,7 +330,7 @@ const getEventLinesForDay = (date: string) => {
 const generateCalendarDays = (): CalendarDay[] => {
   const year = currentYear.value;
   const month = currentMonth.value;
-  const today = formatDate()
+  const today = formatDate();
 
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getDate();
   const daysInPrevMonth = new Date(Date.UTC(year, month, 0)).getDate();
@@ -389,21 +390,11 @@ const calculateExpandableDiv = () => {
   });
 };
 
-// Select today on startup
 const selectToday = () => {
   const today = calendarDays.value.find(day => day.isToday);
   if (today) selectDate(today);
 };
 
-// <!-- Wat is dit? - Jorn  -->
-
-// Event button
-// const openEventDialogue = () => {       // Modal visibility
-//     isVisible.value=true
-//   	console.log("Event button clicked!");
-// };
-
-// Go to previous and next month
 const goToPrevMonth = () => {
   currentMonth.value = (currentMonth.value - 1 + 12) % 12;
   if (currentMonth.value === 11) currentYear.value--;
@@ -416,7 +407,6 @@ const goToNextMonth = () => {
   fetchEventsForMonth();
 };
 
-// Select date
 const selectDate = (date: CalendarDay) => {
   console.log(`Clicked on: ${date.date}`);
 
@@ -426,7 +416,7 @@ const selectDate = (date: CalendarDay) => {
     // Check if event in selected date range
     const eventStartDate = new Date(event.startDate);
     const eventEndDate = new Date(event.endDate);
-    const eventDate = new Date(date.date)
+    const eventDate = new Date(date.date);
 
     if (eventDate >= eventStartDate && eventDate <= eventEndDate) {
       eventsForSelectedDate.push(event);
@@ -436,17 +426,16 @@ const selectDate = (date: CalendarDay) => {
     ...date,
     events: eventsForSelectedDate,
   };
-  //console.log("Selected Date Events:", selectedDate.value.events);
 };
 
 const addEvent = () => {
   // TS string because we stringify the object
-  const query: { selectedDate?: string; groupAgenda?: string } = {}
-  if (selectedDate.value) {
-    query.selectedDate = JSON.stringify(selectedDate.value)
+  const query: { selectedDate?: string; group_id?: string } = {}
+  if (selectedDate.value?.date) {
+    query.selectedDate = selectedDate.value.date
   };
   if (groupAgenda) {
-    query.groupAgenda = groupAgenda;
+    query.group_id = groupAgenda;
   };
 
   router.push({
@@ -473,8 +462,8 @@ onMounted(() => {
     <div class="calendar-wrapper">
       <div class="calendar" @touchstart="onTouchStart" @touchend="(event) => {
         const direction = onTouchEnd(event);
-        if (direction === 'right') goToNextMonth();
-        if (direction === 'left') goToPrevMonth();
+        if (direction === 'right') goToPrevMonth();
+        if (direction === 'left') goToNextMonth();
       }">
         <!-- Header -->
         <div class="calendar-header">
@@ -502,11 +491,9 @@ onMounted(() => {
       </div>
 
       <!-- Expandable Div -->
-      <expandableDiv :events="events" :selectedDate="selectedDate" />
+      <expandableDiv :events="events" :selectedDate="selectedDate" :group_id="groupAgenda"/>
 
-      <router-link to="/calendar/events">
-        <StyledButton type="primary" class="add-event-button">Event Button</StyledButton>
-      </router-link>
+      <StyledButton type="primary" class="add-event-button" @click="addEvent">Add event</StyledButton>
     </div>
   </div>
 </template>

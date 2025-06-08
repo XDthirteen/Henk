@@ -20,6 +20,8 @@
 /
 / 22/01/2025 - Arno Defillet
 / - Aanpassing : Huisstijl toevoegen aan de button
+/ 03/06/2025 - Jorn Vierbergen
+/ - Toevoeging: HTML button type 'submit' nodig voor CalendarEventView form.
 /
 / To do:
 / -
@@ -32,17 +34,27 @@
 #####################################*/
 
 <script lang="ts" setup>
-type ButtonType = "default" | "primary" | 'secundary' | "negative" | "save";
-defineProps<{ type?: ButtonType }>()
+type ButtonType = 'default' | 'primary' | 'secundary' | 'negative' | 'save';
+type HTMLButtonType = 'button' | 'submit' | 'reset';
+
+const props = defineProps<{ 
+  type?: ButtonType 
+  buttonTypeHTML?: HTMLButtonType
+  }>()
+  
+const htmlType = props.buttonTypeHTML ?? 'button';
+
 </script>
 
 <template>
-  <button :class="{
-    'primary': type === 'primary',
-    'secundary': type === 'secundary',
-    'negative': type === 'negative',
-    'save': type === 'save'
-  }">
+  <button 
+    :type="htmlType"
+    :class="{
+      'primary': type === 'primary',
+      'secundary': type === 'secundary',
+      'negative': type === 'negative',
+      'save': type === 'save'
+    }">
     <slot />
   </button>
 </template>
@@ -68,7 +80,6 @@ button:hover {
   color: var(--primary-purple);
   cursor: pointer;
 }
-
 
 .primary {
   background-color: var(--primary-button);
