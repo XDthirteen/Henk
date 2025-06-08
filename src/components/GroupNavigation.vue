@@ -26,11 +26,8 @@
 #####################################*/
 
 <script setup lang="ts">
-// EDITED by Jorn
-//import router from '@/router';
 import { useRouter } from 'vue-router'
 const router = useRouter()
-// END
 
 const toggleGroups = () => {
   router.push({ name: 'Groups' })
@@ -58,6 +55,8 @@ const toggleGroups = () => {
   width: 2.5rem;
   border-radius: 100%;
   background: var(--primary-button);
+  border: 3px solid var(--input-border);
+  box-shadow: 0px 0px 8px var(--active-button);
   color: var(--main-text);
   cursor: pointer;
   transition: background 0.3s ease-in-out;
