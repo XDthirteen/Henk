@@ -23,6 +23,8 @@
 / - Added default config for HENK api
 / 28/05/2025 - Jorn Vierbergen
 / - Added error handeling with messages and status
+/ 08/06/2025 - Jorn Vierbergen
+/ - Changed data object to optional parameter in postData and putData
 /
 / To do:
 /
@@ -162,20 +164,20 @@ export const apiService = () => {
 		}
 	}
 
-	const postData = async (apiPath: string, data: string, config?: AxiosRequestConfig) => {
+	const postData = async (apiPath: string, data?: object, config?: AxiosRequestConfig) => {
 		console.log('API CALL POST')
 		try {
-			const response = await axios.post(apiPath, data, setConfig(apiPath, config))
+			const response = await axios.post(apiPath, data ?? undefined, setConfig(apiPath, config))
 			return response.data
 		} catch (error) {
 			return apiHandleError(error)
 		}
 	}
 
-	const putData = async (apiPath: string, data: string, config?: AxiosRequestConfig) => {
+	const putData = async (apiPath: string, data?: object, config?: AxiosRequestConfig) => {
 		console.log('API CALL PUT')
 		try {
-			const response = await axios.put(apiPath, data, setConfig(apiPath, config))
+			const response = await axios.put(apiPath, data ?? undefined, setConfig(apiPath, config))
 			return response.data
 		} catch (error) {
 			return apiHandleError(error)
