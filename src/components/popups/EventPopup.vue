@@ -38,7 +38,10 @@ import type { CalendarEvent } from "@/components/models";
 const { deleteData } = apiService();
 const router = useRouter();
 
-const props = defineProps<{ event: CalendarEvent }>();
+const props = defineProps<{ 
+  event: CalendarEvent;
+  group_id: string;
+}>();
 const emit = defineEmits(['close']);
 
 const showConfirmPopup = ref(false);
@@ -50,14 +53,22 @@ const errorStatus = ref<string | number | null>(null);
 // return to view to create event, but pre fill the doc + set to edit instead of create
 const editEvent = () => {
   if (!props.event) return;
-
-  const eventDataString = JSON.stringify(props.event);
+  
+  const query = {
+      id: String(props.event.id),
+      title: props.event.title,
+      description: props.event.description,
+      groupId: props.event.groupId,
+      start: props.event.startDate,
+      end: props.event.endDate,
+      startTime: props.event.startTime,
+      endTime: props.event.endTime,
+      group_id : props.group_id,
+    };
 
   router.push({
     name: 'calenderEvents',
-    query: {
-      eventData: eventDataString,
-    },
+    query: query,
   });
 };
 
@@ -113,10 +124,8 @@ const viewCalendar = () => {
 
   <!-- Confirm Delete -->
   <ConfirmPopup v-if="showConfirmPopup "@confirmed="handleConfirmation">
-    <div class="popup-wrapper">
-      <p>Are you sure you want to delete the event:</p>
-      <p class="event-group">{{ event.title }}</p>
-    </div>
+    <p>Are you sure you want to delete the event:</p>
+    <p class="event-group">{{ event.title }}</p>
   </ConfirmPopup>
 
   <!-- Event Deleted Message -->
@@ -130,18 +139,11 @@ const viewCalendar = () => {
     <p v-if="errorStatus !== null">Status: {{ errorStatus }}</p>
     <p>Message: {{ errorMessage }}</p>
   </MessagePopup>
-  
 </template>
 
 <style scoped>
-.popup-wrapper {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 0 10px;
-}
-
 .event-popup {
+  width: 360px;
   height: 400px;
   display: flex;
   flex-direction: column;
@@ -187,7 +189,11 @@ const viewCalendar = () => {
 }
 
 /* Cancel button full width and center on small screens */
-@media (max-width: 390px) {
+@media (max-width: 400px) {
+  .event-popup {
+    width: 100%;
+  }
+
   .btn-container {
     flex-direction: row;
   }

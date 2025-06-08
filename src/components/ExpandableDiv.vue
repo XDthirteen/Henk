@@ -43,6 +43,7 @@ const showEventPopup = ref(false);
 const props = defineProps<{
   events: CalendarEvent[];
   selectedDate: CalendarDay | null;
+  group_id: string;
 }>();
 
 // Expandable div toggle
@@ -110,7 +111,7 @@ const closeEventPopup = (): void => {
     </div>
   </div>
 
-  <EventPopup v-if="selectedEvent" :event="selectedEvent" @close="closeEventPopup"/>
+  <EventPopup v-if="selectedEvent" :event="selectedEvent" :group_id="group_id" @close="closeEventPopup"/>
 </template>
 
 <style scoped>
