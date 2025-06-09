@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { getWeather, getForecast } from '@/services/weather.service';
 import type { WeatherData, ForecastData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from "@/components/StyledInputByType.vue";
 import ModuleTitleContainer from "@/components/ModuleTitleContainer.vue"
 import ErrorMessage from "@/components/ErrorMessage.vue"
+import { userSettings } from '@/services/userSettings.service';
 
+const { getUserParam } = userSettings();
 
 const city = ref<string>('');
+
+onMounted(async () => {
+  const param = await getUserParam()
+  if (param?.city) {
+    city.value = param.city
+    fetchWeatherData()
+  }
+})
+
 const weather = ref<WeatherData | null>(null);
 const forecast = ref<ForecastData[]>([]);
 const errorMessage = ref<string | null>(null);
