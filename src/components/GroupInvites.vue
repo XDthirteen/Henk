@@ -32,12 +32,18 @@
       </div>
     </div>
   </div>
+  <ErrorPopup
+  v-if="showErrorPopup"
+  :errorExplanation="errorExplanation"
+  :errorStatus="errorStatus"
+  :errorMessage="errorMessage"
+  @close="showErrorPopup = false"
+/>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 import type { Group } from '@/components/models.ts'
 import { useAuth } from '@/services/auth.service'
 
@@ -55,6 +61,15 @@ import {
   faRocket,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+import { apiService, isApiError } from '@/services/api.service'
+import ErrorPopup from '@/components/popups/ErrorPopup.vue';
+const { getData, postData } = apiService()
+
+const showErrorPopup = ref(false);
+const errorMessage = ref<string>('');
+const errorStatus = ref<number | null>(null);
+const errorExplanation = ref<string>('');
 
 library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
 
@@ -89,64 +104,6 @@ const openPopup = (group: Group) => {
 
 const acceptInvite = async () => {
   if (selectedGroup.value) {
-    try {
-      const { getAuthToken } = useAuth()
-      const token = getAuthToken()
-
-      if (!token) {
-        throw new Error('No authentication token found.')
-      }
-
-      await axios.post(
-        `/api/invitations/${selectedGroup.value.id}/accept`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
-      selectedGroup.value = null
-    } catch (error) {
-      console.error('Error accepting invite:', error)
-      alert('Failed to accept invite.')
-    }
-  }
-}
-
-const declineInvite = async () => {
-  if (selectedGroup.value) {
-    try {
-      const { getAuthToken } = useAuth()
-      const token = getAuthToken()
-
-      if (!token) {
-        throw new Error('No authentication token found.')
-      }
-
-      await axios.post(
-        `/api/invitations/${selectedGroup.value.id}/reject`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
-      selectedGroup.value = null
-    } catch (error) {
-      console.error('Error declining invite:', error)
-      alert('Failed to decline invite.')
-    }
-  }
-}
-
-const fetchInvites = async () => {
-  try {
     const { getAuthToken } = useAuth()
     const token = getAuthToken()
 
@@ -154,13 +111,64 @@ const fetchInvites = async () => {
       throw new Error('No authentication token found.')
     }
 
-    const response = await axios.get('/api/invitations', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const data = await postData(`/api/invitations/${selectedGroup.value.id}/accept`);
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to accept invitation.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+    }
+    else {
+      invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
+      selectedGroup.value = null
+    };
+  }
+}
 
-    console.log('API /api/invitations response:', response.data)
+const declineInvite = async () => {
+  if (selectedGroup.value) {
+    const { getAuthToken } = useAuth()
+    const token = getAuthToken()
+
+    if (!token) {
+      throw new Error('No authentication token found.')
+    }
+    
+    const data = await postData(`/api/invitations/${selectedGroup.value.id}/reject`);
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to reject invitation.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+    }
+    else {
+      invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
+      selectedGroup.value = null
+    };
+  }
+}
+
+const fetchInvites = async () => {
+  const { getAuthToken } = useAuth()
+  const token = getAuthToken()
+
+  if (!token) {
+    throw new Error('No authentication token found.')
+  }
+
+const data = await getData('/api/invitations');
+  if (isApiError(data)) {
+    errorStatus.value = data.status;
+    errorMessage.value = data.message;
+    errorExplanation.value = 'Unable to refresh invitations.'; // 'Failed to fetch invitations. Please make sure you are logged in.'
+    showErrorPopup.value = true;
+    if (errorStatus.value === 401) router.push({name: 'login'});
+    return;
+  }
+  else {
+    console.log('API /api/invitations response:', data)
 
     interface InviteApiResponse {
       id: number
@@ -171,23 +179,20 @@ const fetchInvites = async () => {
       }
     }
 
-    invites.value = (response.data as InviteApiResponse[]).map((invite) => {
+    invites.value = (data as InviteApiResponse[]).map((invite) => {
       const group = invite.invitedFor
       const isValidIcon = group && iconList.includes(group.image ?? '')
       return {
         id: invite.id,
         groupId: group?.id,
-        name: group?.name ?? 'Onbekende groep',
+        name: group?.name ?? 'Unknown group',
         icon: isValidIcon ? (group?.image as string) : '',
         tasks: [],
         image: !isValidIcon ? group?.image : undefined,
         defaultGroup: false,
       }
     })
-  } catch (error) {
-    console.error('Error fetching invitations:', error)
-    alert('Failed to fetch invitations. Please make sure you are logged in.')
-  }
+  };
 }
 
 onMounted(() => {
