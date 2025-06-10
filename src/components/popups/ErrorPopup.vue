@@ -1,21 +1,20 @@
 /*#####################################
 /
-/ # MessagePopup.vue
+/ # ErrorPopup.vue
 / # ==================
 / # Description:
 / # ------------
-/ # Default popup to display a message.
+/ # Default popup to display errors.
 / # Emits 'close' to parent file upon clicking 'ok', clicking outside the popup or when closing the popup.
 /
 / # Author: Jorn Vierbergen
-/ # Creation date: 30/05/2025
+/ # Creation date: 08/06/2025
 /
 #################
 /
 / Changelog:
 / ----------
-/ 02/06/2025 - Jorn Vierbergen
-/ - Edited: Same size buttons 
+/
 / 
 / To do:
 / 
@@ -27,6 +26,13 @@
 <script setup lang="ts">
 import PopUpComponent from '@/components/PopUpComponent.vue';
 import StyledButton from '@/components/StyledButton.vue';
+import ErrorMessage from '@/components/ErrorMessage.vue';
+
+defineProps<{
+  errorExplanation?: string;
+  errorStatus?: number | null;
+  errorMessage?: string;
+}>();
 
 const emit = defineEmits(['close']);
 
@@ -37,12 +43,17 @@ function closePopup() {
 
 <template>
   <PopUpComponent @close="closePopup">
+    <ErrorMessage>
     <div class="popup">
-      <slot />
+      <p v-if="errorExplanation">{{ errorExplanation }}</p>
+      <p v-if="errorStatus !== null">Status: {{ errorStatus }}</p>
+      <p v-if="errorMessage">Error: {{ errorMessage }}</p>
+
       <div class="btn-container">
         <StyledButton @click="closePopup" type="primary">ok</StyledButton>
       </div>
     </div>
+    </ErrorMessage>
   </PopUpComponent>
 </template>
 

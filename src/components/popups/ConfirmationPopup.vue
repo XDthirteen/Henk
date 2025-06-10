@@ -25,7 +25,7 @@
 #####################################*/
 <script setup lang="ts">
 import PopUpComponent from '@/components/PopUpComponent.vue';
-import StyledButton from "@/components/StyledButton.vue";
+import StyledButton from '@/components/StyledButton.vue';
 
 const emit = defineEmits(['confirmed']);
 
@@ -40,7 +40,7 @@ function confirm() {
 
 <template>
   <PopUpComponent @close="closePopup">
-    <div class="confirm-popup">
+    <div class="popup">
       <slot/>
       <div class="btn-container">
         <StyledButton @click="confirm" type="primary">Confirm</StyledButton>
@@ -51,7 +51,7 @@ function confirm() {
 </template>
 
 <style scoped>
-.confirm-popup {
+.popup {
   margin-top: 1rem;
   text-align: center;
   display: flex;
