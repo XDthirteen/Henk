@@ -16,8 +16,6 @@
 / 02/06/2025 - Jorn Vierbergen
 / - Edited: Same size buttons, and move cancel button on small screen
 / - Edited: House style colors
-/ 10/06/2025 - Jorn Vierbergen
-/ - Added: Different buttons for Task popup
 /
 / To do:
 /
@@ -102,10 +100,6 @@ const viewCalendar = () => {
   emit('close')
 };
 
-function goToTasks() {
-  router.push({ name: 'todo_tasks' });
-}
-
 </script>
 
 <template>
@@ -114,19 +108,13 @@ function goToTasks() {
       <div class="event-title">{{ event.title }}</div>
       <div class="event-group">{{ event.displayName }}</div>
       <div class="event-date">{{ event.startDate }} {{ event.startTime }}</div>
-      <div v-if="event.eventType !== 'task'" class="event-date">{{ event.endDate }} {{ event.endTime }}</div>
+      <div class="event-date">{{ event.endDate }} {{ event.endTime }}</div>
 
       <div class="event-description">
         <div>{{ event.description }}</div>
       </div>
 
-      <!-- If event is a task in disguise -->
-      <div v-if="event.eventType === 'task'" class="btn-container task">
-        <StyledButton @click="goToTasks" type="primary">View Tasks</StyledButton>
-        <StyledButton @click="emit('close')" type="primary">Cancel</StyledButton>
-      </div>
-
-      <div v-else class="btn-container event">
+      <div class="btn-container">
         <StyledButton @click="editEvent" type="save">Edit</StyledButton>
         <StyledButton @click="emit('close')" type="primary">Cancel</StyledButton>
         <StyledButton @click="showConfirmPopup = true" type="negative">Delete</StyledButton>
@@ -166,11 +154,11 @@ function goToTasks() {
 
 .event-title {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .event-group {
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .event-date {
@@ -210,7 +198,7 @@ function goToTasks() {
     flex-direction: row;
   }
 
-   .event > :nth-child(2) { /* Cancel button */
+  .btn-container > :nth-child(2) { /* Cancel button */
     flex-basis: 100%;
     max-width: none;
     order: 3;
