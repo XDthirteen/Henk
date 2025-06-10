@@ -16,6 +16,8 @@
 / 02/06/2025 - Jorn Vierbergen
 / - Edited: Same size buttons, and move cancel button on small screen
 / - Edited: House style colors
+/ 10/06/2025 - Jorn Vierbergen
+/ - Added: Different buttons for Task popup
 /
 / To do:
 /

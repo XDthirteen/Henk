@@ -19,6 +19,8 @@
 / - Edited: selected date with props data exchange
 / 23/05/2025 - Jorn Vierbergen
 / - Edited: Display name of group instead of ID
+/ 10/06/2025 - Jorn Vierbergen
+/ - Edited: CSS last changes.
 /
 / To do:
 /

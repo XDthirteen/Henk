@@ -61,6 +61,9 @@
 / - Added: Pass selected day data to CalendarEventView.vue for creating event
 / 02/06/2025 - Jorn Vierbergen
 / - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
+/ 10/06/2025 - Jorn Vierbergen
+/ - Added: Show group name on top of Calendar
+/ - Changed: CSS last time before sending code for review. Hi there :D
 / 
 / To do:
 / - Selecting event in expandable div opens event description.
