@@ -37,8 +37,6 @@ import axios, { AxiosError } from 'axios';
 import type { UserData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
-import ErrorMessage from '@/components/ErrorMessage.vue';
-import SuccesMessage from '@/components/SuccesMessage.vue';
 
 const router = useRouter();
 
@@ -92,12 +90,9 @@ const registerUser = async (user: UserData): Promise<string> => {
 }
 
 const createUser = async () => {
-  // Reset foutmeldingen
-  correctRegisterPasswords.value = undefined;
-  doubleUsernameOrEmail.value = undefined;
-
   if (userData.password !== confirmPassword.value) {
     correctRegisterPasswords.value = false;
+    alert("Passwords do not match.");
   } else {
     try {
       await registerUser(userData);
@@ -106,7 +101,7 @@ const createUser = async () => {
         router.push({ name: 'login' });
       }, 3000);
     } catch (error) {
-      console.log("Error in createUser. " + error);
+      console.log("Error in createUser. " + error)
     }
   }
 }
@@ -149,9 +144,8 @@ const createUser = async () => {
     </div> -->
   </form>
   <StyledButton :type="buttonType" @click="createUser()">Create account</StyledButton>
-  <SuccesMessage class="succes-message" v-if="correctRegisterPasswords">User succesfull created</SuccesMessage>
-  <ErrorMessage v-if="doubleUsernameOrEmail">Username or emailadres already registered.</ErrorMessage>
-  <ErrorMessage v-if="correctRegisterPasswords === false">Passwords do not match</ErrorMessage>
+  <div v-if="correctRegisterPasswords">User succesfull created</div>
+  <div v-if="doubleUsernameOrEmail">Username or emailadres already registered.</div>
 </template>
 
 <style scoped>
