@@ -1,38 +1,15 @@
-/ 24/05/2025 - Jorn Vierbergen
-/ - Changed: Return to last open group calendar after sending form
-/ 02/06/2025 - Jorn Vierbergen
-/ - Added: Prefill partial form with selected date on adding a event
-/ 24/06/2025 - Jorn Vierbergen
-/ - Added: UTC time for api
-/ - Added: Prefill full form with data to edit event
-/ - Added: Edit event function
-/ - Changed: API calls use api.service
-/ - Changed: Use of MessagePopup component instead of alert()
-/
 // NTH: When returning to calendar return to same month that was open
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { fetchGroups } from '@/services/groupservices';
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { createEvent } from '@/services/eventService'
+import { fetchGroups } from '@/services/groupservices'
 import StyledButton from '@/components/StyledButton.vue';
-import { apiService, isApiError } from '@/services/api.service';
-import ErrorPopup from '@/components/popups/ErrorPopup.vue';
-import MessagePopup from '@/components/popups/MessagePopup.vue';
-
-const { postData, putData } = apiService();
-
-const showMessagePopup = ref(false);
-const popupMessage = ref<string>('');
-
-const showErrorPopup = ref(false);
-const errorMessage = ref<string>('');
-const errorStatus = ref<number | null>(null);
-const errorExplanation = ref<string>('');
 
 const route = useRoute();
 const groups = ref<Group[]>([]);
-const isEdit = ref(false);
+const isEdit = ref(false)
 
 const toUTCISOString = (dateStr: string, timeStr: string): string => {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -117,6 +94,7 @@ const event = ref<EventFormData>({
   allDay: false,
 })
 
+
 onMounted(async () => {
   try {
     groups.value = await fetchGroups();
@@ -140,6 +118,7 @@ const returnToCalendar = () => {
 };
 
 const submitEvent = async () => {
+  try {
     const eventToSend = {
       title: event.value.title,
       groupId: event.value.groupId,
@@ -149,36 +128,18 @@ const submitEvent = async () => {
     };
 
     if (isEdit.value){
-      const data = await putData(`/api/events/${route.query.id}`, eventToSend);
-      if (isApiError(data)) {
-        errorStatus.value = data.status;
-        errorMessage.value = data.message;
-        errorExplanation.value = 'Unable to edit event.';
-        showErrorPopup.value = true;
-        if (errorStatus.value === 401) router.push({name: 'login'});
-        return;
-      }
-      else {
-        showMessagePopup.value = true;
-        popupMessage.value = 'Event edited';
-      };
+      console.log("EDIT MODE"); // add api call in branch api-service-refactor
     }
-
     else {
-      const data = await postData('/api/events', eventToSend);
-      if (isApiError(data)) {
-        errorStatus.value = data.status;
-        errorMessage.value = data.message;
-        errorExplanation.value = 'Unable to add event.';
-        showErrorPopup.value = true;
-        if (errorStatus.value === 401) router.push({name: 'login'});
-        return;
-      }
-      else {
-        showMessagePopup.value = true;
-        popupMessage.value = 'Event added';
-      };
+      await createEvent(eventToSend);
     };
+
+    alert('Event added');
+    returnToCalendar();
+  } catch (error) {
+    console.error('Failed to create event:', error);
+    alert('Failed to create event');
+  };
 };
 </script>
 
@@ -240,16 +201,6 @@ const submitEvent = async () => {
       </form>
     </div>
   </div>
-  <MessagePopup v-if="showMessagePopup" @close="returnToCalendar">
-    <p>{{ popupMessage }}</p>
-  </MessagePopup>
-  <ErrorPopup
-    v-if="showErrorPopup"
-    :errorExplanation="errorExplanation"
-    :errorStatus="errorStatus"
-    :errorMessage="errorMessage"
-    @close="showErrorPopup = false"
-  />
 </template>
 
 <style scoped>

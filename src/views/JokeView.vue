@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { apiService, isApiError } from '@/services/api.service';
-import ErrorPopup from '@/components/popups/ErrorPopup.vue';
+import { apiService, isApiError } from '@/services/api.service'
 import StyledButton from '@/components/StyledButton.vue';
 import { onMounted, ref } from 'vue';
 import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
-
-const showErrorPopup = ref(false);
-const errorMessage = ref<string>('');
-const errorStatus = ref<number | null>(null);
-const errorExplanation = ref<string>('');
 
 const getJoke = ref('')
 const loading = ref(false)
@@ -24,18 +18,21 @@ const fetchJoke = async () => {
   });
 
   if (isApiError(data)) {
-    errorStatus.value = data.status;
-    errorMessage.value = data.message;
-    errorExplanation.value = 'Unable to get a joke.';
-    showErrorPopup.value = true;
+    // if an error occures, you get the error status (null if no status) (status is number eg: 400, 402, 404 etc)
+    // a generic message comes for every error (message is always string)
+    // if you want a specific message to show the user per action, per status you can overwrite the message (eg: at login status 400 means wrong username or password)
+
+    // use error popup component when finished
+    console.error(`${data.status} ${data.message}`);
     return;
   };
 
   getJoke.value = data.joke;
 };
+onMounted(fetchJoke)
 
-onMounted(fetchJoke);
 </script>
+
 
 <template>
   <ModuleTitleContainer>Dad Joke</ModuleTitleContainer>
@@ -47,14 +44,6 @@ onMounted(fetchJoke);
     </div>
     <StyledButton type="primary" @click="fetchJoke">New Joke</StyledButton>
   </div>
-
-  <ErrorPopup
-    v-if="showErrorPopup"
-    :errorExplanation="errorExplanation"
-    :errorStatus="errorStatus"
-    :errorMessage="errorMessage"
-    @close="showErrorPopup = false"
-  />
 </template>
 
 <style scoped>

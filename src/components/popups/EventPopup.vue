@@ -28,13 +28,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { apiService, isApiError } from '@/services/api.service';
-import StyledButton from '@/components/StyledButton.vue';
-import PopUpComponent from '@/components/PopUpComponent.vue';
-import ConfirmPopup from '@/components/popups/ConfirmationPopup.vue';
-import MessagePopup from '@/components/popups/MessagePopup.vue';
-import ErrorPopup from '@/components/popups/ErrorPopup.vue';
-import type { CalendarEvent } from '@/components/models';
+import { apiService, isApiError } from "@/services/api.service";
+import StyledButton from "@/components/StyledButton.vue";
+import PopUpComponent from "@/components/PopUpComponent.vue";
+import ConfirmPopup from "@/components/popups/ConfirmationPopup.vue";
+import MessagePopup from "@/components/popups/MessagePopup.vue";
+import type { CalendarEvent } from "@/components/models";
 
 const { deleteData } = apiService();
 const router = useRouter();
@@ -47,11 +46,9 @@ const emit = defineEmits(['close']);
 
 const showConfirmPopup = ref(false);
 const showMessagePopup = ref(false);
-
 const showErrorPopup = ref(false);
 const errorMessage = ref<string>('');
-const errorStatus = ref<number | null>(null);
-const errorExplanation = ref<string>('');
+const errorStatus = ref<string | number | null>(null);
 
 // return to view to create event, but pre fill the doc + set to edit instead of create
 const editEvent = () => {
@@ -78,13 +75,14 @@ const editEvent = () => {
 const deleteEvent = async () => {
   const data = await deleteData(`/api/events/${props.event.id}`);
   if (isApiError(data)) {
-    errorStatus.value = data.status;
+    // if an error occures you can set a specific error message/popup per error.status for the user here
+    // use error popup component when merged with main
+		console.error(`${data.status} ${data.message}`);
+    errorStatus.value = data.status
     errorMessage.value = data.message;
-    errorExplanation.value = 'Unable to delete event.';
     showErrorPopup.value = true;
-    if (errorStatus.value === 401) router.push({name: 'login'});
 		return;
-	};
+	}
 
   showConfirmPopup.value = false;
   showMessagePopup.value = true;
@@ -99,8 +97,9 @@ const viewCalendar = () => {
   const query = { ...router.currentRoute.value.query };
   query.reload = Date.now().toString(); // Always unique to refresh
   router.push({ name: 'calendar', query: query });
-  emit('close');
+  emit('close')
 };
+
 </script>
 
 <template>
@@ -134,14 +133,12 @@ const viewCalendar = () => {
     <p>Event deleted</p>
   </MessagePopup>
 
-  <!-- Error Message -->
-  <ErrorPopup
-  v-if="showErrorPopup"
-  :errorExplanation="errorExplanation"
-  :errorStatus="errorStatus"
-  :errorMessage="errorMessage"
-  @close="showErrorPopup = false"
-/>
+    <!-- Error Message -->
+  <MessagePopup v-if="showErrorPopup" @close="emit('close')">
+    <p>Unable to delete event.</p>
+    <p v-if="errorStatus !== null">Status: {{ errorStatus }}</p>
+    <p>Message: {{ errorMessage }}</p>
+  </MessagePopup>
 </template>
 
 <style scoped>
