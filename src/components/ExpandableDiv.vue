@@ -102,7 +102,7 @@ const closeEventPopup = (): void => {
           <!-- Event circle and time -->
           <div class="event-details">
             <div class="event-circle" :class="event.eventType"></div>
-            <span>{{ event.startTime }} - {{ event.endTime }} {{ event.displayName }} {{ event.title }}</span>
+            <span>{{ event.startTime }} - {{ event.endTime }} <span class = "display-group-name">{{ event.displayName }}</span> {{ event.title }}</span>
           </div>
         </li>
       </ul>
@@ -202,7 +202,7 @@ button {
 }
 
 .event-circle {
-  width: 12px;
+  min-width: 12px;
   height: 12px;
   border-radius: 50%;
   margin-right: 10px;
@@ -237,5 +237,9 @@ button {
 .event-time {
   display: flex;
   flex-direction: column;
+}
+
+.display-group-name {
+  font-weight: bold;
 }
 </style>
