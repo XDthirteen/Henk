@@ -26,18 +26,18 @@
 #####################################*/
 <script setup lang="ts">
 import PopUpComponent from '@/components/PopUpComponent.vue';
-import StyledButton from '@/components/StyledButton.vue';
+import StyledButton from "@/components/StyledButton.vue";
 
 const emit = defineEmits(['close']);
 
 function closePopup() {
   emit('close');
-};
+}
 </script>
 
 <template>
   <PopUpComponent @close="closePopup">
-    <div class="popup">
+    <div class="message-popup">
       <slot />
       <div class="btn-container">
         <StyledButton @click="closePopup" type="primary">ok</StyledButton>
@@ -47,7 +47,7 @@ function closePopup() {
 </template>
 
 <style scoped>
-.popup {
+.message-popup {
   margin-top: 1rem;
   text-align: center;
 }

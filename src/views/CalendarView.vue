@@ -61,15 +61,13 @@
 / - Added: Pass selected day data to CalendarEventView.vue for creating event
 / 02/06/2025 - Jorn Vierbergen
 / - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
-/ 08/06/2025 - Jorn Vierbergen
-/ - Added: Error handeling from api show in a popup
 / 
 / To do:
-/ - Error popup can only display 1 error at the time last error overwrites previous.
+/ - Selecting event in expandable div opens event description.
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 / 
-/ Optimalization calendar:
+/ - Optimalization calendar:
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
@@ -80,10 +78,11 @@ the div while navigating
 / - NTH Change month to specified month. Click on month, drop down menu
 / - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
-/ Optimalization and NTH HENK: Helpful Event Note Keeper:
+/ - Optimalization and NTH HENK: Helpful Event Note Keeper:
 / - Create 1 general service file for api calls for the same backend
 / - Create 1 general service file for error handeling
 / - Refactor every await and loop as in file optimal.js
+/ - Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
 / 
 / Comments:
 / ------------
@@ -92,20 +91,17 @@ the div while navigating
 #####################################*/
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { apiService, isApiError } from '@/services/api.service'
-import expandableDiv from '@/components/ExpandableDiv.vue';
+import { ref, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { apiService, isApiError } from "@/services/api.service";
+import expandableDiv from "@/components/ExpandableDiv.vue";
 import { swipe } from '@/utils/swipeDetection';
-import GroupNavigation from '@/components/GroupNavigation.vue';
-import type { CalendarDay, CalendarEvent } from '@/components/models';
+// <!-- Wat is dit? - Jorn  -->
+import { faColonSign } from "@fortawesome/free-solid-svg-icons";
+import GroupNavigation from "@/components/GroupNavigation.vue";
+import type { CalendarDay, CalendarEvent } from "@/components/models";
 import StyledButton from '@/components/StyledButton.vue';
-import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 
-const showErrorPopup = ref(false);
-const errorMessage = ref<string>('');
-const errorStatus = ref<number | null>(null);
-const errorExplanation = ref<string>('');
 
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = apiService();
@@ -210,6 +206,12 @@ const formatDateTime = (isoDateTime?: string) => {
   return { date: formattedDate, time: formattedTime };
 };
 
+const getApiUTC = async () => {
+  const response = await fetch("http://worldtimeapi.org/api/timezone/Etc/UTC");
+  const data = await response.json();
+  return new Date(data.utc_datetime);
+};
+
 // Fetch events selected month
 const fetchEventsForMonth = async () => {
   const year = currentYear.value;
@@ -224,56 +226,52 @@ const fetchEventsForMonth = async () => {
     // Duplicate data also in caching...
     const fromDate = new Date(Date.UTC(year, month - 1, 1)).toISOString().split("T")[0];
     const toDate = new Date(Date.UTC(year, month + 2, 0)).toISOString().split("T")[0];
+    //console.log('from', fromDate, 'to', toDate);
+
     try {
       const allEvents: any[] = [];
       if(groupAgenda == 'personal'){
         const personalEvents = await getData(`/api/events/personal?from=${fromDate}&to=${toDate}`);
         if (isApiError(personalEvents)) {
-          errorStatus.value = personalEvents.status;
-          errorMessage.value = personalEvents.message;
-          errorExplanation.value = 'Unable to load personal events.';
-          showErrorPopup.value = true;
-          if (errorStatus.value === 401) router.push({name: 'login'});
-        }
-        else {
-          personalEvents.forEach((item: any) => {
-            allEvents.push({ ...item, eventType: 'personal'});
-          });
-        }
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${personalEvents.status} ${personalEvents.message}`);
+          return;
+	      };
+        console.log("Personal events:", personalEvents);
+        personalEvents.forEach((item: any) => {
+          allEvents.push({ ...item, eventType: 'personal'});
+        });
 
         const tasks = await getData(`/api/tasks?completed=false`);
         if (isApiError(tasks)) {
-          errorStatus.value = tasks.status;
-          errorMessage.value = tasks.message;
-          errorExplanation.value = 'Unable to load tasks.';
-          showErrorPopup.value = true;
-          if (errorStatus.value === 401) router.push({name: 'login'});
-        }
-        else {
-          tasks.forEach((item: any) => {
-            // change dueDate to start and end, re-use event functions
-            item.start = item.dueDate;
-            item.end = item.dueDate;
-            allEvents.push({ ...item, eventType: 'task', displayName: 'Task' });
-          });
+          // if an error occures you can set a specific error message/popup per error.status for the user here
+          // use error popup component when merged with main
+          console.error(`${tasks.status} ${tasks.message}`);
+          return;
         };
+        console.log("Tasks:", tasks);
+        tasks.forEach((item: any) => {
+          // change dueDate to start and end, re-use event functions
+          item.start = item.dueDate;
+          item.end = item.dueDate;
+          allEvents.push({ ...item, eventType: 'task', displayName: 'Task' });
+        });
       };
 
       // get all group events when checking personal agenda
       const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}&` : ``;
       const groupEvents = await getData(`/api/events?${group}from=${fromDate}&to=${toDate}`);
       if (isApiError(groupEvents)) {
-          errorStatus.value = groupEvents.status;
-          errorMessage.value = groupEvents.message;
-          errorExplanation.value = 'Unable to load group events.';
-          showErrorPopup.value = true;
-          if (errorStatus.value === 401) router.push({name: 'login'});
-      }
-      else {
-        groupEvents.forEach((item: any) => {
-          allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
-        });
+        // if an error occures you can set a specific error message/popup per error.status for the user here
+        // use error popup component when merged with main
+        console.error(`${groupEvents.status} ${groupEvents.message}`);
+        return;
       };
+      console.log("Group events:", groupEvents);
+      groupEvents.forEach((item: any) => {
+        allEvents.push({ ...item, eventType: 'group', displayName: `${item.Group.name}` });
+      });
 
       const convertedEvents: any[] = [];
 
@@ -498,13 +496,6 @@ onMounted(() => {
       <StyledButton type="primary" class="add-event-button" @click="addEvent">Add event</StyledButton>
     </div>
   </div>
-  <ErrorPopup
-  v-if="showErrorPopup"
-  :errorExplanation="errorExplanation"
-  :errorStatus="errorStatus"
-  :errorMessage="errorMessage"
-  @close="showErrorPopup = false"
-  />
 </template>
 
 <style scoped>
