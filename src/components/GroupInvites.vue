@@ -6,7 +6,7 @@
     </header>
 
     <div v-if="invites.length === 0">
-      <p>No invites available.</p>
+      <p class="no-invites">No invites available.</p>
     </div>
 
     <div v-else class="group-items-container">
@@ -18,27 +18,22 @@
       </div>
     </div>
 
-    <div v-if="selectedGroup" class="popup-overlay">
-      <div class="popup">
+    <PopUpComponent v-if="selectedGroup" @close="selectedGroup = null">
+      <div>
         <h2>Group Invitation</h2>
         <font-awesome-icon v-if="isValidIcon(selectedGroup.icon)" :icon="['fas', selectedGroup.icon]"
           class="popup-icon" />
         <img v-else :src="defaultIcon" alt="Default Group Icon" class="popup-icon" />
         <p>{{ selectedGroup.name }}</p>
         <div class="popup-buttons">
-          <button class="accept-btn" @click="acceptInvite">Accept</button>
-          <button class="decline-btn" @click="declineInvite">Decline</button>
+          <StyledButton type="save" class="accept-btn" @click="acceptInvite">Accept</StyledButton>
+          <StyledButton type="negative" class="decline-btn" @click="declineInvite">Decline</StyledButton>
         </div>
       </div>
-    </div>
+    </PopUpComponent>
   </div>
-  <ErrorPopup
-  v-if="showErrorPopup"
-  :errorExplanation="errorExplanation"
-  :errorStatus="errorStatus"
-  :errorMessage="errorMessage"
-  @close="showErrorPopup = false"
-/>
+  <ErrorPopup v-if="showErrorPopup" :errorExplanation="errorExplanation" :errorStatus="errorStatus"
+    :errorMessage="errorMessage" @close="showErrorPopup = false" />
 </template>
 
 <script setup lang="ts">
@@ -64,6 +59,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { apiService, isApiError } from '@/services/api.service'
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
+import PopUpComponent from '@/components/PopUpComponent.vue'
+import StyledButton from '@/components/StyledButton.vue'
 const { getData, postData } = apiService()
 
 const showErrorPopup = ref(false);
@@ -117,7 +114,7 @@ const acceptInvite = async () => {
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to accept invitation.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
     }
     else {
       invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
@@ -134,14 +131,14 @@ const declineInvite = async () => {
     if (!token) {
       throw new Error('No authentication token found.')
     }
-    
+
     const data = await postData(`/api/invitations/${selectedGroup.value.id}/reject`);
     if (isApiError(data)) {
       errorStatus.value = data.status;
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to reject invitation.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
     }
     else {
       invites.value = invites.value.filter((invite) => invite.id !== selectedGroup.value!.id)
@@ -158,13 +155,13 @@ const fetchInvites = async () => {
     throw new Error('No authentication token found.')
   }
 
-const data = await getData('/api/invitations');
+  const data = await getData('/api/invitations');
   if (isApiError(data)) {
     errorStatus.value = data.status;
     errorMessage.value = data.message;
     errorExplanation.value = 'Unable to refresh invitations.'; // 'Failed to fetch invitations. Please make sure you are logged in.'
     showErrorPopup.value = true;
-    if (errorStatus.value === 401) router.push({name: 'login'});
+    if (errorStatus.value === 401) router.push({ name: 'login' });
     return;
   }
   else {
@@ -207,6 +204,10 @@ onMounted(() => {
   position: relative;
 }
 
+h1 {
+  color: var(--purple-text);
+}
+
 header {
   display: flex;
   justify-content: center;
@@ -224,6 +225,11 @@ header {
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: var(--black-text);
+}
+
+.no-invites {
+  color: var(--purple-text);
 }
 
 .group-items-container {
@@ -295,7 +301,7 @@ header {
   width: 60px;
   height: 60px;
   margin-bottom: 10px;
-  color: #008cba;
+  color: var(--item-background);
   border-radius: 50%;
   object-fit: cover;
 }
