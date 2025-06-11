@@ -52,7 +52,7 @@ const authenticate = async () => {
   try {
     await login(inputUsername.value, inputPassword.value)
     wrongCredentials.value = false;
-    console.log('Succesfull authenticated')
+    //console.log('Succesfull authenticated')
 
     const { getUserParam, userParam } = userSettings();
 

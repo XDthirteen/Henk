@@ -48,7 +48,7 @@ const CompleteToggler = async (task: Task): Promise<void> => {
   try {
     if (task.id) {
       await completeTask(task);
-      console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
+      //console.log(`Task ${task.id} completion toggled to: ${task.completed}`);
     } else {
       console.error("No task ID found for completion toggle.");
     }

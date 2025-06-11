@@ -82,7 +82,7 @@ const registerUser = async (user: UserData): Promise<string> => {
 
   } catch (error) {
     if ((error as AxiosError).response?.status === 400) {
-      console.log("Error in registerUser (API call) " + error)
+      console.error("Error in registerUser (API call) " + error)
       doubleUsernameOrEmail.value = true;
       throw new Error(`Error: ${error}`);
     } else {
@@ -106,7 +106,7 @@ const createUser = async () => {
         router.push({ name: 'login' });
       }, 3000);
     } catch (error) {
-      console.log("Error in createUser. " + error);
+      console.error("Error in createUser. " + error);
     }
   }
 }

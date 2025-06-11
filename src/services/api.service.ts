@@ -35,6 +35,9 @@
 #####################################*/
 import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
+import { useAuth } from '@/services/auth.service'
+
+const { getAuthToken } = useAuth()
 
 export type ApiError = { error: true; status: number | null; message: string };
 
@@ -138,7 +141,7 @@ const apiHandleError = (error: unknown) => {
 export const apiService = () => {
 	// default configuration for HENK api
 	const getDefaultConfig = (): AxiosRequestConfig => {
-		const token = localStorage.getItem('token');
+		const token = getAuthToken();
 		//console.log(token)
 		return {
 			headers: {

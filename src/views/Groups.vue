@@ -88,6 +88,14 @@
       </template>
     </PopUpComponent>
   </div>
+
+  <ErrorPopup
+  v-if="showErrorPopup"
+  :errorExplanation="errorExplanation"
+  :errorStatus="errorStatus"
+  :errorMessage="errorMessage"
+  @close="showErrorPopup = false"
+/>
 </template>
 
 <script setup lang="ts">
@@ -100,6 +108,8 @@ import { useGroupStore } from '@/services/groupservices'
 import type { Group } from '@/components/models.ts'
 import PopUpComponent from '@/components/PopUpComponent.vue'
 import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue'
+import { apiService, isApiError } from '@/services/api.service';
+import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
@@ -116,6 +126,13 @@ import {
   faBell,
 } from '@fortawesome/free-solid-svg-icons'
 import StyledButton from '@/components/StyledButton.vue'
+
+const { getData, postData, putData, deleteData } = apiService();
+
+const showErrorPopup = ref(false);
+const errorMessage = ref<string>('');
+const errorStatus = ref<number | null>(null);
+const errorExplanation = ref<string>('');
 
 library.add(
   faUser,
@@ -150,7 +167,7 @@ const defaultIcon = '/images/default.png'
 const router = useRouter()
 const route = useRoute()
 const groupId = route.query.group_id
-console.log('Group ID:', groupId)
+//console.log('Group ID:', groupId)
 
 const { getAuthToken, isAuthenticated } = useAuth()
 const groupStore = useGroupStore()
@@ -180,7 +197,7 @@ const toggleIconDropdown = () => {
 }
 
 const selectIcon = (icon: string) => {
-  console.log('Geselecteerde icoon:', icon)
+  //console.log('Geselecteerde icoon:', icon)
   selectedGroupIcon.value = icon
   iconDropdownOpen.value = false
 }
@@ -193,14 +210,19 @@ onMounted(async () => {
 
 const fetchGroups = async () => {
   try {
-    const token = getAuthToken()
-    const response = await axios.get(API_URL, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const data = await getData(`${API_URL}`)
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to fetch groups.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+      return;
+    };
 
-    console.log('Opgehaalde groepen:', response.data)
+     //console.log('Opgehaalde groepen:', data)
 
-    groups.value = response.data
+    groups.value = data
       .filter((group: Group) => !group.defaultGroup)
       .map((group: Group) => {
         const image = (group.image || '').toString()
@@ -218,17 +240,22 @@ const fetchGroups = async () => {
       })
   } catch (error) {
     console.error('Error fetching groups:', error)
-    alert('Failed to fetch groups.')
   }
 }
 
 const fetchInvites = async () => {
   try {
-    const token = getAuthToken()
-    const response = await axios.get('/api/invitations', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    invites.value = response.data
+    const data = await getData('/api/invitations');
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to fetch invites.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+      return;
+    };
+
+    invites.value = data
   } catch (error) {
     console.error('Error fetching invites:', error)
   }
@@ -268,16 +295,19 @@ const selectGroupForLeave = (group: Group) => {
 
 const sendInvite = async () => {
   if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
-
-  const token = getAuthToken()
-
   try {
-    await axios.post(
-      `${API_URL}/${selectedGroup.value.id}/invites`,
-      { email: inviteInput.value },
-      { headers: { Authorization: `Bearer ${token}` } },
-    )
-    successMessage.value = `Uitnodiging succesvol verstuurd naar ${inviteInput.value}!`
+    const data = await postData( `${API_URL}/${selectedGroup.value.id}/invites`, { email: inviteInput.value },);
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to send invite.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 400) errorExplanation.value = 'Unable to send invite. Please check if you have the right email address.';
+      return;
+    };
+
+    successMessage.value = `Invitation sent to ${inviteInput.value}!`
 
     setTimeout(() => {
       successMessage.value = ''
@@ -285,7 +315,6 @@ const sendInvite = async () => {
     }, 2000)
   } catch (error) {
     console.error('Error sending invite:', error)
-    alert('Failed to send invite.')
   }
 }
 
@@ -297,18 +326,18 @@ const cancelInvite = () => {
 
 const confirmLeaveGroup = async () => {
   if (!selectedGroup.value) return
-
-  const token = getAuthToken()
-
   try {
-    await axios.post(
-      `${API_URL}/${selectedGroup.value.id}/leave`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    )
-    successMessage.value = `Je hebt de groep "${selectedGroup.value.name}" succesvol verlaten!`
+    const data = await postData(`${API_URL}/${selectedGroup.value.id}/leave`);
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to send invite.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+      return;
+    };
+
+    successMessage.value = `You have left the group "${selectedGroup.value.name}"!`
 
     setTimeout(() => {
       successMessage.value = ''
@@ -318,7 +347,6 @@ const confirmLeaveGroup = async () => {
     await fetchGroups()
   } catch (error) {
     console.error('Error leaving group:', error)
-    alert('Failed to leave group.')
   }
 }
 
@@ -343,22 +371,23 @@ const addGroup = async () => {
     alert('Vul alle velden in.')
     return
   }
-
-  const token = getAuthToken()
-
   try {
     const newGroup = {
       name: newGroupName.value,
       image: selectedGroupIcon.value,
     }
+    //console.log('Nieuwe groep:', newGroup)
+    const data = await postData(API_URL, newGroup);
+    if (isApiError(data)) {
+      errorStatus.value = data.status;
+      errorMessage.value = data.message;
+      errorExplanation.value = 'Unable to add group.';
+      showErrorPopup.value = true;
+      if (errorStatus.value === 401) router.push({name: 'login'});
+      return;
+    };
 
-    console.log('Nieuwe groep:', newGroup)
-
-    await axios.post(API_URL, newGroup, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    successMessage.value = 'Groep succesvol toegevoegd!'
+    successMessage.value = 'Group successfully added!'
 
     setTimeout(() => {
       successMessage.value = ''
@@ -368,7 +397,6 @@ const addGroup = async () => {
     await fetchGroups()
   } catch (error) {
     console.error('Error adding group:', error)
-    alert('Failed to add group.')
   }
 }
 </script>
