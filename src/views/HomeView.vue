@@ -44,12 +44,12 @@ import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
 </script>
 
 <template>
+  <ModuleTitleContainer>Welkom bij Henk</ModuleTitleContainer>
   <main class="home-container">
     <div class="title">
-      <h1>Welkom bij Henk</h1>
+      <H1>Wie zijn we?</H1>
     </div>
 
-    <ModuleTitleContainer>Wie zijn we?</ModuleTitleContainer>
 
     <div class="intro">
       <p>
