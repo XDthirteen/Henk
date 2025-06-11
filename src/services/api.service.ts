@@ -33,59 +33,57 @@
 / None
 /
 #####################################*/
-import axios from 'axios'
-import type { AxiosRequestConfig } from 'axios'
+import axios from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 
-export type ApiError = { error: true; status: number | null; message: string }
+export type ApiError = { error: true; status: number | null; message: string };
 
 // check if data is apiError, since we can not be sure if a api will not give a status back
 export const isApiError = (data: unknown): data is ApiError => {
 	if (typeof data !== 'object' || data === null) {
-		return false
-	}
+		return false;
+	};
 
-	const copy = { ...data }
+	const copy = { ...data };
 
 	// check if the correct keys are in the object
 	if (!('error' in copy) || !('status' in copy) || !('message' in copy)) {
-		return false
-	}
+		return false;
+	};
 
 	// check if the keys have the correct type
-	if (
-		copy.error !== true ||
-		(typeof copy.status !== 'number' && copy.status !== null) ||
-		typeof copy.message !== 'string'
-	) {
-		return false
-	}
+	if (copy.error !== true 
+    ||(typeof copy.status !== 'number' && copy.status !== null) 
+    || typeof copy.message !== 'string') {
+		return false;
+	};
 
 	// remove keys in copy to check if something remains, nothing should
-	delete copy.error
-	delete copy.status
-	delete copy.message
+	delete copy.error;
+	delete copy.status;
+	delete copy.message;
 
 	if (Object.keys(copy).length > 0) {
-		return false
-	}
+		return false;
+	};
 
-	return true
+	return true;
 };
 
 // change console logs and warnings to error popup when component is finished.
 const apiHandleError = (error: unknown) => {
 	if (axios.isAxiosError(error)) {
-		const { response, request, message } = error
+		const { response, request, message } = error;
 		if (!response) {
 			if (!request) {
-				return { error: true, status: null, message: `Request failed: ${message}` }
-			}
+				return { error: true, status: null, message: `Request failed: ${message}` };
+			};
 			return {
 				error: true,
 				status: null,
 				message: `Network error or no response from the server.`,
-			}
-		}
+			};
+		};
 
 		const status = response.status
 		switch (status) {
@@ -94,105 +92,105 @@ const apiHandleError = (error: unknown) => {
 					error: true,
 					status,
 					message: `Bad request.`,
-				}
+				};
 			case 401:
 				return {
 					error: true,
 					status,
 					message: `Unauthorized. Token may be missing or expired.`,
-				}
+				};
 			case 403:
 				return {
 					error: true,
 					status,
 					message: `Forbidden. You don't have permission to perform this action.`,
-				}
+				};
 			case 404:
 				return {
 					error: true,
 					status,
 					message: `Not found. The requested item could not be found.`,
-				}
+				};
 			case 422:
 				return {
 					error: true,
 					status,
 					message: `Validation error: ${JSON.stringify(response.data?.errors || response.data)}`,
-				}
+				};
 			case 500:
 				return {
 					error: true,
 					status,
 					message: `Internal server error. Try again later.`,
-				}
+				};
 			default:
 				return {
 					error: true,
 					status,
 					message: `Unexpected error. Status: ${status}`,
-				}
-		}
-	}
+				};
+		};
+	};
 
-	return { error: true, status: null, message: `An unexpected error occurred: ${error}` }
-}
+	return { error: true, status: null, message: `An unexpected error occurred: ${error}` };
+};
 
 export const apiService = () => {
 	// default configuration for HENK api
 	const getDefaultConfig = (): AxiosRequestConfig => {
-		const token = localStorage.getItem('token')
-		console.log(token)
+		const token = localStorage.getItem('token');
+		//console.log(token)
 		return {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/json',
-			},
-		}
-	}
+			};
+		};
+	};
 
 	const setConfig = (apiPath: string, config?: AxiosRequestConfig): AxiosRequestConfig => {
-		return apiPath.startsWith('/api') ? getDefaultConfig() : config || {}
-	}
+		return apiPath.startsWith('/api') ? getDefaultConfig() : config || {};
+	};
 
 	const getData = async (apiPath: string, config?: AxiosRequestConfig) => {
-		console.log('API CALL GET')
+		//console.log('API CALL GET')
 		try {
-			const response = await axios.get(apiPath, setConfig(apiPath, config))
-			return response.data
+			const response = await axios.get(apiPath, setConfig(apiPath, config));
+			return response.data;
 		} catch (error) {
-			return apiHandleError(error)
-		}
-	}
+			return apiHandleError(error);
+		};
+	};
 
 	const postData = async (apiPath: string, data?: object, config?: AxiosRequestConfig) => {
-		console.log('API CALL POST')
+		//console.log('API CALL POST')
 		try {
-			const response = await axios.post(apiPath, data ?? undefined, setConfig(apiPath, config))
-			return response.data
+			const response = await axios.post(apiPath, data ?? undefined, setConfig(apiPath, config));
+			return response.data;
 		} catch (error) {
-			return apiHandleError(error)
-		}
-	}
+			return apiHandleError(error);
+		};
+	};
 
 	const putData = async (apiPath: string, data?: object, config?: AxiosRequestConfig) => {
-		console.log('API CALL PUT')
+		//console.log('API CALL PUT')
 		try {
-			const response = await axios.put(apiPath, data ?? undefined, setConfig(apiPath, config))
-			return response.data
+			const response = await axios.put(apiPath, data ?? undefined, setConfig(apiPath, config));
+			return response.data;
 		} catch (error) {
-			return apiHandleError(error)
-		}
-	}
+			return apiHandleError(error);
+		};
+	};
 
 	const deleteData = async (apiPath: string, config?: AxiosRequestConfig) => {
-		console.log('API CALL DELETE')
+		//console.log('API CALL DELETE')
 		try {
-			const response = await axios.delete(apiPath, setConfig(apiPath, config))
-			return response.data
+			const response = await axios.delete(apiPath, setConfig(apiPath, config));
+			return response.data;
 		} catch (error) {
-			return apiHandleError(error)
-		}
-	}
+			return apiHandleError(error);
+		};
+	};
 
-	return { getData, postData, putData, deleteData }
-}
+	return { getData, postData, putData, deleteData };
+};
