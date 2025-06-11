@@ -45,7 +45,6 @@ import { useAuth } from '@/services/auth.service'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -68,11 +67,10 @@ const errorMessage = ref<string>('');
 const errorStatus = ref<number | null>(null);
 const errorExplanation = ref<string>('');
 
-library.add(faUser, faCoffee, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
+library.add(faUser, faCar, faDog, faBicycle, faHome, faTree, faSun, faMoon, faRocket)
 
 const iconList = [
   'user',
-  'coffee',
   'car',
   'dog',
   'bicycle',

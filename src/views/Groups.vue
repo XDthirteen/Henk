@@ -110,7 +110,6 @@ import SuccessMessage from '@/components/popups/SuccessMessage.vue';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -132,7 +131,6 @@ const errorExplanation = ref<string>('');
 
 library.add(
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -146,7 +144,6 @@ library.add(
 
 const iconList = [
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
