@@ -4,7 +4,7 @@ import { ref } from "vue";
 
 const applyTheme = (theme: string) => {
   const normalizedTheme = theme.toLowerCase();
-  console.log("applyTheme aangeroepen met:", normalizedTheme);
+  //console.log("applyTheme aangeroepen met:", normalizedTheme);
 
   const validThemes = ['dark', 'light', 'deeppink'];
 
@@ -51,7 +51,7 @@ const userSettings = () => {
         email: backendUserInfo.email
       };
 
-      console.log(userInfo.value);
+      //console.log(userInfo.value);
       return userInfo.value;
     } catch (error) {
       console.error('Error fetching userinfo: ', error);
@@ -76,7 +76,7 @@ const userSettings = () => {
           Authorization: userToken,
         }
       });
-      console.log("User updated successfully:", response.data);
+      //console.log("User updated successfully:", response.data);
       return response.data;
 
     } catch (error) {
@@ -129,7 +129,7 @@ const userSettings = () => {
           Authorization: userToken,
         }
       });
-      console.log("User parameters updated successfully:", response.data);
+      //console.log("User parameters updated successfully:", response.data);
       return response.data;
 
     } catch (error) {

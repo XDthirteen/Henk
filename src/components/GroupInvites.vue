@@ -168,7 +168,7 @@ const data = await getData('/api/invitations');
     return;
   }
   else {
-    console.log('API /api/invitations response:', data)
+    //console.log('API /api/invitations response:', data)
 
     interface InviteApiResponse {
       id: number

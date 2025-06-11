@@ -17,7 +17,7 @@ const useTasks = () => {
       });
 
       tasks.value = response.data;
-      console.log(response.data)
+      //console.log(response.data)
     } catch (error) {
       console.error("Error fetching tasks: ", error);
     }
@@ -31,7 +31,7 @@ const useTasks = () => {
         }
       }
       );
-      console.log('Task succesfully created:', response.data);
+      //console.log('Task succesfully created:', response.data);
       await fetchTasks();
     } catch(error) {
       console.error('Error creating new task: ', error);
@@ -51,7 +51,7 @@ const useTasks = () => {
           Authorization: userToken
         }
       });
-      console.log("Task updated successfully: ", response.data);
+      //console.log("Task updated successfully: ", response.data);
       await fetchTasks();
       return response.data;
     } catch (error) {
@@ -67,7 +67,7 @@ const useTasks = () => {
           Authorization: userToken
         }
       });
-      console.log("Task deleted successfully: ", response.data);
+      //console.log("Task deleted successfully: ", response.data);
       await fetchTasks();
       return response.data;
     } catch (error) {
@@ -77,7 +77,7 @@ const useTasks = () => {
   }
 
   const completeTask = async (task: Task) => {
-    console.log("Task:", task.id);
+    //console.log("Task:", task.id);
 
     const endpoint = task.completed
       ? `api/tasks/${task.id}/complete`
@@ -90,7 +90,7 @@ const useTasks = () => {
         headers: { Authorization: userToken }
       });
 
-      console.log("Task completion toggled: ", response.data);
+      //console.log("Task completion toggled: ", response.data);
       await fetchTasks();
       return response.data;
     } catch (error) {

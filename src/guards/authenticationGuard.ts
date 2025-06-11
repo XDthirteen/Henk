@@ -33,7 +33,7 @@ export const authenticationGuard = (_to: RouteLocation, _from: RouteLocation) =>
     if(isAuthenticated.value){
         return true;
     } else {
-        console.log("Redirected to 'Login' because no authenticated user.")
+        //console.log("Redirected to 'Login' because no authenticated user.")
         router.push({ name: 'login'});
         return false;
     }

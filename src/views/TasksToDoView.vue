@@ -150,7 +150,7 @@ const PostTaskToBackend = async (): Promise<void> => {
     await postNewTask(newTask);
     isCreatingNewTask.value = false;
     resetNewTask();
-    console.log("Task successfully created!");
+    //console.log("Task successfully created!");
   } catch (error) {
     console.error("Error during task creation:", error);
   }
@@ -160,14 +160,13 @@ const PutTaskToBackend = async (): Promise<void> => {
   try {
     if (editedTask.value.id) {
       if (!editedTask.value.title) {
-        console.log('test')
         formError.value = 'Title cannot be blank';
         return;
       }
       await updateTask(editedTask.value);
       isEditingTask.value = false;
       formError.value = '';
-      console.log("Task successfully updated!");
+      //console.log("Task successfully updated!");
     } else {
       console.error("No task ID found for update.");
     }
@@ -181,7 +180,7 @@ const DeleteTaskToBackend = async (): Promise<void> => {
     if (editedTask.value.id) {
       await deleteTask(editedTask.value);
       isEditingTask.value = false;
-      console.log("Task successfully deleted!");
+      //console.log("Task successfully deleted!");
     } else {
       console.error("No task ID found for deletion.");
     }

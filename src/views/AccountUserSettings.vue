@@ -96,9 +96,7 @@ onMounted(async () => {
 
 const saveChangesToBackend = async (): Promise<void> => {
   const updatedData = await updateUserInfo(tempValues.value);
-  if (updatedData) {
-    console.log("Update succesvol!", updatedData);
-  }
+  //if (updatedData) {console.log("Update succesvol!", updatedData);}
 };
 
 // const setLanguage = (lang: string) => {

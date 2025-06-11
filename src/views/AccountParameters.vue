@@ -96,9 +96,7 @@ function toggleEdit(field: keyof typeof iconTogglerParam.value) {
 
 const saveParamChangesToBackend = async (): Promise<void> => {
   const updatedData = await updateUserParam(paramTempValues.value);
-  if (updatedData) {
-    console.log("Update succesvol!", updatedData);
-  }
+  //if (updatedData) {console.log("Update succesvol!", updatedData);}
 };
 
 function saveParamChanges(): void {
