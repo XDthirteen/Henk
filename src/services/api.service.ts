@@ -144,7 +144,7 @@ export const apiService = () => {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/json',
-			};
+			},
 		};
 	};
 
