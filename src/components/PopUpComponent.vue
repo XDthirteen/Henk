@@ -25,12 +25,12 @@
 #####################################*/
 
 
-<script setup lang="ts">
-const emit = defineEmits(['close'])
+<script setup lang='ts'>
+const emit = defineEmits(['close']);
 
 function emitClose() {
-  emit('close')
-}
+  emit('close');
+};
 </script>
 
 <template>

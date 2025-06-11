@@ -33,14 +33,14 @@
 /
 #####################################*/
 
-<script lang="ts" setup>
+<script lang='ts' setup>
 type ButtonType = 'default' | 'primary' | 'secundary' | 'negative' | 'save';
 type HTMLButtonType = 'button' | 'submit' | 'reset';
 
 const props = defineProps<{ 
-  type?: ButtonType 
-  buttonTypeHTML?: HTMLButtonType
-  }>()
+  type?: ButtonType;
+  buttonTypeHTML?: HTMLButtonType;
+  }>();
   
 const htmlType = props.buttonTypeHTML ?? 'button';
 
