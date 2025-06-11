@@ -91,7 +91,7 @@ the div while navigating
 / 
 #####################################*/
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { apiService, isApiError } from '@/services/api.service'
@@ -110,11 +110,11 @@ const errorExplanation = ref<string>('');
 const { onTouchStart, onTouchEnd } = swipe();
 const { getData } = apiService();
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Set calendar for groups, personal as default
-let groupAgenda = 'personal' //group id, changes when changing groups
+let groupAgenda = 'personal';
 
 const groupId = route.query.group_id;
 if (typeof groupId === 'string') {
@@ -158,28 +158,28 @@ const currentDay = ref(currentDate.getUTCDate());
 const eventCache = ref<{ [key: string]: any[] }>({});
 
 const weekdays = [
-  "Mon",
-  "Tue",
-  "Wed",
-  "Thu",
-  "Fri",
-  "Sat",
-  "Sun"
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+  'Sun'
 ];
 
 const months = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
 ];
 
 // If no isoDateTime string is given, use current date
@@ -222,8 +222,8 @@ const fetchEventsForMonth = async () => {
   else {
     // QUICK FIX, gets data from 3 months!, FIX LATER for less data each api call.
     // Duplicate data also in caching...
-    const fromDate = new Date(Date.UTC(year, month - 1, 1)).toISOString().split("T")[0];
-    const toDate = new Date(Date.UTC(year, month + 2, 0)).toISOString().split("T")[0];
+    const fromDate = new Date(Date.UTC(year, month - 1, 1)).toISOString().split('T')[0];
+    const toDate = new Date(Date.UTC(year, month + 2, 0)).toISOString().split('T')[0];
     try {
       const allEvents: any[] = [];
       if(groupAgenda == 'personal'){
@@ -239,7 +239,7 @@ const fetchEventsForMonth = async () => {
           personalEvents.forEach((item: any) => {
             allEvents.push({ ...item, eventType: 'personal'});
           });
-        }
+        };
 
         const tasks = await getData(`/api/tasks?completed=false`);
         if (isApiError(tasks)) {
@@ -298,12 +298,12 @@ const fetchEventsForMonth = async () => {
 
     }
     catch (error) {
-      console.error("Error fetching and processing events:", error);
+      console.error('Error fetching and processing events:', error);
     };
   };
 
   // Reload calendarDays
-  console.log(events.value)
+  //console.log(events.value)
   calendarDays.value = generateCalendarDays();
   selectToday();
   calculateExpandableDiv();
@@ -383,11 +383,11 @@ const calendarDays = ref<CalendarDay[]>(generateCalendarDays());
 const calculateExpandableDiv = () => {
   // ensure measurement happen on the next frame, after layout and styles are applied.
   requestAnimationFrame(() => {
-    const calendarElement = document.querySelector(".calendar-wrapper") as HTMLElement;
+    const calendarElement = document.querySelector('.calendar-wrapper') as HTMLElement;
     if (calendarElement) {
       const calendarPosition = calendarElement.getBoundingClientRect();
-      document.documentElement.style.setProperty("--calendar-top", `${calendarPosition.top}px`);
-      document.documentElement.style.setProperty("--calendar-bottom", `${calendarPosition.bottom}px`);
+      document.documentElement.style.setProperty('--calendar-top', `${calendarPosition.top}px`);
+      document.documentElement.style.setProperty('--calendar-bottom', `${calendarPosition.bottom}px`);
     };
   });
 };
@@ -410,7 +410,7 @@ const goToNextMonth = () => {
 };
 
 const selectDate = (date: CalendarDay) => {
-  console.log(`Clicked on: ${date.date}`);
+  //console.log(`Clicked on: ${date.date}`);
 
   const eventsForSelectedDate: CalendarEvent[] = [];
 
@@ -432,9 +432,9 @@ const selectDate = (date: CalendarDay) => {
 
 const addEvent = () => {
   // TS string because we stringify the object
-  const query: { selectedDate?: string; group_id?: string } = {}
+  const query: { selectedDate?: string; group_id?: string } = {};
   if (selectedDate.value?.date) {
-    query.selectedDate = selectedDate.value.date
+    query.selectedDate = selectedDate.value.date;
   };
   if (groupAgenda) {
     query.group_id = groupAgenda;
@@ -443,7 +443,7 @@ const addEvent = () => {
   router.push({
     name: 'calenderEvents',
     query: query,
-  })
+  });
 };
 
 // reload after deleting a event

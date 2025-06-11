@@ -28,11 +28,11 @@
 /
 #####################################*/
 
-<script setup lang="ts">
-import { ref, computed } from "vue";
+<script setup lang='ts'>
+import { ref, computed } from 'vue';
 import { swipe } from '@/utils/swipeDetection';
 import EventPopup from '@/components/popups/EventPopup.vue';
-import type { CalendarDay, CalendarEvent } from "@/components/models";
+import type { CalendarDay, CalendarEvent } from '@/components/models';
 
 const { onTouchStart, onTouchEnd } = swipe();
 
@@ -55,14 +55,14 @@ const toggleExpand = (): void => {
 // Selected date event data
 const getEventsForSelectedDate = computed(() => {
   if (props.selectedDate?.events) {
-    return props.selectedDate.events
+    return props.selectedDate.events;
   }
   return [];
 });
 
 const eventClick = (eventData: any): void => {
-  console.log("Clicked event:", eventData);
-  console.log("x",props.selectedDate)
+  //console.log('Clicked event:', eventData);
+  //console.log(props.selectedDate);
   selectedEvent.value = eventData;
   showEventPopup.value = true;
 };

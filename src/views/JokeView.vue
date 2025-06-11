@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import { apiService, isApiError } from '@/services/api.service';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 import StyledButton from '@/components/StyledButton.vue';
@@ -10,11 +10,11 @@ const errorMessage = ref<string>('');
 const errorStatus = ref<number | null>(null);
 const errorExplanation = ref<string>('');
 
-const getJoke = ref('')
-const loading = ref(false)
-const error = ref(false)
+const getJoke = ref('');
+const loading = ref(false);
+const error = ref(false);
 
-const { getData } = apiService()
+const { getData } = apiService();
 
 const fetchJoke = async () => {
   const data = await getData('https://icanhazdadjoke.com/', {

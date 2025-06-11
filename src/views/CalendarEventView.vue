@@ -11,7 +11,7 @@
 /
 // NTH: When returning to calendar return to same month that was open
 
-<script setup lang="ts">
+<script setup lang='ts'>
 import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchGroups } from '@/services/groupservices';
@@ -115,7 +115,7 @@ const event = ref<EventFormData>({
   endTime: '',
   description: '',
   allDay: false,
-})
+});
 
 onMounted(async () => {
   try {
@@ -123,20 +123,17 @@ onMounted(async () => {
     isEdit.value = Boolean(route.query.id);
     preFillDoc();
   } catch (error) {
-    alert('Failed to load groups: ' + error);
+    popupMessage.value = 'Failed to load groups';
+    errorMessage.value = String(error);
+    showMessagePopup.value = true;
   };
 });
 
 // go back to last open group/personal calendar
 const returnToCalendar = () => {
   const query: { group_id?: string } = {};
-
   if (typeof route.query.group_id === 'string') query.group_id = route.query.group_id;
-
-  router.push({
-    name: 'calendar',
-    query,
-  });
+  router.push({ name: 'calendar', query });
 };
 
 const submitEvent = async () => {

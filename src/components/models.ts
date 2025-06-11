@@ -75,7 +75,7 @@ export interface CalendarEvent {
 	startTime: string
 	endDate: string
 	endTime: string
-}
+};
 
 export interface CalendarDay {
 	day: number
@@ -84,7 +84,7 @@ export interface CalendarDay {
 	isToday?: boolean
 	eventLines?: string[]
 	events?: CalendarEvent[]
-}
+};
 
 /////////////
 // WEATHER //

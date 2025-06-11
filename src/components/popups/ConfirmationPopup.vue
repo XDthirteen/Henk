@@ -23,7 +23,7 @@
 / None
 / 
 #####################################*/
-<script setup lang="ts">
+<script setup lang='ts'>
 import PopUpComponent from '@/components/PopUpComponent.vue';
 import StyledButton from '@/components/StyledButton.vue';
 
