@@ -47,7 +47,7 @@ import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
   <ModuleTitleContainer>Welkom bij Henk</ModuleTitleContainer>
   <main class="home-container">
     <div class="title">
-      <H1>Wie zijn we?</H1>
+      <h1>Wie zijn we?</h1>
     </div>
 
 
