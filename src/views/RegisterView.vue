@@ -38,7 +38,7 @@ import type { UserData } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import StyledInputByType from '@/components/StyledInputByType.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
-import SuccesMessage from '@/components/popups/SuccesMessage.vue';
+import SuccessMessage from '@/components/popups/SuccessMessage.vue';
 
 const router = useRouter();
 
@@ -149,7 +149,7 @@ const createUser = async () => {
     </div> -->
   </form>
   <StyledButton :type="buttonType" @click="createUser()">Create account</StyledButton>
-  <SuccesMessage class="succes-message" v-if="correctRegisterPasswords">User succesfull created</SuccesMessage>
+  <SuccessMessage class="succes-message" v-if="correctRegisterPasswords">User succesfull created</SuccessMessage>
   <ErrorMessage v-if="doubleUsernameOrEmail">Username or emailadres already registered.</ErrorMessage>
   <ErrorMessage v-if="correctRegisterPasswords === false">Passwords do not match</ErrorMessage>
 </template>

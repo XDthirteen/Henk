@@ -26,6 +26,9 @@
 / 02/06/2025 - Gert-Jan Germeys
 / - Change to AboutPage
 /
+/ 10/06/2025 - Arno Defillet
+/ - Extra styling toegevoegd
+/
 / To do:
 / -
 / -
@@ -38,42 +41,85 @@
 
 <script setup lang="ts">
 import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue';
-
 </script>
 
 <template>
-  <main>
-    <ModuleTitleContainer>Wie zijn we?</ModuleTitleContainer>
-    <p>Het groepsproject is begonnen in December 2024 door de groep bestaande uit <a href="https://github.com/arnodefillet">Arno</a>, <a href="https://github.com/XDthirteen">Jorn</a>, <a href="https://github.com/Daemszzz">Kevin</a> & <a href="https://github.com/Gert-JanGe">Gert-Jan</a> met een klein beetje <a href="https://github.com/anneleenscholts">Anneleen</a> voor support.</p>
-    <p>Na vershillende ideeën zijn we op Henk uitgekomen, een persoonlijke calender webapp.</p>
-    <p>We hebben op Miro een voorbeeld gemaakt om dan direct in Vue aan het werk te gaan.</p>
-    <p>Dit is het resultaat hier van!</p>
+  <ModuleTitleContainer>Welkom bij Henk</ModuleTitleContainer>
+  <main class="home-container">
+    <div class="title">
+      <h1>Wie zijn we?</h1>
+    </div>
+
+
+    <div class="intro">
+      <p>
+        Het groepsproject is begonnen in December 2024 door de groep bestaande uit <a
+          href="https://github.com/arnodefillet" target="_blank">Arno</a>,
+        <a href="https://github.com/XDthirteen" target="_blank">Jorn</a>,
+        <a href="https://github.com/Daemszzz" target="_blank">Kevin</a> &
+        <a href="https://github.com/Gert-JanGe" target="_blank">Gert-Jan</a>
+        – met een beetje magische support van <a href="https://github.com/anneleenscholts" target="_blank">Anneleen</a>.
+      </p>
+      <p>
+        Na een brainstorm en een Miro-schets ontstond <strong>Henk</strong>: een slimme, intuïtieve kalender-app voor
+        jouw planning.
+      </p>
+      <p>We hopen dat je er net zoveel plezier aan beleeft als wij aan het bouwen ervan!</p>
+    </div>
   </main>
 </template>
 
-
 <style scoped>
-main {
-  color: var(--purple-text);
+.home-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  padding: 3rem 1.5rem;
+  animation: fadeIn 1s ease-in-out;
 }
 
-a:link{
-  color: white;
-  text-decoration: none;
+.title {
+  text-align: center;
+  margin-bottom: 1rem;
 }
-a:active{
-  color: white;
-  text-decoration: none;
+
+.title h1 {
+  font-size: 3rem;
+  color: var(--purple-text);
+  margin-bottom: 0.5rem;
 }
-a:visited{
-  color: white;
-  text-decoration: none;
+
+
+.intro {
+  max-width: 800px;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.8;
 }
-a:hover{
+
+a {
+  color: var(--black-text);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+a:hover {
   color: deeppink;
+}
+
+p {
+  color: var(--purple-text);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

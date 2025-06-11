@@ -47,7 +47,7 @@
           <StyledButton type="save" class="send-btn" @click="sendInvite">Send Invite</StyledButton>
           <StyledButton type="negative" class="cancel-btn" @click="cancelInvite">Cancel</StyledButton>
         </div>
-        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+        <SuccessMessage v-if="successMessage">{{ successMessage }}</SuccessMessage>
       </template>
     </PopUpComponent>
 
@@ -58,7 +58,7 @@
           <StyledButton type="save" @click="confirmLeaveGroup">Bevestig</StyledButton>
           <StyledButton type="negative" @click="cancelLeave">Annuleer</StyledButton>
         </div>
-        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+        <SuccessMessage v-if="successMessage">{{ successMessage }}</SuccessMessage>
       </template>
     </PopUpComponent>
 
@@ -84,18 +84,13 @@
           <StyledButton type="negative" @click="closeAddGroupPopup">Annuleer</StyledButton>
         </div>
 
-        <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
+        <SuccessMessage v-if="successMessage">{{ successMessage }}</SuccessMessage>
       </template>
     </PopUpComponent>
   </div>
 
-  <ErrorPopup
-  v-if="showErrorPopup"
-  :errorExplanation="errorExplanation"
-  :errorStatus="errorStatus"
-  :errorMessage="errorMessage"
-  @close="showErrorPopup = false"
-/>
+  <ErrorPopup v-if="showErrorPopup" :errorExplanation="errorExplanation" :errorStatus="errorStatus"
+    :errorMessage="errorMessage" @close="showErrorPopup = false" />
 </template>
 
 <script setup lang="ts">
@@ -110,11 +105,11 @@ import PopUpComponent from '@/components/PopUpComponent.vue'
 import ModuleTitleContainer from '@/components/ModuleTitleContainer.vue'
 import { apiService, isApiError } from '@/services/api.service';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
+import SuccessMessage from '@/components/popups/SuccessMessage.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -136,7 +131,6 @@ const errorExplanation = ref<string>('');
 
 library.add(
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -150,7 +144,6 @@ library.add(
 
 const iconList = [
   faUser,
-  faCoffee,
   faCar,
   faDog,
   faBicycle,
@@ -169,7 +162,7 @@ const route = useRoute()
 const groupId = route.query.group_id
 //console.log('Group ID:', groupId)
 
-const { getAuthToken, isAuthenticated } = useAuth()
+const { isAuthenticated } = useAuth()
 const groupStore = useGroupStore()
 
 const groups = ref<Group[]>([])
@@ -216,11 +209,11 @@ const fetchGroups = async () => {
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to fetch groups.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
       return;
     };
 
-     //console.log('Opgehaalde groepen:', data)
+    //console.log('Opgehaalde groepen:', data)
 
     groups.value = data
       .filter((group: Group) => !group.defaultGroup)
@@ -251,7 +244,7 @@ const fetchInvites = async () => {
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to fetch invites.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
       return;
     };
 
@@ -296,13 +289,13 @@ const selectGroupForLeave = (group: Group) => {
 const sendInvite = async () => {
   if (!inviteInput.value.trim() || !selectedGroup.value || !isAuthenticated.value) return
   try {
-    const data = await postData( `${API_URL}/${selectedGroup.value.id}/invites`, { email: inviteInput.value },);
+    const data = await postData(`${API_URL}/${selectedGroup.value.id}/invites`, { email: inviteInput.value },);
     if (isApiError(data)) {
       errorStatus.value = data.status;
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to send invite.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
       if (errorStatus.value === 400) errorExplanation.value = 'Unable to send invite. Please check if you have the right email address.';
       return;
     };
@@ -333,7 +326,7 @@ const confirmLeaveGroup = async () => {
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to send invite.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
       return;
     };
 
@@ -383,7 +376,7 @@ const addGroup = async () => {
       errorMessage.value = data.message;
       errorExplanation.value = 'Unable to add group.';
       showErrorPopup.value = true;
-      if (errorStatus.value === 401) router.push({name: 'login'});
+      if (errorStatus.value === 401) router.push({ name: 'login' });
       return;
     };
 
@@ -417,20 +410,6 @@ header {
   position: relative;
   padding-bottom: 10px;
   border-bottom: 2px solid var(--input-border);
-}
-
-.header-buttons {
-  position: absolute;
-  right: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.invite-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  position: relative;
 }
 
 .invite-badge {
@@ -562,81 +541,6 @@ header {
   text-align: center;
 }
 
-.confirm-btn {
-  background-color: #4caf50;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.confirm-btn:hover {
-  background-color: #45a049;
-}
-
-.invite-sent-message {
-  margin-top: 20px;
-  color: green;
-  font-weight: bold;
-}
-
-.success-message {
-  margin-top: 10px;
-  color: #4caf50;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.add-group-form {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 320px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  margin: 20px auto;
-}
-
-.add-group-form input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  /* Voeg deze regel toe voor extra ruimte */
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.add-group-form button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.add-group-form button:first-child {
-  background-color: #008cba;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.add-group-form button:first-child:hover {
-  background-color: #0078a5;
-}
-
-.add-group-form button:last-child {
-  background-color: #f44336;
-  color: white;
-  transition: background 0.3s ease;
-}
-
-.add-group-form button:last-child:hover {
-  background-color: #d32f2f;
-}
-
 .custom-dropdown {
   position: relative;
   display: inline-block;
@@ -685,7 +589,6 @@ header {
 
 .invite-bell-btn {
   position: relative;
-  border: none;
   padding: 12px 18px;
   border-radius: 6px;
   font-size: 16px;
