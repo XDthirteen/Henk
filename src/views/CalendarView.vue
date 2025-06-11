@@ -61,16 +61,19 @@
 / - Added: Pass selected day data to CalendarEventView.vue for creating event
 / 02/06/2025 - Jorn Vierbergen
 / - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
+/ 08/06/2025 - Jorn Vierbergen
+/ - Added: Error handeling from api show in a popup
 / 10/06/2025 - Jorn Vierbergen
 / - Added: Show group name on top of Calendar
 / - Changed: CSS last time before sending code for review. Hi there :D
 / 
 / To do:
+/ - Error popup can only display 1 error at the time last error overwrites previous.
 / - Selecting event in expandable div opens event description.
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 / 
-/ - Optimalization calendar:
+/ Optimalization calendar:
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
@@ -82,11 +85,10 @@ the div while navigating
 / - NTH Change month to specified month. Click on month, drop down menu
 / - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
-/ - Optimalization and NTH HENK: Helpful Event Note Keeper:
+/ Optimalization and NTH HENK: Helpful Event Note Keeper:
 / - Create 1 general service file for api calls for the same backend
 / - Create 1 general service file for error handeling
 / - Refactor every await and loop as in file optimal.js
-/ - Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
 / 
 / Comments:
 / ------------
