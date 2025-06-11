@@ -61,29 +61,32 @@
 / - Added: Pass selected day data to CalendarEventView.vue for creating event
 / 02/06/2025 - Jorn Vierbergen
 / - Added: Refetch events after deletion (edit refetches on it's own since it is a different view)
-/ 08/06/2025 - Jorn Vierbergen
-/ - Added: Error handeling from api show in a popup
+/ 10/06/2025 - Jorn Vierbergen
+/ - Added: Show group name on top of Calendar
+/ - Changed: CSS last time before sending code for review. Hi there :D
 / 
 / To do:
-/ - Error popup can only display 1 error at the time last error overwrites previous.
+/ - Selecting event in expandable div opens event description.
 / - Use date instead of lists for months and weekdays.
 / This is what you get when the teacher starts to explain dates when you are a month into making a calendar app.
 / 
-/ Optimalization calendar:
+/ - Optimalization calendar:
 / - Update only calendar days that have events instead of all days on api loaded
 / - API get only the events for the dates needed, now we get the events for 3 months
 / - Use filter() instead of forEach and push for arrays
 / - When expandableDiv is expanded, add a buttons to select next day and previous day. So you don't have to minimalize
 the div while navigating
 / - Desktop mode, replace expandable div with a div on the right side of calendar. More user friendly
+/ - Pass group name with group_id through route query, when selecting group calendar, 1 less api call
 /
 / - NTH Change month to specified month. Click on month, drop down menu
 / - NTH Change days of week to specified order. Current: Starting on monday (Europe, ISO 8601), saturday (Hebrew Calendar) or sunday (United States)
 /
-/ Optimalization and NTH HENK: Helpful Event Note Keeper:
+/ - Optimalization and NTH HENK: Helpful Event Note Keeper:
 / - Create 1 general service file for api calls for the same backend
 / - Create 1 general service file for error handeling
 / - Refactor every await and loop as in file optimal.js
+/ - Dark theme option in MainLayout by variables. eg: 'background'(1,2,3,4), 'border'
 / 
 / Comments:
 / ------------
@@ -122,6 +125,19 @@ if (typeof groupId === 'string') {
 }
 else if (Array.isArray(groupId)) {
   groupAgenda = groupId[0] ?? 'personal';
+};
+
+const calendarGroupName = ref<string>('');
+
+const getGroupName = async () => {
+  calendarGroupName.value = 'Personal'
+  if (groupAgenda !== 'personal') {
+    const groupName = await getData(`/api/groups/${groupAgenda}`);
+    if (isApiError(groupName)) {
+      return;
+    };
+    calendarGroupName.value = groupName.name;
+  };
 };
 
 // TIME SETTINGS FROM USER SETTINGS
@@ -383,11 +399,11 @@ const calendarDays = ref<CalendarDay[]>(generateCalendarDays());
 const calculateExpandableDiv = () => {
   // ensure measurement happen on the next frame, after layout and styles are applied.
   requestAnimationFrame(() => {
-    const calendarElement = document.querySelector('.calendar-wrapper') as HTMLElement;
+    const calendarElement = document.querySelector('.calendar') as HTMLElement;
     if (calendarElement) {
       const calendarPosition = calendarElement.getBoundingClientRect();
-      document.documentElement.style.setProperty('--calendar-top', `${calendarPosition.top}px`);
-      document.documentElement.style.setProperty('--calendar-bottom', `${calendarPosition.bottom}px`);
+      document.documentElement.style.setProperty('--calendar-top', `${calendarPosition.top - 8}px`);  // -8px for shadow box
+      document.documentElement.style.setProperty('--calendar-bottom', `${calendarPosition.bottom + 10}px`);   // +10px for shadow box
     };
   });
 };
@@ -447,12 +463,14 @@ const addEvent = () => {
 };
 
 // reload after deleting a event
-watch(() => route.query.reload, () => {
+watch(() => route.query.reload, async () => {
   eventCache.value = {};
+  await getGroupName();
   fetchEventsForMonth();
 });
 
-onMounted(() => {
+onMounted(async () => {
+  await getGroupName();
   fetchEventsForMonth();
 });
 
@@ -461,7 +479,11 @@ onMounted(() => {
 <template>
   <GroupNavigation></GroupNavigation>
   <div class="center">
+    <div class="group-calendar">
+        {{ calendarGroupName }}
+    </div>
     <div class="calendar-wrapper">
+      
       <div class="calendar" @touchstart="onTouchStart" @touchend="(event) => {
         const direction = onTouchEnd(event);
         if (direction === 'right') goToPrevMonth();
@@ -509,23 +531,32 @@ onMounted(() => {
 
 <style scoped>
 .center {
-  font-family: Arial;
   display: flex;
-  justify-content: center;
-  margin: 0;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.group-calendar {
+  text-align: center;
+  margin: 0 3.5rem 0 3.5rem;
+  color: var(--black-text);
+  max-height: 3.2em;
+  overflow: hidden;
 }
 
 .calendar-wrapper {
-  width: 400px;
-  padding-top: 4px;
-  /* Offset for expandable div */
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+  box-sizing: border-box;
 }
 
 .calendar {
   margin: 2%;
   border: 1px solid var(--black-text);
   box-shadow: 2px 2px 8px var(--title-border);
-
   border-radius: 10px;
   overflow: hidden;
   display: flex;
@@ -575,6 +606,7 @@ button:hover {
   /* Center adjust for element length*/
   padding: 10px 20px;
   z-index: 4;
+  border: 1px solid black;
 }
 
 .calendar-grid {
