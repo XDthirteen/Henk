@@ -625,12 +625,16 @@ button:hover {
 .day,
 .date {
   position: relative;
-  padding: 20%;
+  padding: 20% 20% 12% 20%;
   text-align: center;
   font-size: 14px;
   color: black;
   /* Transparent border, accounts for the border so no elements are pushed around on hover */
   border: 2px solid transparent;
+}
+
+.day{
+  padding: 20% 20% 0% 20%;
 }
 
 .date {
