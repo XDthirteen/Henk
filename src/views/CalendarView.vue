@@ -107,6 +107,8 @@ import type { CalendarDay, CalendarEvent } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 
+console.log('API base URL:', import.meta.env.VITE_API_BASE_URL);
+
 const showErrorPopup = ref(false);
 const errorMessage = ref<string>('');
 const errorStatus = ref<number | null>(null);
@@ -134,7 +136,7 @@ const calendarGroupName = ref<string>('');
 const getGroupName = async () => {
   calendarGroupName.value = 'Personal'
   if (groupAgenda !== 'personal') {
-    const groupName = await getData(`/api/groups/${groupAgenda}`);
+    const groupName = await getData(`${baseUrl}/groups/${groupAgenda}`);
     if (isApiError(groupName)) {
       return;
     };
@@ -245,7 +247,7 @@ const fetchEventsForMonth = async () => {
     try {
       const allEvents: any[] = [];
       if(groupAgenda == 'personal'){
-        const personalEvents = await getData(`/api/events/personal?from=${fromDate}&to=${toDate}`);
+        const personalEvents = await getData(`${baseUrl}/events/personal?from=${fromDate}&to=${toDate}`);
         if (isApiError(personalEvents)) {
           errorStatus.value = personalEvents.status;
           errorMessage.value = personalEvents.message;
@@ -259,7 +261,7 @@ const fetchEventsForMonth = async () => {
           });
         };
 
-        const tasks = await getData(`/api/tasks?completed=false`);
+        const tasks = await getData(`${baseUrl}/tasks?completed=false`);
         if (isApiError(tasks)) {
           errorStatus.value = tasks.status;
           errorMessage.value = tasks.message;
@@ -279,7 +281,7 @@ const fetchEventsForMonth = async () => {
 
       // get all group events when checking personal agenda
       const group = groupAgenda != 'personal' ? `groupId=${groupAgenda}&` : ``;
-      const groupEvents = await getData(`/api/events?${group}from=${fromDate}&to=${toDate}`);
+      const groupEvents = await getData(`${baseUrl}/events?${group}from=${fromDate}&to=${toDate}`);
       if (isApiError(groupEvents)) {
           errorStatus.value = groupEvents.status;
           errorMessage.value = groupEvents.message;
