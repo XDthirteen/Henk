@@ -107,6 +107,8 @@ import type { CalendarDay, CalendarEvent } from '@/components/models';
 import StyledButton from '@/components/StyledButton.vue';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 console.log('API base URL:', import.meta.env.VITE_API_BASE_URL);
 
 const showErrorPopup = ref(false);
