@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useAuth } from './auth.service';
 const { getAuthToken } = useAuth()
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export const useGroupStore = defineStore('groupStore', {
   state: () => ({
@@ -32,9 +33,9 @@ export const useGroupStore = defineStore('groupStore', {
 export const fetchGroups = async () => {
   const token = getAuthToken()
   try {
-    const response = await fetch('/api/groups', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await fetch(`${baseUrl}/groups`, {
+		headers: { Authorization: `Bearer ${token}` },
+	})
     if (!response.ok) {
       throw new Error('Failed to fetch groups');
     }

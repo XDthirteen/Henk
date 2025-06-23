@@ -2,7 +2,7 @@ import type { Task } from "@/components/models";
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
-
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const useTasks = () => {
   const userToken = `Bearer ${localStorage.getItem("token")}`;
@@ -10,11 +10,11 @@ const useTasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get<Task[]>("/api/tasks", {
-        headers: {
-          Authorization: userToken
-        }
-      });
+      const response = await axios.get<Task[]>(`${baseUrl}/tasks`, {
+			headers: {
+				Authorization: userToken,
+			},
+		})
 
       tasks.value = response.data;
       //console.log(response.data)
@@ -25,12 +25,11 @@ const useTasks = () => {
 
   const postNewTask = async (newTask: Task) => {
     try {
-      const response = await axios.post("/api/tasks", newTask, {
-        headers: {
-          Authorization: userToken
-        }
-      }
-      );
+      const response = await axios.post(`${baseUrl}/tasks`, newTask, {
+			headers: {
+				Authorization: userToken,
+			},
+		})
       //console.log('Task succesfully created:', response.data);
       await fetchTasks();
     } catch(error) {
@@ -41,7 +40,7 @@ const useTasks = () => {
 
   const updateTask = async (taskID: Task) => {
     try {
-      const response = await axios.put(`/api/tasks/${taskID.id}`, {
+      const response = await axios.put(`${baseUrl}/tasks/${taskID.id}`, {
         completed: taskID.completed,
         title: taskID.title,
         description: taskID.description,
@@ -62,7 +61,7 @@ const useTasks = () => {
 
   const deleteTask = async (taskID: Task) => {
     try {
-      const response = await axios.delete(`/api/tasks/${taskID.id}`, {
+      const response = await axios.delete(`${baseUrl}/tasks/${taskID.id}`, {
         headers: {
           Authorization: userToken
         }

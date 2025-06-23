@@ -83,7 +83,7 @@ onMounted(async () => {
 
   if (userInfo.value) {
     savedValues.value = {
-      id: userInfo.value.id,
+      id: userInfo.value.id!,
       username: userInfo.value.username,
       firstname: userInfo.value.firstName,
       lastname: userInfo.value.lastName,

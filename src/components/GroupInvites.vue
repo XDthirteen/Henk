@@ -60,7 +60,10 @@ import { apiService, isApiError } from '@/services/api.service'
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 import PopUpComponent from '@/components/PopUpComponent.vue'
 import StyledButton from '@/components/StyledButton.vue'
-const { getData, postData } = apiService()
+
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+const { getData, postData } = apiService();
 
 const showErrorPopup = ref(false);
 const errorMessage = ref<string>('');
@@ -106,7 +109,7 @@ const acceptInvite = async () => {
       throw new Error('No authentication token found.')
     }
 
-    const data = await postData(`/api/invitations/${selectedGroup.value.id}/accept`);
+    const data = await postData(`${baseUrl}/invitations/${selectedGroup.value.id}/accept`);
     if (isApiError(data)) {
       errorStatus.value = data.status;
       errorMessage.value = data.message;
@@ -130,7 +133,7 @@ const declineInvite = async () => {
       throw new Error('No authentication token found.')
     }
 
-    const data = await postData(`/api/invitations/${selectedGroup.value.id}/reject`);
+    const data = await postData(`${baseUrl}/invitations/${selectedGroup.value.id}/reject`);
     if (isApiError(data)) {
       errorStatus.value = data.status;
       errorMessage.value = data.message;
@@ -153,7 +156,7 @@ const fetchInvites = async () => {
     throw new Error('No authentication token found.')
   }
 
-  const data = await getData('/api/invitations');
+  const data = await getData(`${baseUrl}/invitations`);
   if (isApiError(data)) {
     errorStatus.value = data.status;
     errorMessage.value = data.message;

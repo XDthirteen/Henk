@@ -29,15 +29,17 @@ import router from "@/router";
 import axios from "axios";
 import { ref } from "vue";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const isAuthenticated = ref(localStorage.getItem("token") !== null);
 
 const useAuth = () => {
     const login = async (email: string, password: string) => {
         try {
-            const response = await axios.post<{token: string}>("/api/auth/login", {
-                email: email,
-                password: password
-            });
+            const response = await axios.post<{ token: string }>(`${baseUrl}/auth/login`, {
+				email: email,
+				password: password,
+			})
 
             const token = response.data.token;
             localStorage.setItem("token", token);

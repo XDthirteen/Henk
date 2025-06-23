@@ -20,6 +20,8 @@ import { apiService, isApiError } from '@/services/api.service';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 import MessagePopup from '@/components/popups/MessagePopup.vue';
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const { postData, putData } = apiService();
 
 const showMessagePopup = ref(false);
@@ -146,7 +148,7 @@ const submitEvent = async () => {
     };
 
     if (isEdit.value){
-      const data = await putData(`/api/events/${route.query.id}`, eventToSend);
+      const data = await putData(`${baseUrl}/events/${route.query.id}`, eventToSend);
       if (isApiError(data)) {
         errorStatus.value = data.status;
         errorMessage.value = data.message;
@@ -162,7 +164,7 @@ const submitEvent = async () => {
     }
 
     else {
-      const data = await postData('/api/events', eventToSend);
+      const data = await postData(`${baseUrl}/events`, eventToSend);
       if (isApiError(data)) {
         errorStatus.value = data.status;
         errorMessage.value = data.message;

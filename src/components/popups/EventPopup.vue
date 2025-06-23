@@ -38,6 +38,8 @@ import MessagePopup from '@/components/popups/MessagePopup.vue';
 import ErrorPopup from '@/components/popups/ErrorPopup.vue';
 import type { CalendarEvent } from '@/components/models';
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const { deleteData } = apiService();
 const router = useRouter();
 
@@ -78,7 +80,7 @@ const editEvent = () => {
 };
 
 const deleteEvent = async () => {
-  const data = await deleteData(`/api/events/${props.event.id}`);
+  const data = await deleteData(`${baseUrl}/events/${props.event.id}`);
   if (isApiError(data)) {
     errorStatus.value = data.status;
     errorMessage.value = data.message;

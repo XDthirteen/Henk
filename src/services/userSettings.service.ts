@@ -2,6 +2,8 @@ import type { UserData, UserParamData } from "@/components/models";
 import axios from "axios";
 import { ref } from "vue";
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const applyTheme = (theme: string) => {
   const normalizedTheme = theme.toLowerCase();
   //console.log("applyTheme aangeroepen met:", normalizedTheme);
@@ -34,11 +36,11 @@ const userSettings = () => {
 
   const getUserInfo = async () => {
     try {
-      const response = await axios.get<UserData>("/api/users/me", {
-        headers: {
-          Authorization: userToken
-        }
-      });
+      const response = await axios.get<UserData>(`${baseUrl}/users/me`, {
+			headers: {
+				Authorization: userToken,
+			},
+		})
 
       const backendUserInfo = response.data;
 
@@ -66,16 +68,19 @@ const userSettings = () => {
     language: string;
   }) => {
     try {
-      const response = await axios.put("/api/users/me", {
-        firstName: tempValues.firstname,
-        lastName: tempValues.lastname,
-        email: tempValues.email,
-        defaultLanguage: tempValues.language,
-      }, {
-        headers: {
-          Authorization: userToken,
-        }
-      });
+      const response = await axios.put(`${baseUrl}/users/me`,
+			{
+				firstName: tempValues.firstname,
+				lastName: tempValues.lastname,
+				email: tempValues.email,
+				defaultLanguage: tempValues.language,
+			},
+			{
+				headers: {
+					Authorization: userToken,
+				},
+			},
+		)
       //console.log("User updated successfully:", response.data);
       return response.data;
 
@@ -89,11 +94,11 @@ const userSettings = () => {
 
   const getUserParam = async () => {
   try {
-    const response = await axios.get<UserParamData>("/api/users/preferences", {
-      headers: {
-        Authorization: userToken
-      }
-    });
+    const response = await axios.get<UserParamData>(`${baseUrl}/users/preferences`, {
+		headers: {
+			Authorization: userToken,
+		},
+	})
 
     const backendUserInfo = response.data;
 
@@ -120,15 +125,18 @@ const userSettings = () => {
     theme: string
   }) => {
     try {
-      const response = await axios.put("/api/users/preferences", {
-        city: tempValues.city,
-        app: tempValues.app,
-        theme: tempValues.theme
-      }, {
-        headers: {
-          Authorization: userToken,
-        }
-      });
+      const response = await axios.put(`${baseUrl}/users/preferences`,
+			{
+				city: tempValues.city,
+				app: tempValues.app,
+				theme: tempValues.theme,
+			},
+			{
+				headers: {
+					Authorization: userToken,
+				},
+			},
+		)
       //console.log("User parameters updated successfully:", response.data);
       return response.data;
 

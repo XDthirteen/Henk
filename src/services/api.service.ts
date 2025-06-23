@@ -37,6 +37,8 @@ import axios from 'axios';
 import type { AxiosRequestConfig } from 'axios';
 import { useAuth } from '@/services/auth.service'
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const { getAuthToken } = useAuth()
 
 export type ApiError = { error: true; status: number | null; message: string };
@@ -152,7 +154,7 @@ export const apiService = () => {
 	};
 
 	const setConfig = (apiPath: string, config?: AxiosRequestConfig): AxiosRequestConfig => {
-		return apiPath.startsWith('/api') ? getDefaultConfig() : config || {};
+		return apiPath.startsWith(`${baseUrl}`) ? getDefaultConfig() : config || {}
 	};
 
 	const getData = async (apiPath: string, config?: AxiosRequestConfig) => {

@@ -31,7 +31,7 @@ export const getForecast = async (city:string): Promise<ForecastData[]> => {
     });
 
     const forecastList = response.data.list;
-    const noonForecasts: ForecastData[] = forecastList.filter((item) =>
+    const noonForecasts: ForecastData[] = forecastList.filter((item :any) =>
     item.dt_txt.includes("12:00:00")  //moet op middag staan voor de API de volgende dag te laden
   );
 

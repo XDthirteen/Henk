@@ -121,6 +121,7 @@ import {
   faBell,
 } from '@fortawesome/free-solid-svg-icons'
 import StyledButton from '@/components/StyledButton.vue'
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 const { getData, postData, putData, deleteData } = apiService();
 
@@ -154,7 +155,7 @@ const iconList = [
   faRocket,
 ]
 
-const API_URL = '/api/groups'
+const API_URL = `${baseUrl}/groups`
 const defaultIcon = '/images/default.png'
 
 const router = useRouter()
@@ -238,7 +239,7 @@ const fetchGroups = async () => {
 
 const fetchInvites = async () => {
   try {
-    const data = await getData('/api/invitations');
+    const data = await getData(`${baseUrl}/invitations`);
     if (isApiError(data)) {
       errorStatus.value = data.status;
       errorMessage.value = data.message;

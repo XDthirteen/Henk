@@ -40,6 +40,8 @@ import StyledInputByType from '@/components/StyledInputByType.vue';
 import ErrorMessage from '@/components/ErrorMessage.vue';
 import SuccessMessage from '@/components/popups/SuccessMessage.vue';
 
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
 const router = useRouter();
 
 const buttonType = "primary";
@@ -76,7 +78,7 @@ const doubleUsernameOrEmail: Ref<boolean | undefined> = ref();
 const registerUser = async (user: UserData): Promise<string> => {
   try {
     // Verstuur een POST-verzoek naar de API met de ingevoerde parameters
-    const response = await axios.post<{ message: string }>("/api/auth/register", user)
+    const response = await axios.post<{ message: string }>(`${baseUrl}/auth/register`, user)
     const message = response.data.message;
     return message;
 
