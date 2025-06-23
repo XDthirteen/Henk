@@ -1,0 +1,1 @@
+import{_ as r,c,N as o,o as s}from"./index-GKEzOR5-.js";const n={};function t(e,a){return s(),c("p",null,[o(e.$slots,"default",{},void 0)])}const d=r(n,[["render",t],["__scopeId","data-v-b5c82bc8"]]);export{d as E};
